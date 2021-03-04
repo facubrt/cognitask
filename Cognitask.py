@@ -40,6 +40,11 @@ from modulos.aplicacion import BCIAplicacion #############################
 from modulos.operador import BCIOperador #################################
 from modulos.splash import Splash ########################################
 
+##########################################################################
+# IMPORTANTE, ANTES DE PONER A PRUEBA MODIFICAR:
+# numero de secuencias en calibración,
+# numero de secuencias en niveles de terapia
+# modulos_bci.txt
 
 class Cognitask(QtWidgets.QMainWindow, BCIOperador):
    
@@ -395,19 +400,19 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         
         if self.modo_calibracion == True and self.calibracion_tarea == 1:
             for i in range(0, 9):
-                img = "calibracion/sec1/dimg" + str(i+1) + ".png"
+                img = "calibracion/tarea 1/dimg" + str(i+1) + ".png"
                 self.BCIAplicacion.progreso_lineal[i].setPixmap(QtGui.QPixmap(img))
                 self.BCIAplicacion.progreso_grid[i].setPixmap(QtGui.QPixmap(img))
         
         if self.modo_calibracion == True and self.calibracion_tarea == 2:
             for i in range(0, 9):
-                img = "calibracion/sec2/dimg" + str(i+1) + ".png"
+                img = "calibracion/tarea 2/dimg" + str(i+1) + ".png"
                 self.BCIAplicacion.progreso_lineal[i].setPixmap(QtGui.QPixmap(img))
                 self.BCIAplicacion.progreso_grid[i].setPixmap(QtGui.QPixmap(img))
 
         if self.modo_calibracion == True and self.calibracion_tarea == 3:
             for i in range(0, 9):
-                img = "calibracion/sec3/dimg" + str(i+1) + ".png"
+                img = "calibracion/tarea 3/dimg" + str(i+1) + ".png"
                 self.BCIAplicacion.progreso_lineal[i].setPixmap(QtGui.QPixmap(img))
                 self.BCIAplicacion.progreso_grid[i].setPixmap(QtGui.QPixmap(img))
 
@@ -563,11 +568,11 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
             
     def SeleccionarSecuencia(self):
         if self.modo_terapia_opciones.currentText() == "Rompecabezas":
-            directorio = QFileDialog.getExistingDirectory(None, 'Selecciona una secuencia:', 'sec/Rompecabezas/', QFileDialog.ShowDirsOnly)
+            directorio = QFileDialog.getExistingDirectory(None, 'Selecciona una secuencia:', 'terapia/Rompecabezas/', QFileDialog.ShowDirsOnly)
         elif self.modo_terapia_opciones.currentText() == "Actividades":
-            directorio = QFileDialog.getExistingDirectory(None, 'Selecciona una secuencia:', 'sec/Actividades/', QFileDialog.ShowDirsOnly)
+            directorio = QFileDialog.getExistingDirectory(None, 'Selecciona una secuencia:', 'terapia/Actividades/', QFileDialog.ShowDirsOnly)
         else:
-            directorio = QFileDialog.getExistingDirectory(None, 'Selecciona una secuencia:', 'sec/Palabras/', QFileDialog.ShowDirsOnly)
+            directorio = QFileDialog.getExistingDirectory(None, 'Selecciona una secuencia:', 'terapia/Palabras/', QFileDialog.ShowDirsOnly)
         if directorio != "":
             self.ubicacion_img = directorio
         
@@ -622,24 +627,25 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         fout.close()
     
     def AplicarSecuenciaCalibracion(self):
-        QtCore.QCoreApplication.processEvents() 
+        QtCore.QCoreApplication.processEvents()
         fout = open("config/secuencia.prm", "wt")
         fout.write("Application:Speller%20Targets matrix TargetDefinitions= 9 { Display Enter Display%20Size Icon%20File Sound Intensified%20Icon } ")
         lista = ("A A 1 ", "B B 1 ", "C C 1 ", "D D 1 ", "E E 1 ", "F F 1 ", "G G 1 ", "H H 1 ", "I I 1 ") # necesario para construir el archivo prm
         if self.calibracion_tarea == 1:
-            self.ubicacion_img = self.install_dir + "/calibracion/sec1"
+            self.ubicacion_img = self.install_dir + "/calibracion/tarea 1"
             orden_sec = [5, 2, 7, 1, 9, 4, 3, 6, 8] # el orden debe ser siempre el mismo debido a el comportamiento de BCI2000 en modo calibración
             text_to_spell = "Application:Speller string TextToSpell= DBGFAHCIE // character or string to spell in offline copy mode"
         elif self.calibracion_tarea == 2:
-            self.ubicacion_img = self.install_dir + "/calibracion/sec2"
+            self.ubicacion_img = self.install_dir + "/calibracion/tarea 2"
             orden_sec = [8, 1, 4, 7, 6, 3, 9, 2, 5]
             text_to_spell = "Application:Speller string TextToSpell= BHFCIEDAG // character or string to spell in offline copy mode"
         else:
-            self.ubicacion_img = self.install_dir + "/calibracion/sec3"
+            self.ubicacion_img = self.install_dir + "/calibracion/tarea 3"
             orden_sec = [4, 9, 2, 5, 8, 3, 6, 1, 7]
             text_to_spell = "Application:Speller string TextToSpell= HCFADGIEB // character or string to spell in offline copy mode"
+        ubicacion_img = self.ubicacion_img.replace(' ', '%20')
         for i in range(0, 9):
-            orden_img = lista[i] + self.ubicacion_img + "/img" + str(orden_sec[i]) +".png % % "
+            orden_img = lista[i] + ubicacion_img + "/img" + str(orden_sec[i]) +".png % % "
             fout.write(orden_img)
         fout.write("// speller target properties\n")
         fout.write(text_to_spell)
