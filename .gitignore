@@ -14,6 +14,7 @@ __pycache__/
 build/
 documentos/
 gui/
+.vscode/
 develop-eggs/
 dist/
 downloads/
