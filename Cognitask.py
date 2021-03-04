@@ -61,7 +61,6 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         self.modulos = ("Adquisicion", "Procesamiento", "Aplicacion")
         self.IniciarModulosBCI2000() # permite modificar los modulos posteriormente a traves de modulos_bci.txt
         self.bci.Connect()
-        print("Operator path: " + self.bci.OperatorPath)
         self.bci.StartupModules(self.modulos) # inicializa los modulos de BCI2000
         self.InWindow() # introduce P3Speller dentro del modulo de Aplicacion Cognitask
         self.BCIAplicacion.setWindowFlag(QtCore.Qt.FramelessWindowHint) # Frameless Window
@@ -604,17 +603,18 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
                 orden_secuencia[i] = 0
         
         # escribimos el archivo de configuracion BCI2000
-        path = self.ubicacion_img.replace(' ', '%20') # el archivo de configuracion de BCI2000 necesita que los espacios sean indicados con '%20'
+        img_path = self.ubicacion_img.replace(' ', '%20') # el archivo de configuracion de BCI2000 necesita que los espacios sean indicados con '%20'
+        install_path = self.install_dir.replace(' ', '%20')
         fout = open("config/secuencia.prm", "wt")
         fout.write("Application:Speller%20Targets matrix TargetDefinitions= 9 { Display Enter Display%20Size Icon%20File Sound Intensified%20Icon } ")
         lista = ("A A 1 ", "B B 1 ", "C C 1 ", "D D 1 ", "E E 1 ", "F F 1 ", "G G 1 ", "H H 1 ", "I I 1 ") # necesario para construir el archivo prm
         random.shuffle(orden_secuencia)
         for i in range(0, 9):
             if orden_secuencia[i] != 0:
-                orden_img = lista[i] + path + "/img" + str(orden_secuencia[i]) +".png % % "
+                orden_img = lista[i] + img_path + "/img" + str(orden_secuencia[i]) +".png % % "
                 fout.write(orden_img)
             else:
-                orden_img = lista[i] + self.install_dir + "/img" + "/img" + str(orden_secuencia[i]) +".png % % "
+                orden_img = lista[i] + install_path + "/img" + "/img" + str(orden_secuencia[i]) +".png % % "
                 fout.write(orden_img)
             self.orden_secuencia[i] = orden_secuencia[i]
         
