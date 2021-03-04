@@ -1,3 +1,0 @@
-SignalGenerator
-P3SignalProcessing
-P3Speller
