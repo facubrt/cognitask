@@ -27,3 +27,9 @@ ACTIVIDAD INTERRUMPIDA -
 Selecciones realizadas  [02]
 Selecciones correctas   [00]
 Selecciones incorrectas [02]
+
+--- Sesión del día 04-03-21 [TERAPIA] ---
+
+Matriz de clasificación ---
+1 4 1 1
+1 6 2 1
