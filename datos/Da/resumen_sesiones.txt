@@ -33,3 +33,50 @@ Selecciones incorrectas [02]
 Matriz de clasificación ---
 1 4 1 1
 1 6 2 1
+
+--- Sesión del día 05-03-21 [CALIBRACIÓN] ---
+
+--------------- Corrida R01
+
+[Tarea Nro. 1]
+
+ACTIVIDAD INTERRUMPIDA -
+Selecciones realizadas  [08]
+Selecciones correctas   [01]
+Selecciones incorrectas [07]
+
+--------------- Corrida R02
+
+[Tarea Nro. 1]
+
+ACTIVIDAD COMPLETADA ---
+Selecciones realizadas  [17]
+Selecciones correctas   [04]
+Selecciones incorrectas [13]
+
+--------------- Corrida R03
+
+[Tarea Nro. 2]
+
+ACTIVIDAD COMPLETADA ---
+Selecciones realizadas  [18]
+Selecciones correctas   [04]
+Selecciones incorrectas [14]
+
+--------------- Corrida R04
+
+[Tarea Nro. 2]
+
+ACTIVIDAD COMPLETADA ---
+Selecciones realizadas  [27]
+Selecciones correctas   [08]
+Selecciones incorrectas [19]
+
+--------------- Corrida R05
+
+[Tarea Nro. 3]
+
+ACTIVIDAD COMPLETADA ---
+Selecciones realizadas  [36]
+Selecciones correctas   [11]
+Selecciones incorrectas [25]
