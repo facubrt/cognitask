@@ -80,3 +80,9 @@ ACTIVIDAD COMPLETADA ---
 Selecciones realizadas  [36]
 Selecciones correctas   [11]
 Selecciones incorrectas [25]
+
+--- Sesión del día 15-03-21 [TERAPIA] ---
+
+Matriz de clasificación ---
+1 4 1 1
+1 6 2 1

@@ -25,12 +25,13 @@
 from PyQt5 import QtCore, QtGui, QtWidgets ###############################
 from PyQt5.QtGui import QImage ###########################################
 from PyQt5.QtWidgets import QFileDialog ##################################
-from datetime import date ################################################
+from datetime import date, datetime ######################################
 import win32process ######################################################
 import random ############################################################
 import subprocess ########################################################
 import win32gui ##########################################################
 import inspect ###########################################################
+import time ##############################################################
 import sys ###############################################################
 import os ################################################################
 import re ################################################################
@@ -107,6 +108,10 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         self.calibracion_tarea = 1 # permite cambiar entre las distintas tareas de calibración automaticamente
         self.cantidad_pasos = 9 # cantidad de pasos que contiene la actividad. Por defecto son 9 pasos
         self.mostrar_guia = True
+
+        # temporizador
+        self.tiempo_inicial = 0
+        self.tiempo_sesion = 0
  
         # estados
         self.running = 0 # permite alternar entre comenzar y suspender una actividad
@@ -117,6 +122,8 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         self.selecciones_realizadas = 0
         self.selecciones_correctas = 0
         self.selecciones_incorrectas = 0
+        self.porcentaje_aciertos = 0
+        
         self.run = 0
         self.actividad_completada = False
         self.sesion_iniciada = False # con False se informará en el resumen una nueva sesión. con True se escribirá dentro de la misma
@@ -244,6 +251,7 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
             self.run += 1
             self.siguiente_seleccion = 1
             self.IniciarProgreso()
+            self.IniciarTiempo()
             self.sesion_estado = "Realizando"
             self.ActualizarResumen()
             self.EscribirResumen(2)  
@@ -310,6 +318,7 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
             self.ActualizarProgreso()
             self.selecciones_correctas += 1
             self.selecciones_realizadas += 1
+            self.ActualizarResumen()
             self.TerapiaFinalizada()
         
         elif self.imagen_seleccionada != self.siguiente_seleccion and self.modo_calibracion == False:
@@ -365,12 +374,18 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
             self.informacion_titulo.setText("¿Cómo empezar?")
             self.informacion_stacked_widget.setCurrentIndex(2)
         elif (informacion == "Resumen"):
-            self.informacion_titulo.setText("Resumen")
+            self.informacion_titulo.setText(self.bci.SubjectID)
             self.informacion_stacked_widget.setCurrentIndex(3)
 
     def ActualizarResumen(self):
         if (self.sesion_estado == "Preparado"):
             self.modo_resumen_texto.setText(self.modo_terapia_opciones.currentText())
+            if (self.modo_terapia_opciones.currentText() == "Rompecabezas"):
+                self.actividad_resumen_titulo.setText("Imagen")
+            elif (self.modo_terapia_opciones.currentText() == "Actividades"):
+                self.actividad_resumen_titulo.setText("Actividad")
+            elif (self.modo_terapia_opciones.currentText() == "Palabras"):
+                self.actividad_resumen_titulo.setText("Palabra")
             self.actividad_resumen_texto.setText(os.path.basename(self.ubicacion_img))
             self.nivel_resumen_texto.setText(self.nivel_opciones.currentText())
             self.selecciones_resumen_texto.setText(str(self.selecciones_realizadas))
@@ -442,6 +457,9 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         self.actividad_completada = True
         self.sesion_estado = "Completado"
         self.ActualizarResumen()
+        # actualizamos tambien el porcentaje de aciertos
+        self.porcentaje_aciertos = round((self.selecciones_correctas / self.selecciones_realizadas) * 100)
+
         self.EscribirResumen(3)
 
     def CalibracionFinalizada(self):
@@ -481,7 +499,7 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         if not file_exists:  
             header = "Resumen de todas las sesiones [" + self.bci.SubjectID + "]\n"
             fout.write(header)
-            #montaje = "Electrodos utilizados [colocar posteriormente los electrodos usados]\n"
+            #montaje = "Electrodos utilizados ---[Fz Cz Pz PO7 PO8 Oz]\n"
             #fout.write(montaje)
         if indice == 1:
             today = date.today()
@@ -523,12 +541,16 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
             if self.actividad_completada == True:
                 act = "\nACTIVIDAD COMPLETADA ---" 
             fout.write(act)
+            tiempo = "\nDuración ------[" + str(self.tiempo_sesion.minute).zfill(2) + ' min ' + str(self.tiempo_sesion.second).zfill(2) + ' s' + "]"
+            fout.write(tiempo)
             selecciones = "\nSelecciones realizadas  [" + str(self.selecciones_realizadas).zfill(2) + "]"
             fout.write(selecciones)
             correctas = "\nSelecciones correctas   [" + str(self.selecciones_correctas).zfill(2) + "]"
             fout.write(correctas)
             incorrectas = "\nSelecciones incorrectas [" + str(self.selecciones_incorrectas).zfill(2) + "]\n"
             fout.write(incorrectas)
+            aciertos = "\nPorcentaje de aciertos [" + str(self.porcentaje_aciertos) + "%]\n"
+            fout.write(aciertos)
         fout.close()
 
 
@@ -541,6 +563,7 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
 
     def Observar(self):
         while self.bci_estado == 'Running':
+            self.ActualizarTiempo()  # la actualización se realiza en este lugar para aprovechar el while de Observacion
             QtCore.QCoreApplication.processEvents()
             starget = self.bci.GetStateVariable('SelectedTarget') # me da el numero de target seleccionado (1 a 9)
             starget = int(starget)
@@ -672,6 +695,15 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         self.comenzar_terapia_boton.setEnabled(False)
    
     ## OTRAS FUNCIONES
+
+    def IniciarTiempo (self):
+        self.tiempo_inicial = datetime.now()
+
+    def ActualizarTiempo(self):
+            diferencia = datetime.now() - self.tiempo_inicial
+            tiempo_referencia = datetime(self.tiempo_inicial.year, self.tiempo_inicial.month, self.tiempo_inicial.day, 0, 0, 0)
+            self.tiempo_sesion = tiempo_referencia + diferencia
+            self.tiempo_resumen_texto.setText(str(self.tiempo_sesion.minute).zfill(2) + ' min ' + str(self.tiempo_sesion.second).zfill(2) + ' s')
 
     def DeshabilitarCambios(self):
         self.comenzar_calibracion_boton.setText("Suspender")
