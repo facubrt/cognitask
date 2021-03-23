@@ -79,10 +79,10 @@ class Ui_BCIAplicacion(object):
         self.feedback_label.setFont(font)
         self.feedback_label.setFocusPolicy(QtCore.Qt.NoFocus)
         self.feedback_label.setStyleSheet("color: rgb(242, 242, 242);\n"
-"border-color: rgb(0, 0, 0);\n"
-"background-color: rgb(35, 181, 156);\n"
-"border-radius: 6px;\n"
-"")
+        "border-color: rgb(0, 0, 0);\n"
+        "background-color: rgb(35, 181, 156);\n"
+        "border-radius: 6px;\n"
+        "")
         self.feedback_label.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.feedback_label.setFrameShadow(QtWidgets.QFrame.Plain)
         self.feedback_label.setLineWidth(1)

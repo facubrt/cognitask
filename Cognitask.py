@@ -44,8 +44,6 @@ from modulos.splash import Splash ########################################
 ##########################################################################
 # IMPORTANTE, ANTES DE PONER A PRUEBA MODIFICAR:
 # numero de secuencias en calibración,
-# numero de secuencias en niveles de terapia
-# modulos_bci.txt
 
 class Cognitask(QtWidgets.QMainWindow, BCIOperador):
    
@@ -128,7 +126,7 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         self.actividad_completada = False
         self.sesion_iniciada = False # con False se informará en el resumen una nueva sesión. con True se escribirá dentro de la misma
                        
-    ## COMPORTAMIENTO DE APLICACION
+    # NUEVA SESION
 
     def NuevaSesionPagina(self):
         self.RestablecerConfiguracion()
@@ -141,27 +139,6 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         self.seleccion_calibracion_frame.setStyleSheet("background-color: rgb(38, 43, 50);")
         self.seleccion_terapia_frame.setStyleSheet("background-color: rgb(38, 43, 50);")
         self.seleccion_nueva_sesion_frame.setStyleSheet("background-color: rgb(255, 255, 255);")
-
-    def CalibracionPagina(self):
-        self.RestablecerConfiguracion()
-        self.sesion_iniciada = False # debido a que se cambia de tipo de terapia, se vuelve a escribir la seccion de sesión
-        self.run = 0
-        self.configuracion_stacked_widget.setCurrentIndex(1)
-        self.MostrarInformacion("Calibracion")
-        self.seleccion_calibracion_frame.setStyleSheet("background-color:rgb(255,255,255);")
-        self.seleccion_terapia_frame.setStyleSheet("background-color: rgb(38, 43, 50);")
-        self.seleccion_nueva_sesion_frame.setStyleSheet("background-color: rgb(38, 43, 50);")
-
-    def TerapiaPagina(self):
-        self.RestablecerConfiguracion()
-        self.sesion_iniciada = False # debido a que se cambia de tipo de terapia, se vuelve a escribir la seccion de sesión
-        self.run = 0
-        self.configuracion_stacked_widget.setCurrentIndex(2)
-        self.MostrarInformacion("Terapia")
-        self.seleccion_calibracion_frame.setStyleSheet("background-color: rgb(38, 43, 50);")
-        self.seleccion_nueva_sesion_frame.setStyleSheet("background-color: rgb(38, 43, 50);")
-        self.seleccion_terapia_frame.setStyleSheet("background-color:rgb(255,255,255);")
-
 
     def IniciarSesion(self):
         # Datos de sujeto y sesión
@@ -179,6 +156,146 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
             self.calibracion_boton.setEnabled(True)
             self.terapia_boton.setEnabled(True)
 
+    def SeleccionarDirectorio(self):
+        directorio = QFileDialog.getExistingDirectory(None, 'Selecciona una carpeta:', 'C:/', QFileDialog.ShowDirsOnly)
+        if directorio != "":
+            self.ubicacion_datos = directorio
+            self.directorio_entrada.setText(self.ubicacion_datos)
+    
+    # CALIBRACION
+
+    def CalibracionPagina(self):
+        self.RestablecerConfiguracion()
+        self.sesion_iniciada = False # debido a que se cambia de tipo de terapia, se vuelve a escribir la seccion de sesión
+        self.run = 0
+        self.configuracion_stacked_widget.setCurrentIndex(1)
+        self.MostrarInformacion("Calibracion")
+        self.seleccion_calibracion_frame.setStyleSheet("background-color:rgb(255,255,255);")
+        self.seleccion_terapia_frame.setStyleSheet("background-color: rgb(38, 43, 50);")
+        self.seleccion_nueva_sesion_frame.setStyleSheet("background-color: rgb(38, 43, 50);")
+
+    def AplicarConfigCalibracion(self):
+        QtCore.QCoreApplication.processEvents() 
+        self.siguiente_seleccion = 1
+        self.modo_calibracion = True
+        self.IniciarProgreso()
+        self.AplicarSecuenciaCalibracion()
+        self.bci.LoadParametersRemote(self.config_calibracion)
+        self.bci.LoadParametersRemote(self.secuencia)
+        self.BCIAplicacion.p3_frame.hide()
+
+        if self.BCIAplicacion.Open == 0:
+            self.BCIAplicacion.Open = 1
+            self.BCIAplicacion.show()  
+        
+        self.bci.SetConfig()
+        self.BCIAplicacion.p3_frame.show()
+        self.comenzar_terapia_boton.setEnabled(False)
+        self.comenzar_calibracion_boton.setEnabled(True)
+        self.EscribirResumen(1)
+    
+    def ComenzarCalibracion(self):
+        if self.running == 0: 
+            self.bci.Start()
+            self.DeshabilitarCambios()
+            self.running = 1
+            self.BCIAplicacion.feedback_label.setText("Comencemos!")
+            if self.calibracion_tarea == 1:
+                self.calibracion_estado_1.setText("Realizando ...")
+            elif self.calibracion_tarea == 2:
+                self.calibracion_estado_2.setText("Realizando ...")
+            else:
+                self.calibracion_estado_3.setText("Realizando ...")
+            self.BCIAplicacion.feedback_label.show()
+            QtCore.QTimer.singleShot(2000, self.msgOcultar)
+            self.run += 1
+            self.siguiente_seleccion = 1
+            self.IniciarProgreso()
+            self.EscribirResumen(2)
+        else:
+            self.bci.Stop()
+            self.HabilitarCambios()
+            self.running = 0
+            self.BCIAplicacion.feedback_label.setText("Espera un momento...")
+            if self.calibracion_tarea == 1:
+                self.calibracion_estado_1.setText("Esperando ...")
+            elif self.calibracion_tarea == 2:
+                self.calibracion_estado_2.setText("Esperando ...")
+            else:
+                self.calibracion_estado_3.setText("Esperando ...")
+            self.BCIAplicacion.feedback_label.show()
+            self.EscribirResumen(3) # si se interrumpe la corrida y se empieza una nueva, se anuncia que no se completo y se da un resumen
+         
+        self.bci_estado = 'Running'
+        self.Observar()
+
+
+    def AplicarSecuenciaCalibracion(self):
+        QtCore.QCoreApplication.processEvents()
+        fout = open("config/secuencia.prm", "wt")
+        fout.write("Application:Speller%20Targets matrix TargetDefinitions= 9 { Display Enter Display%20Size Icon%20File Sound Intensified%20Icon } ")
+        lista = ("A A 1 ", "B B 1 ", "C C 1 ", "D D 1 ", "E E 1 ", "F F 1 ", "G G 1 ", "H H 1 ", "I I 1 ") # necesario para construir el archivo prm
+        if self.calibracion_tarea == 1:
+            self.ubicacion_img = self.install_dir + "/calibracion/tarea 1"
+            orden_sec = [5, 2, 7, 1, 9, 4, 3, 6, 8] # el orden debe ser siempre el mismo debido a el comportamiento de BCI2000 en modo calibración
+            text_to_spell = "Application:Speller string TextToSpell= DBGFAHCIE // character or string to spell in offline copy mode"
+        elif self.calibracion_tarea == 2:
+            self.ubicacion_img = self.install_dir + "/calibracion/tarea 2"
+            orden_sec = [8, 1, 4, 7, 6, 3, 9, 2, 5]
+            text_to_spell = "Application:Speller string TextToSpell= BHFCIEDAG // character or string to spell in offline copy mode"
+        else:
+            self.ubicacion_img = self.install_dir + "/calibracion/tarea 3"
+            orden_sec = [4, 9, 2, 5, 8, 3, 6, 1, 7]
+            text_to_spell = "Application:Speller string TextToSpell= HCFADGIEB // character or string to spell in offline copy mode"
+        ubicacion_img = self.ubicacion_img.replace(' ', '%20')
+        for i in range(0, 9):
+            orden_img = lista[i] + ubicacion_img + "/img" + str(orden_sec[i]) +".png % % "
+            fout.write(orden_img)
+        fout.write("// speller target properties\n")
+        fout.write(text_to_spell)
+        fout.close()
+        self.orden_secuencia = orden_sec
+
+
+    def CalibracionFinalizada(self):
+        self.bci.Stop()
+        self.HabilitarCambios()
+        self.comenzar_calibracion_boton.setEnabled(False)
+        self.running = 0
+        self.BCIAplicacion.feedback_label.setText("Has terminado!")
+        self.BCIAplicacion.feedback_label.show()
+        p = QtGui.QPixmap("img/completado.png")
+        if self.calibracion_tarea == 1:
+            print('tarea 1')
+            self.calibracion_estado_1.setText("Completado")
+            self.calibracion_completada_1.setPixmap(QtGui.QPixmap(p))
+            self.calibracion_tarea += 1
+        elif self.calibracion_tarea == 2:
+            print('tarea 2')
+            self.calibracion_estado_2.setText("Completado")
+            self.calibracion_completada_2.setPixmap(QtGui.QPixmap(p))
+            self.calibracion_tarea += 1
+        elif self.calibracion_tarea == 3:
+            print('tarea 3')
+            self.calibracion_estado_3.setText("Completado")
+            self.calibracion_completada_3.setPixmap(QtGui.QPixmap(p))
+            self.calibracion_tarea = 1
+            self.preparar_calibracion_boton.setEnabled(False)
+            self.clasificador_boton.setEnabled(True)
+        self.actividad_completada = True
+        self.EscribirResumen(3)
+    
+    # TERAPIA
+
+    def TerapiaPagina(self):
+        self.RestablecerConfiguracion()
+        self.sesion_iniciada = False # debido a que se cambia de tipo de terapia, se vuelve a escribir la seccion de sesión
+        self.run = 0
+        self.configuracion_stacked_widget.setCurrentIndex(2)
+        self.MostrarInformacion("Terapia")
+        self.seleccion_calibracion_frame.setStyleSheet("background-color: rgb(38, 43, 50);")
+        self.seleccion_nueva_sesion_frame.setStyleSheet("background-color: rgb(38, 43, 50);")
+        self.seleccion_terapia_frame.setStyleSheet("background-color:rgb(255,255,255);")
 
     def AplicarConfigTerapia(self):
         QtCore.QCoreApplication.processEvents()
@@ -218,26 +335,6 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         self.comenzar_terapia_boton.setEnabled(True)
         self.comenzar_calibracion_boton.setEnabled(False)
         self.EscribirResumen(1)
-    
-    def AplicarConfigCalibracion(self):
-        QtCore.QCoreApplication.processEvents() 
-        self.siguiente_seleccion = 1
-        self.modo_calibracion = True
-        self.IniciarProgreso()
-        self.AplicarSecuenciaCalibracion()
-        self.bci.LoadParametersRemote(self.config_calibracion)
-        self.bci.LoadParametersRemote(self.secuencia)
-        self.BCIAplicacion.p3_frame.hide()
-
-        if self.BCIAplicacion.Open == 0:
-            self.BCIAplicacion.Open = 1
-            self.BCIAplicacion.show()  
-        
-        self.bci.SetConfig()
-        self.BCIAplicacion.p3_frame.show()
-        self.comenzar_terapia_boton.setEnabled(False)
-        self.comenzar_calibracion_boton.setEnabled(True)
-        self.EscribirResumen(1)
 
     def ComenzarTerapia(self):
         if self.bci_estado == 'Suspended': 
@@ -266,41 +363,142 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
             self.EscribirResumen(3) # si se interrumpe la corrida y se empieza una nueva, se anuncia que no se completo y se da un resumen   
 
         self.Observar()
-    
-    def ComenzarCalibracion(self):
-        if self.running == 0: 
-            self.bci.Start()
-            self.DeshabilitarCambios()
-            self.running = 1
-            self.BCIAplicacion.feedback_label.setText("Comencemos!")
-            if self.calibracion_tarea == 1:
-                self.calibracion_estado_1.setText("Realizando ...")
-            elif self.calibracion_tarea == 2:
-                self.calibracion_estado_2.setText("Realizando ...")
-            else:
-                self.calibracion_estado_3.setText("Realizando ...")
-            self.BCIAplicacion.feedback_label.show()
-            QtCore.QTimer.singleShot(2000, self.msgOcultar)
-            self.run += 1
-            self.siguiente_seleccion = 1
-            self.IniciarProgreso()
-            self.EscribirResumen(2)
+
+
+    def SeleccionarSecuencia(self):
+        if self.modo_terapia_opciones.currentText() == "Rompecabezas":
+            directorio = QFileDialog.getExistingDirectory(None, 'Selecciona una secuencia:', 'terapia/Rompecabezas/', QFileDialog.ShowDirsOnly)
+        elif self.modo_terapia_opciones.currentText() == "Actividades":
+            directorio = QFileDialog.getExistingDirectory(None, 'Selecciona una secuencia:', 'terapia/Actividades/', QFileDialog.ShowDirsOnly)
         else:
-            self.bci.Stop()
-            self.HabilitarCambios()
-            self.running = 0
-            self.BCIAplicacion.feedback_label.setText("Espera un momento...")
-            if self.calibracion_tarea == 1:
-                self.calibracion_estado_1.setText("Esperando ...")
-            elif self.calibracion_tarea == 2:
-                self.calibracion_estado_2.setText("Esperando ...")
+            directorio = QFileDialog.getExistingDirectory(None, 'Selecciona una secuencia:', 'terapia/Palabras/', QFileDialog.ShowDirsOnly)
+        if directorio != "":
+            self.ubicacion_img = directorio
+        
+        # contamos la cantidad de pasos que contiene la secuencia elegida
+        self.cantidad_pasos = sum(1 for item in os.listdir(self.ubicacion_img) if os.path.isfile(os.path.join(self.ubicacion_img, item)))
+
+    def AplicarMatrizClasificacion(self):
+        clas = QFileDialog.getOpenFileName(self, "Seleccione el archivo de calibración: ", "C:/", "PRM (*.prm)")
+        self.archivo_calibracion_entrada.setText(clas[0])
+        self.matriz_clasificacion = clas[0]
+
+    def AplicarNivel(self): 
+        # ver si faltan mas configuraciones para definir un nivel. Tal vez duracion de estimulo, etc
+        QtCore.QCoreApplication.processEvents() 
+        fout = open("config/nivel.prm", "wt")
+        if self.nivel_opciones.currentText() == "Avanzado":
+            fout.write("Application:Sequencing int NumberOfSequences= 7 15 1 % // number of sequences in a set of intensifications\n")
+            fout.write("Filtering:P3TemporalFilter int EpochsToAverage= 7 1 0 % // Number of epochs to average")
+        elif self.nivel_opciones.currentText() == "Intermedio":
+            fout.write("Application:Sequencing int NumberOfSequences= 10 15 1 % // number of sequences in a set of intensifications\n")
+            fout.write("Filtering:P3TemporalFilter int EpochsToAverage= 10 1 0 % // Number of epochs to average")
+        else:
+            fout.write("Application:Sequencing int NumberOfSequences= 15 15 1 % // number of sequences in a set of intensifications\n")
+            fout.write("Filtering:P3TemporalFilter int EpochsToAverage= 15 1 0 % // Number of epochs to average")
+        fout.close()
+
+    def AplicarSecuencia(self):
+        QtCore.QCoreApplication.processEvents()
+        orden_secuencia = list(range(1, 10))
+
+        if self.cantidad_pasos < 9:
+            for i in range (self.cantidad_pasos, 9):
+                orden_secuencia[i] = 0
+        
+        # escribimos el archivo de configuracion BCI2000
+        img_path = self.ubicacion_img.replace(' ', '%20') # el archivo de configuracion de BCI2000 necesita que los espacios sean indicados con '%20'
+        install_path = self.install_dir.replace(' ', '%20')
+        fout = open("config/secuencia.prm", "wt")
+        fout.write("Application:Speller%20Targets matrix TargetDefinitions= 9 { Display Enter Display%20Size Icon%20File Sound Intensified%20Icon } ")
+        lista = ("A A 1 ", "B B 1 ", "C C 1 ", "D D 1 ", "E E 1 ", "F F 1 ", "G G 1 ", "H H 1 ", "I I 1 ") # necesario para construir el archivo prm
+        random.shuffle(orden_secuencia)
+        for i in range(0, 9):
+            if orden_secuencia[i] != 0:
+                orden_img = lista[i] + img_path + "/img" + str(orden_secuencia[i]) +".png % % "
+                fout.write(orden_img)
             else:
-                self.calibracion_estado_3.setText("Esperando ...")
-            self.BCIAplicacion.feedback_label.show()
-            self.EscribirResumen(3) # si se interrumpe la corrida y se empieza una nueva, se anuncia que no se completo y se da un resumen
-         
-        self.bci_estado = 'Running'
-        self.Observar()
+                orden_img = lista[i] + install_path + "/img" + "/img" + str(orden_secuencia[i]) +".png % % "
+                fout.write(orden_img)
+            self.orden_secuencia[i] = orden_secuencia[i]
+        
+        fout.write("// speller target properties")
+        fout.close()
+
+
+    def TerapiaFinalizada(self):
+        self.bci.Stop()
+        self.HabilitarCambios()
+        self.running = 0
+        self.BCIAplicacion.feedback_label.setText("Has terminado!")
+        self.BCIAplicacion.feedback_label.show()
+        self.actividad_completada = True
+        self.sesion_estado = "Completado"
+        self.ActualizarResumen()
+        # actualizamos tambien el porcentaje de aciertos
+        self.porcentaje_aciertos = round((self.selecciones_correctas / self.selecciones_realizadas) * 100)
+
+        self.EscribirResumen(3)
+
+    ## FEEDBACK Y PROGRESO
+
+    def IniciarProgreso(self):
+        
+        if self.modo_calibracion == False:
+            for i in range(0, 9):
+                if i < self.cantidad_pasos:
+                    self.BCIAplicacion.progreso_lineal[i].setPixmap(QtGui.QPixmap("img/target_v.png"))
+                    self.BCIAplicacion.progreso_grid[i].setPixmap(QtGui.QPixmap("img/target_h.png"))
+                else:
+                    self.BCIAplicacion.progreso_lineal[i].setPixmap(QtGui.QPixmap("img/bloqueado_v.png"))
+                    self.BCIAplicacion.progreso_grid[i].setPixmap(QtGui.QPixmap("img/bloqueado_h.png"))
+        
+        if self.modo_calibracion == True and self.calibracion_tarea == 1:
+            for i in range(0, 9):
+                img = "calibracion/tarea 1/dimg" + str(i+1) + ".png"
+                self.BCIAplicacion.progreso_lineal[i].setPixmap(QtGui.QPixmap(img))
+                self.BCIAplicacion.progreso_grid[i].setPixmap(QtGui.QPixmap(img))
+        
+        if self.modo_calibracion == True and self.calibracion_tarea == 2:
+            for i in range(0, 9):
+                img = "calibracion/tarea 2/dimg" + str(i+1) + ".png"
+                self.BCIAplicacion.progreso_lineal[i].setPixmap(QtGui.QPixmap(img))
+                self.BCIAplicacion.progreso_grid[i].setPixmap(QtGui.QPixmap(img))
+
+        if self.modo_calibracion == True and self.calibracion_tarea == 3:
+            for i in range(0, 9):
+                img = "calibracion/tarea 3/dimg" + str(i+1) + ".png"
+                self.BCIAplicacion.progreso_lineal[i].setPixmap(QtGui.QPixmap(img))
+                self.BCIAplicacion.progreso_grid[i].setPixmap(QtGui.QPixmap(img))
+    
+    def ActualizarProgreso(self):
+
+        if self.modo_calibracion == False:
+            if self.siguiente_seleccion < self.cantidad_pasos:
+                self.BCIAplicacion.progreso_lineal[self.siguiente_seleccion].setPixmap(QtGui.QPixmap("img/starget_v.png"))
+                self.BCIAplicacion.progreso_grid[self.siguiente_seleccion].setPixmap(QtGui.QPixmap("img/starget_h.png"))
+            img = self.ubicacion_img + "/img" + str(self.imagen_seleccionada) + ".png"
+            p = QtGui.QPixmap(img)
+            self.BCIAplicacion.progreso_lineal[self.siguiente_seleccion - 1].setPixmap(QtGui.QPixmap(p))
+            self.BCIAplicacion.progreso_grid[self.siguiente_seleccion - 1].setPixmap(QtGui.QPixmap(p))
+        
+        if self.modo_calibracion == True:
+            img = self.ubicacion_img + "/img" + str(self.imagen_seleccionada) + ".png"
+            p = QtGui.QPixmap(img)
+            self.BCIAplicacion.progreso_lineal[self.siguiente_seleccion - 1].setPixmap(QtGui.QPixmap(p))
+            self.BCIAplicacion.progreso_grid[self.siguiente_seleccion - 1].setPixmap(QtGui.QPixmap(p))
+
+    def MostrarGuia(self):
+        # queda ver si se puede poner opacidad en las imagenes de guia. También debería hacerse para calibracion
+        for i in range(0, 9):
+            if i < self.cantidad_pasos:
+                img = self.ubicacion_img + "/img" + str(i+1) + ".png"
+                p = QtGui.QPixmap(img)
+                self.BCIAplicacion.progreso_lineal[i].setPixmap(QtGui.QPixmap(p))
+                self.BCIAplicacion.progreso_grid[i].setPixmap(QtGui.QPixmap(p))
+            else:
+                self.BCIAplicacion.progreso_lineal[i].setPixmap(QtGui.QPixmap("img/bloqueado_v.png"))
+                self.BCIAplicacion.progreso_grid[i].setPixmap(QtGui.QPixmap("img/bloqueado_h.png"))  
 
 
     def Feedback(self):
@@ -351,17 +549,7 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
 
         self.ActualizarResumen() # informa al operador de la seleccion
 
-    def MostrarGuia(self):
-        # queda ver si se puede poner opacidad en las imagenes de guia. También debería hacerse para calibracion
-        for i in range(0, 9):
-            if i < self.cantidad_pasos:
-                img = self.ubicacion_img + "/img" + str(i+1) + ".png"
-                p = QtGui.QPixmap(img)
-                self.BCIAplicacion.progreso_lineal[i].setPixmap(QtGui.QPixmap(p))
-                self.BCIAplicacion.progreso_grid[i].setPixmap(QtGui.QPixmap(p))
-            else:
-                self.BCIAplicacion.progreso_lineal[i].setPixmap(QtGui.QPixmap("img/bloqueado_v.png"))
-                self.BCIAplicacion.progreso_grid[i].setPixmap(QtGui.QPixmap("img/bloqueado_h.png"))  
+    ## INFORMACION Y RESUMEN
 
     def MostrarInformacion(self, informacion):
         if (informacion == "Nueva sesion"):
@@ -377,6 +565,7 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
             self.informacion_titulo.setText(self.bci.SubjectID)
             self.informacion_stacked_widget.setCurrentIndex(3)
 
+    # se muestra el resumen de la sesion actual en la ventana de operador
     def ActualizarResumen(self):
         if (self.sesion_estado == "Preparado"):
             self.modo_resumen_texto.setText(self.modo_terapia_opciones.currentText())
@@ -402,95 +591,7 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         elif (self.sesion_estado == "Interrumpido"):
             self.estado_resumen_texto.setText("Interrumpido")
 
-    def IniciarProgreso(self):
-        
-        if self.modo_calibracion == False:
-            for i in range(0, 9):
-                if i < self.cantidad_pasos:
-                    self.BCIAplicacion.progreso_lineal[i].setPixmap(QtGui.QPixmap("img/target_v.png"))
-                    self.BCIAplicacion.progreso_grid[i].setPixmap(QtGui.QPixmap("img/target_h.png"))
-                else:
-                    self.BCIAplicacion.progreso_lineal[i].setPixmap(QtGui.QPixmap("img/bloqueado_v.png"))
-                    self.BCIAplicacion.progreso_grid[i].setPixmap(QtGui.QPixmap("img/bloqueado_h.png"))
-        
-        if self.modo_calibracion == True and self.calibracion_tarea == 1:
-            for i in range(0, 9):
-                img = "calibracion/tarea 1/dimg" + str(i+1) + ".png"
-                self.BCIAplicacion.progreso_lineal[i].setPixmap(QtGui.QPixmap(img))
-                self.BCIAplicacion.progreso_grid[i].setPixmap(QtGui.QPixmap(img))
-        
-        if self.modo_calibracion == True and self.calibracion_tarea == 2:
-            for i in range(0, 9):
-                img = "calibracion/tarea 2/dimg" + str(i+1) + ".png"
-                self.BCIAplicacion.progreso_lineal[i].setPixmap(QtGui.QPixmap(img))
-                self.BCIAplicacion.progreso_grid[i].setPixmap(QtGui.QPixmap(img))
-
-        if self.modo_calibracion == True and self.calibracion_tarea == 3:
-            for i in range(0, 9):
-                img = "calibracion/tarea 3/dimg" + str(i+1) + ".png"
-                self.BCIAplicacion.progreso_lineal[i].setPixmap(QtGui.QPixmap(img))
-                self.BCIAplicacion.progreso_grid[i].setPixmap(QtGui.QPixmap(img))
-
-    def ActualizarProgreso(self):
-
-        if self.modo_calibracion == False:
-            if self.siguiente_seleccion < self.cantidad_pasos:
-                self.BCIAplicacion.progreso_lineal[self.siguiente_seleccion].setPixmap(QtGui.QPixmap("img/starget_v.png"))
-                self.BCIAplicacion.progreso_grid[self.siguiente_seleccion].setPixmap(QtGui.QPixmap("img/starget_h.png"))
-            img = self.ubicacion_img + "/img" + str(self.imagen_seleccionada) + ".png"
-            p = QtGui.QPixmap(img)
-            self.BCIAplicacion.progreso_lineal[self.siguiente_seleccion - 1].setPixmap(QtGui.QPixmap(p))
-            self.BCIAplicacion.progreso_grid[self.siguiente_seleccion - 1].setPixmap(QtGui.QPixmap(p))
-        
-        if self.modo_calibracion == True:
-            img = self.ubicacion_img + "/img" + str(self.imagen_seleccionada) + ".png"
-            p = QtGui.QPixmap(img)
-            self.BCIAplicacion.progreso_lineal[self.siguiente_seleccion - 1].setPixmap(QtGui.QPixmap(p))
-            self.BCIAplicacion.progreso_grid[self.siguiente_seleccion - 1].setPixmap(QtGui.QPixmap(p))
-
-    def TerapiaFinalizada(self):
-        self.bci.Stop()
-        self.HabilitarCambios()
-        self.running = 0
-        self.BCIAplicacion.feedback_label.setText("Has terminado!")
-        self.BCIAplicacion.feedback_label.show()
-        self.actividad_completada = True
-        self.sesion_estado = "Completado"
-        self.ActualizarResumen()
-        # actualizamos tambien el porcentaje de aciertos
-        self.porcentaje_aciertos = round((self.selecciones_correctas / self.selecciones_realizadas) * 100)
-
-        self.EscribirResumen(3)
-
-    def CalibracionFinalizada(self):
-        self.bci.Stop()
-        self.HabilitarCambios()
-        self.comenzar_calibracion_boton.setEnabled(False)
-        self.running = 0
-        self.BCIAplicacion.feedback_label.setText("Has terminado!")
-        self.BCIAplicacion.feedback_label.show()
-        p = QtGui.QPixmap("img/completado.png")
-        if self.calibracion_tarea == 1:
-            print('tarea 1')
-            self.calibracion_estado_1.setText("Completado")
-            self.calibracion_completada_1.setPixmap(QtGui.QPixmap(p))
-            self.calibracion_tarea += 1
-        elif self.calibracion_tarea == 2:
-            print('tarea 2')
-            self.calibracion_estado_2.setText("Completado")
-            self.calibracion_completada_2.setPixmap(QtGui.QPixmap(p))
-            self.calibracion_tarea += 1
-        elif self.calibracion_tarea == 3:
-            print('tarea 3')
-            self.calibracion_estado_3.setText("Completado")
-            self.calibracion_completada_3.setPixmap(QtGui.QPixmap(p))
-            self.calibracion_tarea = 1
-            self.preparar_calibracion_boton.setEnabled(False)
-            self.clasificador_boton.setEnabled(True)
-        self.actividad_completada = True
-        self.EscribirResumen(3)
-
-
+    # Se escribe el documento con el resumen de todas las sesiones
     def EscribirResumen(self, indice):
         QtCore.QCoreApplication.processEvents()
         path = self.ubicacion_datos + "/" + self.bci.SubjectID + "/resumen_sesiones.txt" 
@@ -553,13 +654,34 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
             fout.write(aciertos)
         fout.close()
 
+    ## SALIR Y RESTABLECER
+
+    def RestablecerConfiguracion(self):
+        # Pagina Nueva Sesion
+        self.nombre_entrada.setText("")
+        
+        # Pagina Calibracion
+        self.calibracion_tarea = 1
+        self.calibracion_estado_1.setText("Realizar tarea de calibración Nro. 1")
+        self.calibracion_estado_2.setText("Realizar tarea de calibración Nro. 2")
+        self.calibracion_estado_3.setText("Realizar tarea de calibración Nro. 3")
+        p = QtGui.QPixmap("img/completado_d.png")
+        pr = p.scaled(80, 80, QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation)
+        self.calibracion_completada_1.setPixmap(QtGui.QPixmap(pr))
+        self.calibracion_completada_2.setPixmap(QtGui.QPixmap(pr))
+        self.calibracion_completada_3.setPixmap(QtGui.QPixmap(pr))
+        self.comenzar_calibracion_boton.setEnabled(False)
+        self.clasificador_boton.setEnabled(False)
+        
+        # Pagina Terapia
+        self.comenzar_terapia_boton.setEnabled(False)
 
     def SalirCognitask(self):
         self.bci.Quit()
         self.BCIAplicacion.close()
         Cognitask.close(self)
 
-    ## OBSERVACION DE ESTADOS DE BCI2000
+    ## BCI2000
 
     def Observar(self):
         while self.bci_estado == 'Running':
@@ -578,124 +700,16 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
                 self.consultar_seleccion = True
             self.bci_estado = self.bci.GetSystemState()
     
-    ## CONFIGURACION DE LA SESION
-
-    def AbrirP3Classifier(self):
-        subprocess.Popen("BCI2000/P300Classifier.exe")
-
-    def SeleccionarDirectorio(self):
-        directorio = QFileDialog.getExistingDirectory(None, 'Selecciona una carpeta:', 'C:/', QFileDialog.ShowDirsOnly)
-        if directorio != "":
-            self.ubicacion_datos = directorio
-            self.directorio_entrada.setText(self.ubicacion_datos)
-            
-    def SeleccionarSecuencia(self):
-        if self.modo_terapia_opciones.currentText() == "Rompecabezas":
-            directorio = QFileDialog.getExistingDirectory(None, 'Selecciona una secuencia:', 'terapia/Rompecabezas/', QFileDialog.ShowDirsOnly)
-        elif self.modo_terapia_opciones.currentText() == "Actividades":
-            directorio = QFileDialog.getExistingDirectory(None, 'Selecciona una secuencia:', 'terapia/Actividades/', QFileDialog.ShowDirsOnly)
-        else:
-            directorio = QFileDialog.getExistingDirectory(None, 'Selecciona una secuencia:', 'terapia/Palabras/', QFileDialog.ShowDirsOnly)
-        if directorio != "":
-            self.ubicacion_img = directorio
-        
-        # contamos la cantidad de pasos que contiene la secuencia elegida
-        self.cantidad_pasos = sum(1 for item in os.listdir(self.ubicacion_img) if os.path.isfile(os.path.join(self.ubicacion_img, item)))
-
-    def AplicarMatrizClasificacion(self):
-        clas = QFileDialog.getOpenFileName(self, "Seleccione el archivo de calibración: ", "C:/", "PRM (*.prm)")
-        self.archivo_calibracion_entrada.setText(clas[0])
-        self.matriz_clasificacion = clas[0]
-
-    def AplicarNivel(self): 
-        # ver si faltan mas configuraciones para definir un nivel. Tal vez duracion de estimulo, etc
-        QtCore.QCoreApplication.processEvents() 
-        fout = open("config/nivel.prm", "wt")
-        if self.nivel_opciones.currentText() == "Avanzado":
-            fout.write("Application:Sequencing int NumberOfSequences= 2 15 1 % // number of sequences in a set of intensifications\n")
-            fout.write("Filtering:P3TemporalFilter int EpochsToAverage= 2 1 0 % // Number of epochs to average")
-        elif self.nivel_opciones.currentText() == "Intermedio":
-            fout.write("Application:Sequencing int NumberOfSequences= 10 15 1 % // number of sequences in a set of intensifications\n")
-            fout.write("Filtering:P3TemporalFilter int EpochsToAverage= 10 1 0 % // Number of epochs to average")
-        else:
-            fout.write("Application:Sequencing int NumberOfSequences= 15 15 1 % // number of sequences in a set of intensifications\n")
-            fout.write("Filtering:P3TemporalFilter int EpochsToAverage= 15 1 0 % // Number of epochs to average")
-        fout.close()
-    
-    def AplicarSecuencia(self):
-        QtCore.QCoreApplication.processEvents()
-        orden_secuencia = list(range(1, 10))
-
-        if self.cantidad_pasos < 9:
-            for i in range (self.cantidad_pasos, 9):
-                orden_secuencia[i] = 0
-        
-        # escribimos el archivo de configuracion BCI2000
-        img_path = self.ubicacion_img.replace(' ', '%20') # el archivo de configuracion de BCI2000 necesita que los espacios sean indicados con '%20'
-        install_path = self.install_dir.replace(' ', '%20')
-        fout = open("config/secuencia.prm", "wt")
-        fout.write("Application:Speller%20Targets matrix TargetDefinitions= 9 { Display Enter Display%20Size Icon%20File Sound Intensified%20Icon } ")
-        lista = ("A A 1 ", "B B 1 ", "C C 1 ", "D D 1 ", "E E 1 ", "F F 1 ", "G G 1 ", "H H 1 ", "I I 1 ") # necesario para construir el archivo prm
-        random.shuffle(orden_secuencia)
-        for i in range(0, 9):
-            if orden_secuencia[i] != 0:
-                orden_img = lista[i] + img_path + "/img" + str(orden_secuencia[i]) +".png % % "
-                fout.write(orden_img)
-            else:
-                orden_img = lista[i] + install_path + "/img" + "/img" + str(orden_secuencia[i]) +".png % % "
-                fout.write(orden_img)
-            self.orden_secuencia[i] = orden_secuencia[i]
-        
-        fout.write("// speller target properties")
-        fout.close()
-    
-    def AplicarSecuenciaCalibracion(self):
-        QtCore.QCoreApplication.processEvents()
-        fout = open("config/secuencia.prm", "wt")
-        fout.write("Application:Speller%20Targets matrix TargetDefinitions= 9 { Display Enter Display%20Size Icon%20File Sound Intensified%20Icon } ")
-        lista = ("A A 1 ", "B B 1 ", "C C 1 ", "D D 1 ", "E E 1 ", "F F 1 ", "G G 1 ", "H H 1 ", "I I 1 ") # necesario para construir el archivo prm
-        if self.calibracion_tarea == 1:
-            self.ubicacion_img = self.install_dir + "/calibracion/tarea 1"
-            orden_sec = [5, 2, 7, 1, 9, 4, 3, 6, 8] # el orden debe ser siempre el mismo debido a el comportamiento de BCI2000 en modo calibración
-            text_to_spell = "Application:Speller string TextToSpell= DBGFAHCIE // character or string to spell in offline copy mode"
-        elif self.calibracion_tarea == 2:
-            self.ubicacion_img = self.install_dir + "/calibracion/tarea 2"
-            orden_sec = [8, 1, 4, 7, 6, 3, 9, 2, 5]
-            text_to_spell = "Application:Speller string TextToSpell= BHFCIEDAG // character or string to spell in offline copy mode"
-        else:
-            self.ubicacion_img = self.install_dir + "/calibracion/tarea 3"
-            orden_sec = [4, 9, 2, 5, 8, 3, 6, 1, 7]
-            text_to_spell = "Application:Speller string TextToSpell= HCFADGIEB // character or string to spell in offline copy mode"
-        ubicacion_img = self.ubicacion_img.replace(' ', '%20')
-        for i in range(0, 9):
-            orden_img = lista[i] + ubicacion_img + "/img" + str(orden_sec[i]) +".png % % "
-            fout.write(orden_img)
-        fout.write("// speller target properties\n")
-        fout.write(text_to_spell)
-        fout.close()
-        self.orden_secuencia = orden_sec
-     
     def IniciarModulosBCI2000(self):
         with open('config/modulos_bci.txt', 'r') as f:
             self.modulos = [line.strip() for line in f]
+    
+    def AbrirP3Classifier(self):
+        subprocess.Popen("BCI2000/P300Classifier.exe")
 
-    def RestablecerConfiguracion(self):
-        self.nombre_entrada.setText("")
-        self.calibracion_tarea = 1
-        self.calibracion_estado_1.setText("Realizar tarea de calibración Nro. 1")
-        self.calibracion_estado_2.setText("Realizar tarea de calibración Nro. 2")
-        self.calibracion_estado_3.setText("Realizar tarea de calibración Nro. 3")
-        p = QtGui.QPixmap("img/completado_d.png")
-        pr = p.scaled(80, 80, QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation)
-        self.calibracion_completada_1.setPixmap(QtGui.QPixmap(pr))
-        self.calibracion_completada_2.setPixmap(QtGui.QPixmap(pr))
-        self.calibracion_completada_3.setPixmap(QtGui.QPixmap(pr))
-        self.comenzar_calibracion_boton.setEnabled(False)
-        self.clasificador_boton.setEnabled(False)
-        self.comenzar_terapia_boton.setEnabled(False)
-   
     ## OTRAS FUNCIONES
 
+    # Temporizador para conocer la duracion de cada sesion
     def IniciarTiempo (self):
         self.tiempo_inicial = datetime.now()
 
@@ -704,6 +718,7 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
             tiempo_referencia = datetime(self.tiempo_inicial.year, self.tiempo_inicial.month, self.tiempo_inicial.day, 0, 0, 0)
             self.tiempo_sesion = tiempo_referencia + diferencia
             self.tiempo_resumen_texto.setText(str(self.tiempo_sesion.minute).zfill(2) + ' min ' + str(self.tiempo_sesion.second).zfill(2) + ' s')
+
 
     def DeshabilitarCambios(self):
         self.comenzar_calibracion_boton.setText("Suspender")
@@ -745,11 +760,13 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         self.archivo_calibracion_entrada.setEnabled(True)
         self.archivo_calibracion_boton.setEnabled(True)
 
+
     def msgOcultar(self):
         self.BCIAplicacion.feedback_label.hide()
         self.BCIAplicacion.feedback_label.setStyleSheet("color: rgb(242, 242, 242);border-color: rgb(0, 0, 0);border-radius: 6px;"
             "background-color: rgb(35, 181, 156);") # restaura valores por defecto
-       
+
+    # oculta los procesos de BCI2000 que se ejecutan de fondo
     def OcultarProcesos(self):
         for i in range (0, 3):
             title = re.sub(r"(\w)([A-Z])", r"\1 \2", self.modulos[i])
@@ -759,6 +776,7 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
             command = "HIDE PROCESS " + pid 
             self.bci.Execute (command)
     
+    # mantiene el P3 Speller embebido en la ventana de Aplicacion 
     def InWindow(self):
         parent = self.BCIAplicacion.p3_frame.winId()
         child = win32gui.FindWindow(None, "P3 Speller")
