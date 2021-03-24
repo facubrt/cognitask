@@ -176,7 +176,13 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
 
     def AplicarConfigCalibracion(self):
         QtCore.QCoreApplication.processEvents() 
+        
+        # restablecer variables de sesion
         self.siguiente_seleccion = 1
+        self.selecciones_realizadas = 0
+        self.selecciones_correctas = 0
+        self.selecciones_incorrectas = 0
+        
         self.modo_calibracion = True
         self.IniciarProgreso()
         self.AplicarSecuenciaCalibracion()
@@ -192,6 +198,9 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         self.BCIAplicacion.p3_frame.show()
         self.comenzar_terapia_boton.setEnabled(False)
         self.comenzar_calibracion_boton.setEnabled(True)
+        self.sesion_estado = "Preparado"
+        self.ActualizarResumen()
+        self.MostrarInformacion("Resumen")
         self.EscribirResumen(1)
     
     def ComenzarCalibracion(self):
@@ -211,6 +220,9 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
             self.run += 1
             self.siguiente_seleccion = 1
             self.IniciarProgreso()
+            self.sesion_estado = "Realizando"
+            self.ActualizarResumen()
+            self.IniciarTiempo()
             self.EscribirResumen(2)
         else:
             self.bci.Stop()
@@ -568,19 +580,25 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
     # se muestra el resumen de la sesion actual en la ventana de operador
     def ActualizarResumen(self):
         if (self.sesion_estado == "Preparado"):
-            self.modo_resumen_texto.setText(self.modo_terapia_opciones.currentText())
-            if (self.modo_terapia_opciones.currentText() == "Rompecabezas"):
-                self.actividad_resumen_titulo.setText("Imagen")
-            elif (self.modo_terapia_opciones.currentText() == "Actividades"):
-                self.actividad_resumen_titulo.setText("Actividad")
-            elif (self.modo_terapia_opciones.currentText() == "Palabras"):
-                self.actividad_resumen_titulo.setText("Palabra")
-            self.actividad_resumen_texto.setText(os.path.basename(self.ubicacion_img))
-            self.nivel_resumen_texto.setText(self.nivel_opciones.currentText())
-            self.selecciones_resumen_texto.setText(str(self.selecciones_realizadas))
-            self.correctas_resumen_texto.setText(str(self.selecciones_correctas))
-            self.incorrectas_resumen_texto.setText(str(self.selecciones_incorrectas))
-            self.estado_resumen_texto.setText("Preparado")
+            if (self.modo_calibracion == True):
+                self.modo_resumen_texto.setText("Calibración")
+                self.actividad_resumen_titulo.setText("Tarea")
+                self.actividad_resumen_texto.setText(os.path.basename(self.ubicacion_img))
+                self.nivel_resumen_texto.setText("-")
+            else:
+                self.modo_resumen_texto.setText(self.modo_terapia_opciones.currentText())
+                if (self.modo_terapia_opciones.currentText() == "Rompecabezas"):
+                    self.actividad_resumen_titulo.setText("Imagen")
+                elif (self.modo_terapia_opciones.currentText() == "Actividades"):
+                    self.actividad_resumen_titulo.setText("Actividad")
+                elif (self.modo_terapia_opciones.currentText() == "Palabras"):
+                    self.actividad_resumen_titulo.setText("Palabra")
+                self.actividad_resumen_texto.setText(os.path.basename(self.ubicacion_img))
+                self.nivel_resumen_texto.setText(self.nivel_opciones.currentText())
+                self.selecciones_resumen_texto.setText(str(self.selecciones_realizadas))
+                self.correctas_resumen_texto.setText(str(self.selecciones_correctas))
+                self.incorrectas_resumen_texto.setText(str(self.selecciones_incorrectas))
+                self.estado_resumen_texto.setText("Preparado")
         elif (self.sesion_estado == "Realizando"):
             self.selecciones_resumen_texto.setText(str(self.selecciones_realizadas))
             self.correctas_resumen_texto.setText(str(self.selecciones_correctas))
@@ -714,10 +732,10 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         self.tiempo_inicial = datetime.now()
 
     def ActualizarTiempo(self):
-            diferencia = datetime.now() - self.tiempo_inicial
-            tiempo_referencia = datetime(self.tiempo_inicial.year, self.tiempo_inicial.month, self.tiempo_inicial.day, 0, 0, 0)
-            self.tiempo_sesion = tiempo_referencia + diferencia
-            self.tiempo_resumen_texto.setText(str(self.tiempo_sesion.minute).zfill(2) + ' min ' + str(self.tiempo_sesion.second).zfill(2) + ' s')
+        diferencia = datetime.now() - self.tiempo_inicial
+        tiempo_referencia = datetime(self.tiempo_inicial.year, self.tiempo_inicial.month, self.tiempo_inicial.day, 0, 0, 0)
+        self.tiempo_sesion = tiempo_referencia + diferencia
+        self.tiempo_resumen_texto.setText(str(self.tiempo_sesion.minute).zfill(2) + ' min ' + str(self.tiempo_sesion.second).zfill(2) + ' s')
 
 
     def DeshabilitarCambios(self):

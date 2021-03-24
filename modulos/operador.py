@@ -916,7 +916,7 @@ class Ui_Operador(object):
         self.incorrectas_resumen_texto.setText(_translate("Operador", ""))
         self.sesion_resumen_titulo.setText(_translate("Operador", "Sesión"))
         self.tiempo_resumen_titulo.setText(_translate("Operador", "Tiempo"))
-        self.tiempo_resumen_texto.setText(_translate("Operador", "0 min 0 s"))
+        self.tiempo_resumen_texto.setText(_translate("Operador", "00 min 00 s"))
         self.estado_resumen_titulo.setText(_translate("Operador", "Estado"))
         self.estado_resumen_texto.setText(_translate("Operador", ""))
         
