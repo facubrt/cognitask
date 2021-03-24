@@ -89,6 +89,7 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         # variables de configuracion
         self.config = self.install_dir + "/config/config.prm"
         self.config_calibracion = self.install_dir + "/config/calibracion.prm"
+        self.config_source = self.install_dir + "/config/" + self.modulos[0] + ".prm"
         self.secuencia = self.install_dir + "/config/secuencia.prm"
         self.nivel = self.install_dir + "/config/nivel.prm"
         self.ubicacion_datos = self.install_dir + "\datos" # ubicacion de datos por defecto
@@ -189,6 +190,7 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         self.IniciarProgreso()
         self.AplicarSecuenciaCalibracion()
         self.bci.LoadParametersRemote(self.config_calibracion)
+        self.bci.LoadParametersRemote(self.config_source)
         self.bci.LoadParametersRemote(self.secuencia)
         self.BCIAplicacion.p3_frame.hide()
 
