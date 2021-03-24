@@ -244,25 +244,36 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
 
     def AplicarSecuenciaCalibracion(self):
         QtCore.QCoreApplication.processEvents()
+
         fout = open("config/secuencia.prm", "wt")
         fout.write("Application:Speller%20Targets matrix TargetDefinitions= 9 { Display Enter Display%20Size Icon%20File Sound Intensified%20Icon } ")
-        lista = ("A A 1 ", "B B 1 ", "C C 1 ", "D D 1 ", "E E 1 ", "F F 1 ", "G G 1 ", "H H 1 ", "I I 1 ") # necesario para construir el archivo prm
         if self.calibracion_tarea == 1:
+            # ROMA
+            lista = ("A A 1 ", "O O 1 ", "C C 1 ", "R R 1 ", "E E 1 ", "F F 1 ", "G G 1 ", "M M 1 ", "I I 1 ") # necesario para construir el archivo prm
             self.ubicacion_img = self.install_dir + "/calibracion/tarea 1"
-            orden_sec = [5, 2, 7, 1, 9, 4, 3, 6, 8] # el orden debe ser siempre el mismo debido a el comportamiento de BCI2000 en modo calibración
-            text_to_spell = "Application:Speller string TextToSpell= DBGFAHCIE // character or string to spell in offline copy mode"
+            # contamos la cantidad de pasos que contiene la secuencia elegida
+            self.cantidad_pasos = sum(1 for item in os.listdir(self.ubicacion_img) if os.path.isfile(os.path.join(self.ubicacion_img, item)))
+            orden_sec = [4, 2, 5, 1, 9, 6, 8, 3, 7] # el orden debe ser siempre el mismo debido a el comportamiento de BCI2000 en modo calibración
+            text_to_spell = "Application:Speller string TextToSpell= ROMA // character or string to spell in offline copy mode"
         elif self.calibracion_tarea == 2:
+            # LINO
+            lista = ("A A 1 ", "L L 1 ", "O O 1 ", "R R 1 ", "E E 1 ", "N N 1 ", "G G 1 ", "I I 1 ", "R R I 1 ") # necesario para construir el archivo prm
             self.ubicacion_img = self.install_dir + "/calibracion/tarea 2"
-            orden_sec = [8, 1, 4, 7, 6, 3, 9, 2, 5]
-            text_to_spell = "Application:Speller string TextToSpell= BHFCIEDAG // character or string to spell in offline copy mode"
+            orden_sec = [7, 1, 4, 9, 6, 3, 5, 2, 8]
+            text_to_spell = "Application:Speller string TextToSpell= LINO // character or string to spell in offline copy mode"
         else:
+            # CUNA
+            lista = ("A A 1 ", "L L 1 ", "U U 1 ", "R R 1 ", "E E 1 ", "N N 1 ", "G G 1 ", "C C 1 ", "R R I 1 ") # necesario para construir el archivo prm
             self.ubicacion_img = self.install_dir + "/calibracion/tarea 3"
-            orden_sec = [4, 9, 2, 5, 8, 3, 6, 1, 7]
-            text_to_spell = "Application:Speller string TextToSpell= HCFADGIEB // character or string to spell in offline copy mode"
+            orden_sec = [4, 8, 2, 9, 7, 3, 6, 1, 5]
+            text_to_spell = "Application:Speller string TextToSpell= CUNA // character or string to spell in offline copy mode"
+        
         ubicacion_img = self.ubicacion_img.replace(' ', '%20')
+
         for i in range(0, 9):
             orden_img = lista[i] + ubicacion_img + "/img" + str(orden_sec[i]) +".png % % "
             fout.write(orden_img)
+
         fout.write("// speller target properties\n")
         fout.write(text_to_spell)
         fout.close()
@@ -426,12 +437,13 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         lista = ("A A 1 ", "B B 1 ", "C C 1 ", "D D 1 ", "E E 1 ", "F F 1 ", "G G 1 ", "H H 1 ", "I I 1 ") # necesario para construir el archivo prm
         random.shuffle(orden_secuencia)
         for i in range(0, 9):
+
             if orden_secuencia[i] != 0:
                 orden_img = lista[i] + img_path + "/img" + str(orden_secuencia[i]) +".png % % "
-                fout.write(orden_img)
             else:
                 orden_img = lista[i] + install_path + "/img" + "/img" + str(orden_secuencia[i]) +".png % % "
-                fout.write(orden_img)
+                
+            fout.write(orden_img)
             self.orden_secuencia[i] = orden_secuencia[i]
         
         fout.write("// speller target properties")
@@ -541,7 +553,7 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
             self.selecciones_realizadas += 1
         
         # modo calibracion
-        if self.modo_calibracion == True and self.siguiente_seleccion != 9:
+        if self.modo_calibracion == True and self.siguiente_seleccion != 4:
             if self.imagen_seleccionada != self.siguiente_seleccion:
                 self.selecciones_incorrectas += 1
             else:
@@ -550,7 +562,7 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
             self.siguiente_seleccion = self.siguiente_seleccion + 1
             self.selecciones_realizadas += 1
 
-        elif self.modo_calibracion == True and self.siguiente_seleccion == 9:
+        elif self.modo_calibracion == True and self.siguiente_seleccion == 4:
             if self.imagen_seleccionada != self.siguiente_seleccion:
                 self.selecciones_incorrectas += 1
             else:
