@@ -106,6 +106,7 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         self.calibracion_tarea = 1 # permite cambiar entre las distintas tareas de calibración automaticamente
         self.cantidad_pasos = 9 # cantidad de pasos que contiene la actividad. Por defecto son 9 pasos
         self.mostrar_guia = True
+        self.intentos = 1 # suma 1 cada vez que el sujeto se equivoca en la sesion de terapia
 
         # temporizador
         self.tiempo_inicial = 0
@@ -178,6 +179,7 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         QtCore.QCoreApplication.processEvents() 
         
         # restablecer variables de sesion
+        self.msgOcultar()
         self.siguiente_seleccion = 1
         self.selecciones_realizadas = 0
         self.selecciones_correctas = 0
@@ -324,6 +326,7 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         QtCore.QCoreApplication.processEvents()
         
         # restablecer variables de sesion
+        self.msgOcultar()
         self.siguiente_seleccion = 1
         self.selecciones_realizadas = 0
         self.selecciones_correctas = 0
@@ -469,7 +472,9 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
     def IniciarProgreso(self):
         
         if self.modo_calibracion == False:
-            for i in range(0, 9):
+            self.BCIAplicacion.progreso_lineal[0].setPixmap(QtGui.QPixmap("img/starget_v.png"))
+            self.BCIAplicacion.progreso_grid[0].setPixmap(QtGui.QPixmap("img/starget_h.png"))
+            for i in range(1, 9):
                 if i < self.cantidad_pasos:
                     self.BCIAplicacion.progreso_lineal[i].setPixmap(QtGui.QPixmap("img/target_v.png"))
                     self.BCIAplicacion.progreso_grid[i].setPixmap(QtGui.QPixmap("img/target_h.png"))
@@ -527,6 +532,7 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
 
     def Feedback(self):
         # modo terapia
+        intentos_maximos = 3 # cantidad de veces que se intenta realizar una seleccion. Si no se logra, se sigue
         if self.imagen_seleccionada == self.siguiente_seleccion and self.siguiente_seleccion != self.cantidad_pasos and self.modo_calibracion == False:
             self.BCIAplicacion.feedback_label.setText("Elegiste bien!")
             self.BCIAplicacion.feedback_label.show()
@@ -543,14 +549,27 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
             self.ActualizarResumen()
             self.TerapiaFinalizada()
         
-        elif self.imagen_seleccionada != self.siguiente_seleccion and self.modo_calibracion == False:
+        elif self.imagen_seleccionada != self.siguiente_seleccion and self.intentos != intentos_maximos and self.modo_calibracion == False:
             self.BCIAplicacion.feedback_label.setText("Casi! Vuelve a intentar")
             self.BCIAplicacion.feedback_label.setStyleSheet("color: rgb(242, 242, 242);border-color: rgb(0, 0, 0);border-radius: 6px;"
             "background-color: rgb(234, 86, 61)")
             self.BCIAplicacion.feedback_label.show()
             QtCore.QTimer.singleShot(2000, self.msgOcultar)
+            self.intentos += 1
             self.selecciones_incorrectas += 1
             self.selecciones_realizadas += 1
+        
+        elif self.imagen_seleccionada != self.siguiente_seleccion and self.intentos == intentos_maximos and self.modo_calibracion == False:
+            self.BCIAplicacion.feedback_label.setText("Casi! Pasa a la que sigue")
+            self.BCIAplicacion.feedback_label.setStyleSheet("color: rgb(242, 242, 242);border-color: rgb(0, 0, 0);border-radius: 6px;"
+            "background-color: rgb(234, 86, 61)")
+            self.BCIAplicacion.feedback_label.show()
+            QtCore.QTimer.singleShot(2000, self.msgOcultar)
+            self.ActualizarProgreso()
+            self.intentos = 0
+            self.selecciones_incorrectas += 1
+            self.selecciones_realizadas += 1
+            self.siguiente_seleccion = self.siguiente_seleccion + 1
         
         # modo calibracion
         if self.modo_calibracion == True and self.siguiente_seleccion != 4:

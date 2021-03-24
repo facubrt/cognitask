@@ -1,2 +1,2 @@
-Application:Sequencing int NumberOfSequences= 2 15 1 % // number of sequences in a set of intensifications
-Filtering:P3TemporalFilter int EpochsToAverage= 2 1 0 % // Number of epochs to average
+Application:Sequencing int NumberOfSequences= 10 15 1 % // number of sequences in a set of intensifications
+Filtering:P3TemporalFilter int EpochsToAverage= 10 1 0 % // Number of epochs to average
