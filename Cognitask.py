@@ -261,13 +261,13 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
             text_to_spell = "Application:Speller string TextToSpell= ROMA // character or string to spell in offline copy mode"
         elif self.calibracion_tarea == 2:
             # LINO
-            lista = ("A A 1 ", "L L 1 ", "O O 1 ", "R R 1 ", "E E 1 ", "N N 1 ", "G G 1 ", "I I 1 ", "R R I 1 ") # necesario para construir el archivo prm
+            lista = ("A A 1 ", "L L 1 ", "O O 1 ", "R R 1 ", "E E 1 ", "N N 1 ", "G G 1 ", "I I 1 ", "R R 1 ") # necesario para construir el archivo prm
             self.ubicacion_img = self.install_dir + "/calibracion/tarea 2"
             orden_sec = [7, 1, 4, 9, 6, 3, 5, 2, 8]
             text_to_spell = "Application:Speller string TextToSpell= LINO // character or string to spell in offline copy mode"
         else:
             # CUNA
-            lista = ("A A 1 ", "L L 1 ", "U U 1 ", "R R 1 ", "E E 1 ", "N N 1 ", "G G 1 ", "C C 1 ", "R R I 1 ") # necesario para construir el archivo prm
+            lista = ("A A 1 ", "L L 1 ", "U U 1 ", "R R 1 ", "E E 1 ", "N N 1 ", "G G 1 ", "C C 1 ", "R R 1 ") # necesario para construir el archivo prm
             self.ubicacion_img = self.install_dir + "/calibracion/tarea 3"
             orden_sec = [4, 8, 2, 9, 7, 3, 6, 1, 5]
             text_to_spell = "Application:Speller string TextToSpell= CUNA // character or string to spell in offline copy mode"
@@ -757,7 +757,7 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
             self.modulos = [line.strip() for line in f]
     
     def AbrirP3Classifier(self):
-        subprocess.Popen("BCI2000/P300Classifier.exe")
+        subprocess.Popen("BCI2000/P300Classifier/P300Classifier.exe")
 
     ## OTRAS FUNCIONES
 
