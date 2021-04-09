@@ -342,6 +342,7 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         self.AplicarSecuencia()
         self.BCIAplicacion.p3_frame.hide()
         self.bci.LoadParametersRemote(self.config)
+        self.bci.LoadParametersRemote(self.config_source)
         self.bci.LoadParametersRemote(self.secuencia)
         self.AplicarNivel()
         
@@ -534,7 +535,7 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
 
     def Feedback(self):
         # modo terapia
-        intentos_maximos = 3 # cantidad de veces que se intenta realizar una seleccion. Si no se logra, se sigue
+        intentos_maximos = 4 # cantidad de veces que se intenta realizar una seleccion. Si no se logra, se sigue
         if self.imagen_seleccionada == self.siguiente_seleccion and self.siguiente_seleccion != self.cantidad_pasos and self.modo_calibracion == False:
             self.BCIAplicacion.feedback_label.setText("Elegiste bien!")
             self.BCIAplicacion.feedback_label.show()
