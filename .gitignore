@@ -9,12 +9,16 @@ __pycache__/
 #icono
 *.ico
 
+# Carpetas
+documentos/
+datos/
+ui/
+BCI2000/
+recursos/
+
 # Distribution / packaging
 .Python
 build/
-documentos/
-datos/
-gui/
 .vscode/
 develop-eggs/
 dist/
@@ -33,6 +37,7 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+*.pyc
 .pyc
 
 # PyInstaller

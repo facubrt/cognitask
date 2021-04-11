@@ -23,6 +23,7 @@
 ##  along with Cognitask.  If not, see <https://www.gnu.org/licenses/>. ##
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+#from cognitask import Cognitask
 
 class Ui_Splash(object):
     def setupSplash(self, Splash):
@@ -73,12 +74,13 @@ class Ui_Splash(object):
             Splash.setCentralWidget(self.centralwidget)
             self.label_2.setText("Despertando BCI2000...")
 
-class Splash(Ui_Splash):
-   
+#SPLASH
+class Splash(QtWidgets.QMainWindow, Ui_Splash):
+    
     def __init__(self):
         super(Splash, self).__init__()
         self.setupSplash(self)
-        
+
         # Eliminacion de la barra de titulo por defecto
         self.setWindowFlag(QtCore.Qt.FramelessWindowHint)
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground)

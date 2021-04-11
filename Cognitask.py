@@ -39,11 +39,6 @@ import re ################################################################
 from BCI2000.prog.BCI2000Remote import BCI2000Remote #####################
 from modulos.aplicacion import BCIAplicacion #############################
 from modulos.operador import BCIOperador #################################
-from modulos.splash import Splash ########################################
-
-##########################################################################
-# IMPORTANTE, ANTES DE PONER A PRUEBA MODIFICAR:
-# numero de secuencias en calibración,
 
 class Cognitask(QtWidgets.QMainWindow, BCIOperador):
    
@@ -834,34 +829,3 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         child = win32gui.FindWindow(None, "P3 Speller")
         win32gui.SetParent(child, parent)
         win32gui.SetWindowPos(child, 0, 0, 0, 600, 600, 0)
-
-# SPLASH
-class SplashScreen(QtWidgets.QMainWindow, Splash):
-    
-    def __init__(self):
-        super(SplashScreen, self).__init__()
-       
-        self.timer = QtCore.QTimer()
-        self.timer.timeout.connect(self.IniciarCognitask)
-        self.timer.start(1250)
-        QtCore.QCoreApplication.processEvents() 
-        QtCore.QTimer.singleShot(1000, lambda: self.label_2.setText("Configurando módulos..."))
-        QtCore.QTimer.singleShot(1200, lambda: self.label_2.setText("Iniciando..."))
-        
-    
-    def IniciarCognitask(self):
-        self.timer.stop()
-        self.Operador = Cognitask()
-        self.Operador.show()
-        self.close()
-
-# MAIN
-if __name__ == '__main__':
-    app = QtWidgets.QApplication(sys.argv)
-    # agrego las fuentes de texto Gilroy utilizadas
-    QtGui.QFontDatabase.addApplicationFont('font/Gilroy-Light.ttf')
-    QtGui.QFontDatabase.addApplicationFont('font/Gilroy-Regular.ttf')
-    QtGui.QFontDatabase.addApplicationFont('font/Gilroy-Bold.ttf')
-    sp = SplashScreen()
-    sp.show()
-    sys.exit(app.exec_())
