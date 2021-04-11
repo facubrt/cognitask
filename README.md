@@ -1,11 +1,8 @@
+# Proyecto Final de Bioingeniería
+#### por Facundo Barreto
+<br>
 <p align="center">
-  <img src="https://i.imgur.com/LNxxl9s.png" alt="BCI Cognitask">
+  <img src="https://i.imgur.com/LNxxl9s.png">
 </p>
 <br>
-<div>
-  # Proyecto Final de Bioingeniería
-  ## por Facundo Barreto
-  <br>
-</div>
-BCI basada en P300 para rehabilitación cognitiva de la atención por neurofeedback
-
+<p>BCI basada en P300 para rehabilitación cognitiva de la atención por neurofeedback</p>
