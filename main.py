@@ -21,6 +21,7 @@ if __name__ == '__main__':
     agregarFuentes()
     splashScreen = Splash()
     splashScreen.show()
+    app.setWindowIcon(QtGui.QIcon('QRev.ico'))
 
     # creo un temporizador para el splash
     timer = QtCore.QTimer()

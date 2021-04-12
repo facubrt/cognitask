@@ -185,7 +185,9 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         self.IniciarProgreso()
         self.AplicarSecuenciaCalibracion()
         self.bci.LoadParametersRemote(self.config_calibracion)
+        QtCore.QCoreApplication.processEvents() # evita que la gui se cuelgue cuando se cargan los parametros
         self.bci.LoadParametersRemote(self.config_source)
+        QtCore.QCoreApplication.processEvents() # evita que la gui se cuelgue cuando se cargan los parametros
         self.bci.LoadParametersRemote(self.secuencia)
         self.BCIAplicacion.p3_frame.hide()
 
@@ -269,6 +271,7 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         
         ubicacion_img = self.ubicacion_img.replace(' ', '%20')
 
+        QtCore.QCoreApplication.processEvents() # evita que la gui se cuelgue cuando se cargan los parametros
         for i in range(0, 9):
             orden_img = lista[i] + ubicacion_img + "/img" + str(orden_sec[i]) +".png % % "
             fout.write(orden_img)
@@ -337,7 +340,9 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         self.AplicarSecuencia()
         self.BCIAplicacion.p3_frame.hide()
         self.bci.LoadParametersRemote(self.config)
+        QtCore.QCoreApplication.processEvents() # evita que la gui se cuelgue cuando se cargan los parametros
         self.bci.LoadParametersRemote(self.config_source)
+        QtCore.QCoreApplication.processEvents() # evita que la gui se cuelgue cuando se cargan los parametros
         self.bci.LoadParametersRemote(self.secuencia)
         self.AplicarNivel()
         
@@ -354,6 +359,7 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
             self.BCIAplicacion.Open = 1
             self.BCIAplicacion.show()   
 
+        QtCore.QCoreApplication.processEvents() # evita que la gui se cuelgue cuando se cargan los parametros
         self.bci.SetConfig()
         self.BCIAplicacion.p3_frame.show()
         self.comenzar_terapia_boton.setEnabled(True)
@@ -530,7 +536,7 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
 
     def Feedback(self):
         # modo terapia
-        intentos_maximos = 4 # cantidad de veces que se intenta realizar una seleccion. Si no se logra, se sigue
+        intentos_maximos = 3 # cantidad de veces que se intenta realizar una seleccion. Si no se logra, se sigue
         if self.imagen_seleccionada == self.siguiente_seleccion and self.siguiente_seleccion != self.cantidad_pasos and self.modo_calibracion == False:
             self.BCIAplicacion.feedback_label.setText("Elegiste bien!")
             self.BCIAplicacion.feedback_label.show()
@@ -547,6 +553,7 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
             self.ActualizarResumen()
             self.TerapiaFinalizada()
         
+        # opcion para cuando se equivoca INTENTOS_MAXIMOS veces, pero no es la ultima seleccion
         elif self.imagen_seleccionada != self.siguiente_seleccion and self.intentos != intentos_maximos and self.modo_calibracion == False:
             self.BCIAplicacion.feedback_label.setText("Casi! Vuelve a intentar")
             self.BCIAplicacion.feedback_label.setStyleSheet("color: rgb(242, 242, 242);border-color: rgb(0, 0, 0);border-radius: 6px;"
@@ -557,7 +564,15 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
             self.selecciones_incorrectas += 1
             self.selecciones_realizadas += 1
         
-        elif self.imagen_seleccionada != self.siguiente_seleccion and self.intentos == intentos_maximos and self.modo_calibracion == False:
+        # opcion para cuando se equivoca INTENTOS_MAXIMOS veces, y es la ultima selección
+        elif self.imagen_seleccionada == self.siguiente_seleccion and self.siguiente_seleccion == self.cantidad_pasos and self.modo_calibracion == False:
+            self.ActualizarProgreso()
+            self.selecciones_incorrectas += 1
+            self.selecciones_realizadas += 1
+            self.ActualizarResumen()
+            self.TerapiaFinalizada()
+        
+        elif self.imagen_seleccionada != self.siguiente_seleccion and self.intentos == intentos_maximos and self.modo_calibracion == False and self.siguiente != self.cantidad_pasos:
             self.BCIAplicacion.feedback_label.setText("Casi! Pasa a la que sigue")
             self.BCIAplicacion.feedback_label.setStyleSheet("color: rgb(242, 242, 242);border-color: rgb(0, 0, 0);border-radius: 6px;"
             "background-color: rgb(234, 86, 61)")
@@ -786,6 +801,7 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         self.nivel_opciones.setEnabled(False)
         self.archivo_calibracion_entrada.setEnabled(False)
         self.archivo_calibracion_boton.setEnabled(False)
+        self.guia_inicial_opciones.setEnabled(False)
 
     def HabilitarCambios(self):
         self.comenzar_calibracion_boton.setText("Comenzar")
@@ -806,6 +822,7 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         self.nivel_opciones.setEnabled(True)
         self.archivo_calibracion_entrada.setEnabled(True)
         self.archivo_calibracion_boton.setEnabled(True)
+        self.guia_inicial_opciones.setEnabled(True)
 
 
     def msgOcultar(self):
