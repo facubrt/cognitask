@@ -537,6 +537,7 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
     def Feedback(self):
         # modo terapia
         intentos_maximos = 3 # cantidad de veces que se intenta realizar una seleccion. Si no se logra, se sigue
+        # cuando acierta y no es la ultima
         if self.imagen_seleccionada == self.siguiente_seleccion and self.siguiente_seleccion != self.cantidad_pasos and self.modo_calibracion == False:
             self.BCIAplicacion.feedback_label.setText("Elegiste bien!")
             self.BCIAplicacion.feedback_label.show()
@@ -545,16 +546,15 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
             self.selecciones_correctas += 1
             self.selecciones_realizadas += 1
             self.siguiente_seleccion = self.siguiente_seleccion + 1
-
+        # cuando acierta y es la ultima
         elif self.imagen_seleccionada == self.siguiente_seleccion and self.siguiente_seleccion == self.cantidad_pasos and self.modo_calibracion == False:
             self.ActualizarProgreso()
             self.selecciones_correctas += 1
             self.selecciones_realizadas += 1
             self.ActualizarResumen()
             self.TerapiaFinalizada()
-        
-        # opcion para cuando se equivoca INTENTOS_MAXIMOS veces, pero no es la ultima seleccion
-        elif self.imagen_seleccionada != self.siguiente_seleccion and self.intentos != intentos_maximos and self.modo_calibracion == False:
+        # cuando no acierta
+        elif self.imagen_seleccionada != self.siguiente_seleccion and self.intentos < intentos_maximos and self.modo_calibracion == False:
             self.BCIAplicacion.feedback_label.setText("Casi! Vuelve a intentar")
             self.BCIAplicacion.feedback_label.setStyleSheet("color: rgb(242, 242, 242);border-color: rgb(0, 0, 0);border-radius: 6px;"
             "background-color: rgb(234, 86, 61)")
@@ -565,14 +565,17 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
             self.selecciones_realizadas += 1
         
         # opcion para cuando se equivoca INTENTOS_MAXIMOS veces, y es la ultima selección
-        elif self.imagen_seleccionada == self.siguiente_seleccion and self.siguiente_seleccion == self.cantidad_pasos and self.modo_calibracion == False:
+        elif self.imagen_seleccionada != self.siguiente_seleccion and self.siguiente_seleccion == self.cantidad_pasos and self.modo_calibracion == False and self.intentos == intentos_maximos:
+            self.intentos = 0 # restablecemos los valores de intentos
             self.ActualizarProgreso()
             self.selecciones_incorrectas += 1
             self.selecciones_realizadas += 1
             self.ActualizarResumen()
             self.TerapiaFinalizada()
         
-        elif self.imagen_seleccionada != self.siguiente_seleccion and self.intentos == intentos_maximos and self.modo_calibracion == False and self.siguiente != self.cantidad_pasos:
+        # cuando se equivoca INTENTOS_MAXIMOS veces y no es la ultima
+        elif self.imagen_seleccionada != self.siguiente_seleccion and self.intentos == intentos_maximos and self.modo_calibracion == False and self.siguiente_seleccion != self.cantidad_pasos:
+            self.intentos = 0# opcion para cuando se equivoca INTENTOS_MAXIMOS veces, pero no es la ultima seleccion
             self.BCIAplicacion.feedback_label.setText("Casi! Pasa a la que sigue")
             self.BCIAplicacion.feedback_label.setStyleSheet("color: rgb(242, 242, 242);border-color: rgb(0, 0, 0);border-radius: 6px;"
             "background-color: rgb(234, 86, 61)")
