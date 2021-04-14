@@ -53,8 +53,8 @@ TAREA_UNO = ['C', 'A', 'M', 'I', 'N', 'O']
 TAREA_DOS = ['B', 'A', 'R', 'C', 'O', 'S']
 TAREA_TRES = ['E', 'S', 'C', 'U', 'D', 'O']
 
-CSS_MSG_CALIBRACION = "color: rgb(242, 242, 242);border-color: rgb(0, 0, 0); border-radius: 6px; background-color: rgb(234, 202, 110)"
-CSS_MSG_CORRECTO = "color: rgb(242, 242, 242);border-color: rgb(0, 0, 0); border-radius: 6px; background-color: rgb(234, 202, 110)"
+CSS_MSG_CALIBRACION = "color: rgb(242, 242, 242);border-color: rgb(0, 0, 0); border-radius: 6px; background-color: rgb(35, 181, 156);"
+CSS_MSG_CORRECTO = "color: rgb(242, 242, 242);border-color: rgb(0, 0, 0); border-radius: 6px; background-color: rgb(35, 181, 156);"
 CSS_MSG_INCORRECTO = "color: rgb(242, 242, 242);border-color: rgb(0, 0, 0); border-radius: 6px; background-color: rgb(234, 86, 61)"
 CSS_MSG_PASAR = "color: rgb(242, 242, 242);border-color: rgb(0, 0, 0); border-radius: 6px; background-color: rgb(234, 202, 110)"
 
@@ -68,6 +68,7 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
     def __init__(self):
         super(Cognitask, self).__init__()
 
+        
         # obtener la ubicacion de instalacion de Cognitask
         pyfile = inspect.getfile(inspect.currentframe())
         self.install_dir = os.path.dirname(os.path.realpath(pyfile))
@@ -874,8 +875,7 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
 
     def msgOcultar(self):
         self.BCIAplicacion.feedback_label.hide()
-        self.BCIAplicacion.feedback_label.setStyleSheet("color: rgb(242, 242, 242);border-color: rgb(0, 0, 0);border-radius: 6px;"
-            "background-color: rgb(35, 181, 156);") # restaura valores por defecto
+        self.BCIAplicacion.feedback_label.setStyleSheet(CSS_MSG_CORRECTO) # restaura valores por defecto
 
     # oculta los procesos de BCI2000 que se ejecutan de fondo
     def OcultarProcesos(self):
