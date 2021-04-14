@@ -5,6 +5,13 @@
   <img src="https://i.imgur.com/LNxxl9s.png">
 </p>
 
+### Prerequisitos
+<ul>
+  <li>BCI2000</li>
+  <li>Python 3.6.8</li>
+  <li>PyQt5</li>
+</ul>
+
 ### Introducción
 <p align="justify">
 BCI basada en P300 para rehabilitación cognitiva de la atención por neurofeedback
