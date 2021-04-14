@@ -41,13 +41,13 @@ from modulos.aplicacion import BCIAplicacion #############################
 from modulos.operador import BCIOperador #################################
 
 # constantes globales
-INTENTOS_MAXIMOS = 2 # cantidad de veces que se puede equivocar en la seleccion antes de pasar a la siguiente
+INTENTOS_MAXIMOS = 3 # cantidad de veces que se puede equivocar en la seleccion antes de pasar a la siguiente
 PASOS_CALIBRACION = 6 # cantidad de pasos/selecciones que se realizan en la calibracion
 
 NIVEL_INICIAL = 15
 NIVEL_INTERMEDIO = 10
-NIVEL_AVANZADO = 2
-NIVEL_CALIBRACION = 2
+NIVEL_AVANZADO = 7
+NIVEL_CALIBRACION = 15
 
 TAREA_UNO = ['C', 'A', 'M', 'I', 'N', 'O']
 TAREA_DOS = ['B', 'A', 'R', 'C', 'O', 'S']
