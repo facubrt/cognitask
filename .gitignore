@@ -18,6 +18,7 @@ datos/
 ui/
 BCI2000/
 recursos/
+release/
 
 # Distribution / packaging
 .Python
