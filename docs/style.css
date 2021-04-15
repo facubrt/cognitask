@@ -43,7 +43,7 @@ a {
     height: 100%;
     width: 100%;
     background-color:black;
-    opacity: .6;
+    opacity: .2;
     z-index: -1;
 }
 #hero .hero {
