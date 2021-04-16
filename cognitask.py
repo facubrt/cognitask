@@ -301,7 +301,6 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
 
 
     def CalibracionFinalizada(self):
-        self.bci.Stop()
         self.HabilitarCambios()
         self.comenzar_calibracion_boton.setEnabled(False)
         self.running = 0
@@ -309,17 +308,14 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         self.BCIAplicacion.feedback_label.show()
         p = QtGui.QPixmap("img/completado.png")
         if self.calibracion_tarea == 1:
-            print('tarea 1')
             self.calibracion_estado_1.setText("Completado")
             self.calibracion_completada_1.setPixmap(QtGui.QPixmap(p))
             self.calibracion_tarea += 1
         elif self.calibracion_tarea == 2:
-            print('tarea 2')
             self.calibracion_estado_2.setText("Completado")
             self.calibracion_completada_2.setPixmap(QtGui.QPixmap(p))
             self.calibracion_tarea += 1
         elif self.calibracion_tarea == 3:
-            print('tarea 3')
             self.calibracion_estado_3.setText("Completado")
             self.calibracion_completada_3.setPixmap(QtGui.QPixmap(p))
             self.calibracion_tarea = 1
@@ -327,6 +323,8 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
             self.clasificador_boton.setEnabled(True)
         self.actividad_completada = True
         self.EscribirResumen(3)
+        self.bci.Execute("Wait for Suspended 10")
+        self.bci.Stop()
     
     # TERAPIA
 
