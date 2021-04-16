@@ -788,6 +788,7 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
 
     def SalirCognitask(self):
         self.bci.Quit()
+        del self.bci
         self.BCIAplicacion.close()
         Cognitask.close(self)
 
