@@ -31,8 +31,8 @@ GLOBAL_STATE = 0
 class Ui_BCIAplicacion(object):
     def setupUi(self, BCIAplicacion):
         BCIAplicacion.setObjectName("BCIAplicacion")
-        BCIAplicacion.resize(1106, 745)
-        BCIAplicacion.setMinimumSize(QtCore.QSize(1106, 745))
+        BCIAplicacion.resize(1106, 786) ## 745
+        BCIAplicacion.setMinimumSize(QtCore.QSize(1106, 786)) ## 745
         BCIAplicacion.setStyleSheet("background-color: rgb(38, 43, 50);")
         self.centralwidget = QtWidgets.QWidget(BCIAplicacion)
         self.centralwidget.setObjectName("centralwidget")
@@ -93,7 +93,7 @@ class Ui_BCIAplicacion(object):
         self.verticalLayout.addWidget(self.top_frame)
         self.bottom_frame = QtWidgets.QFrame(self.centralwidget)
         self.bottom_frame.setMinimumSize(QtCore.QSize(0, 0)) ## 0, 125
-        self.bottom_frame.setMaximumSize(QtCore.QSize(16777215, 125)) ## 16777215, 125
+        self.bottom_frame.setMaximumSize(QtCore.QSize(16777215, 150)) ## 16777215, 125
         self.bottom_frame.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.bottom_frame.setFrameShadow(QtWidgets.QFrame.Plain)
         self.bottom_frame.setLineWidth(0)
@@ -103,23 +103,23 @@ class Ui_BCIAplicacion(object):
         self.horizontalLayout_2.setSpacing(0)
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.lineal_progreso_frame = QtWidgets.QFrame(self.bottom_frame)
-        self.lineal_progreso_frame.setMinimumSize(QtCore.QSize(700, 125))
-        self.lineal_progreso_frame.setMaximumSize(QtCore.QSize(700, 125))
+        self.lineal_progreso_frame.setMinimumSize(QtCore.QSize(770, 150)) ##700, 125
+        self.lineal_progreso_frame.setMaximumSize(QtCore.QSize(770, 150)) ##700, 125
         self.lineal_progreso_frame.setStyleSheet("border-radius:0px;")
         self.lineal_progreso_frame.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.lineal_progreso_frame.setFrameShadow(QtWidgets.QFrame.Plain)
         self.lineal_progreso_frame.setLineWidth(0)
         self.lineal_progreso_frame.setObjectName("lineal_progreso_frame")
         self.layoutWidget_3 = QtWidgets.QWidget(self.lineal_progreso_frame)
-        self.layoutWidget_3.setGeometry(QtCore.QRect(10, 40, 680, 75))
+        self.layoutWidget_3.setGeometry(QtCore.QRect(0, 40, 770, 111)) ##10, 40, 680, 75
         self.layoutWidget_3.setObjectName("layoutWidget_3")
         self.lineal_progreso = QtWidgets.QHBoxLayout(self.layoutWidget_3)
-        self.lineal_progreso.setContentsMargins(0, 0, 0, 0)
-        self.lineal_progreso.setSpacing(6)
+        self.lineal_progreso.setContentsMargins(0, 0, 0, 0) ## 0, 0, 0, 0
+        self.lineal_progreso.setSpacing(0)
         self.lineal_progreso.setObjectName("lineal_progreso")
         self.img1_lineal = QtWidgets.QLabel(self.layoutWidget_3)
-        self.img1_lineal.setMinimumSize(QtCore.QSize(70, 70))
-        self.img1_lineal.setMaximumSize(QtCore.QSize(70, 70))
+        self.img1_lineal.setMinimumSize(QtCore.QSize(80, 80)) ## 70, 70
+        self.img1_lineal.setMaximumSize(QtCore.QSize(80, 80)) ## 70, 70
         self.img1_lineal.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.img1_lineal.setText("")
         self.img1_lineal.setPixmap(QtGui.QPixmap("img/none_light.png"))
@@ -127,8 +127,8 @@ class Ui_BCIAplicacion(object):
         self.img1_lineal.setObjectName("img1_lineal")
         self.lineal_progreso.addWidget(self.img1_lineal)
         self.img2_lineal = QtWidgets.QLabel(self.layoutWidget_3)
-        self.img2_lineal.setMinimumSize(QtCore.QSize(70, 70))
-        self.img2_lineal.setMaximumSize(QtCore.QSize(70, 70))
+        self.img2_lineal.setMinimumSize(QtCore.QSize(80, 80))
+        self.img2_lineal.setMaximumSize(QtCore.QSize(80, 80))
         self.img2_lineal.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.img2_lineal.setText("")
         self.img2_lineal.setPixmap(QtGui.QPixmap("img/none_light.png"))
@@ -136,8 +136,8 @@ class Ui_BCIAplicacion(object):
         self.img2_lineal.setObjectName("img2_lineal")
         self.lineal_progreso.addWidget(self.img2_lineal)
         self.img3_lineal = QtWidgets.QLabel(self.layoutWidget_3)
-        self.img3_lineal.setMinimumSize(QtCore.QSize(70, 70))
-        self.img3_lineal.setMaximumSize(QtCore.QSize(70, 70))
+        self.img3_lineal.setMinimumSize(QtCore.QSize(80, 80))
+        self.img3_lineal.setMaximumSize(QtCore.QSize(80, 80))
         self.img3_lineal.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.img3_lineal.setText("")
         self.img3_lineal.setPixmap(QtGui.QPixmap("img/none_light.png"))
@@ -150,8 +150,8 @@ class Ui_BCIAplicacion(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.img4_lineal.sizePolicy().hasHeightForWidth())
         self.img4_lineal.setSizePolicy(sizePolicy)
-        self.img4_lineal.setMinimumSize(QtCore.QSize(70, 70))
-        self.img4_lineal.setMaximumSize(QtCore.QSize(70, 70))
+        self.img4_lineal.setMinimumSize(QtCore.QSize(80, 80))
+        self.img4_lineal.setMaximumSize(QtCore.QSize(80, 80))
         self.img4_lineal.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.img4_lineal.setText("")
         self.img4_lineal.setPixmap(QtGui.QPixmap("img/none_light.png"))
@@ -164,8 +164,8 @@ class Ui_BCIAplicacion(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.img5_lineal.sizePolicy().hasHeightForWidth())
         self.img5_lineal.setSizePolicy(sizePolicy)
-        self.img5_lineal.setMinimumSize(QtCore.QSize(70, 70))
-        self.img5_lineal.setMaximumSize(QtCore.QSize(70, 70))
+        self.img5_lineal.setMinimumSize(QtCore.QSize(80, 80))
+        self.img5_lineal.setMaximumSize(QtCore.QSize(80, 80))
         self.img5_lineal.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.img5_lineal.setText("")
         self.img5_lineal.setPixmap(QtGui.QPixmap("img/none_light.png"))
@@ -178,8 +178,8 @@ class Ui_BCIAplicacion(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.img6_lineal.sizePolicy().hasHeightForWidth())
         self.img6_lineal.setSizePolicy(sizePolicy)
-        self.img6_lineal.setMinimumSize(QtCore.QSize(70, 70))
-        self.img6_lineal.setMaximumSize(QtCore.QSize(70, 70))
+        self.img6_lineal.setMinimumSize(QtCore.QSize(80, 80))
+        self.img6_lineal.setMaximumSize(QtCore.QSize(80, 80))
         self.img6_lineal.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.img6_lineal.setText("")
         self.img6_lineal.setPixmap(QtGui.QPixmap("img/none_light.png"))
@@ -187,8 +187,8 @@ class Ui_BCIAplicacion(object):
         self.img6_lineal.setObjectName("img6_lineal")
         self.lineal_progreso.addWidget(self.img6_lineal)
         self.img7_lineal = QtWidgets.QLabel(self.layoutWidget_3)
-        self.img7_lineal.setMinimumSize(QtCore.QSize(70, 70))
-        self.img7_lineal.setMaximumSize(QtCore.QSize(70, 70))
+        self.img7_lineal.setMinimumSize(QtCore.QSize(80, 80))
+        self.img7_lineal.setMaximumSize(QtCore.QSize(80, 80))
         self.img7_lineal.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.img7_lineal.setText("")
         self.img7_lineal.setPixmap(QtGui.QPixmap("img/none_light.png"))
@@ -196,8 +196,8 @@ class Ui_BCIAplicacion(object):
         self.img7_lineal.setObjectName("img7_lineal")
         self.lineal_progreso.addWidget(self.img7_lineal)
         self.img8_lineal = QtWidgets.QLabel(self.layoutWidget_3)
-        self.img8_lineal.setMinimumSize(QtCore.QSize(70, 70))
-        self.img8_lineal.setMaximumSize(QtCore.QSize(70, 70))
+        self.img8_lineal.setMinimumSize(QtCore.QSize(80, 80))
+        self.img8_lineal.setMaximumSize(QtCore.QSize(80, 80))
         self.img8_lineal.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.img8_lineal.setText("")
         self.img8_lineal.setPixmap(QtGui.QPixmap("img/none_light.png"))
@@ -205,8 +205,8 @@ class Ui_BCIAplicacion(object):
         self.img8_lineal.setObjectName("img8_lineal")
         self.lineal_progreso.addWidget(self.img8_lineal)
         self.img9_lineal = QtWidgets.QLabel(self.layoutWidget_3)
-        self.img9_lineal.setMinimumSize(QtCore.QSize(70, 70))
-        self.img9_lineal.setMaximumSize(QtCore.QSize(70, 70))
+        self.img9_lineal.setMinimumSize(QtCore.QSize(80, 80))
+        self.img9_lineal.setMaximumSize(QtCore.QSize(80, 80))
         self.img9_lineal.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.img9_lineal.setText("")
         self.img9_lineal.setPixmap(QtGui.QPixmap("img/none_light.png"))
@@ -214,7 +214,7 @@ class Ui_BCIAplicacion(object):
         self.img9_lineal.setObjectName("img9_lineal")
         self.lineal_progreso.addWidget(self.img9_lineal)
         self.tu_progreso_texto = QtWidgets.QLabel(self.lineal_progreso_frame)
-        self.tu_progreso_texto.setGeometry(QtCore.QRect(50, 0, 601, 31))
+        self.tu_progreso_texto.setGeometry(QtCore.QRect(85, 10, 600, 30)) ## 50, 0, 601, 31
         font = QtGui.QFont()
         font.setFamily("Gilroy-Regular")
         font.setPointSize(14)
@@ -240,7 +240,7 @@ class Ui_BCIAplicacion(object):
         self.layoutWidget_2.setObjectName("layoutWidget_2")
         self.grid_progreso = QtWidgets.QGridLayout(self.layoutWidget_2)
         self.grid_progreso.setContentsMargins(10, 0, 10, 0)
-        self.grid_progreso.setSpacing(10)
+        self.grid_progreso.setSpacing(0)
         self.grid_progreso.setObjectName("grid_progreso")
         self.img2_grid = QtWidgets.QLabel(self.layoutWidget_2)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
@@ -425,7 +425,7 @@ class Ui_BCIAplicacion(object):
         sizePolicy.setHeightForWidth(self.expandir_boton.sizePolicy().hasHeightForWidth())
         self.expandir_boton.setSizePolicy(sizePolicy)
         self.expandir_boton.setStyleSheet("QPushButton{border-radius:0px;}\n"
-"QPushButton::hover{ background-color: rgb(35, 181, 156);}")
+        "QPushButton::hover{ background-color: rgb(35, 181, 156);}")
         self.expandir_boton.setText("")
         self.icon3 = QtGui.QIcon()
         self.icon3.addPixmap(QtGui.QPixmap("img/expandirh.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -494,7 +494,7 @@ class BCIAplicacion(QtWidgets.QMainWindow, Ui_BCIAplicacion):
             if enable:
                 width = self.right_frame.width()
                 heigth = self.bottom_frame.height()
-                maxHeigth = 125 # bottom frame
+                maxHeigth = 150 # bottom frame
                 minHeight = 0 # bottom frame
                 standard = 0
 
