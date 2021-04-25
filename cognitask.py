@@ -40,29 +40,6 @@ from BCI2000.prog.BCI2000Remote import BCI2000Remote #####################
 from modulos.aplicacion import BCIAplicacion #############################
 from modulos.operador import BCIOperador #################################
 
-# constantes globales
-INTENTOS_MAXIMOS = 3 # cantidad de veces que se puede equivocar en la seleccion antes de pasar a la siguiente
-PASOS_CALIBRACION = 6 # cantidad de pasos/selecciones que se realizan en la calibracion
-
-NIVEL_INICIAL = 15
-NIVEL_INTERMEDIO = 10
-NIVEL_AVANZADO = 7
-NIVEL_CALIBRACION = 15
-
-TAREA_UNO = ['C', 'A', 'M', 'I', 'N', 'O']
-TAREA_DOS = ['B', 'A', 'R', 'C', 'O', 'S']
-TAREA_TRES = ['E', 'S', 'C', 'U', 'D', 'O']
-
-CSS_MSG_CALIBRACION = "color: rgb(242, 242, 242);border-color: rgb(0, 0, 0); border-radius: 6px; background-color: rgb(35, 181, 156);"
-CSS_MSG_CORRECTO = "color: rgb(242, 242, 242);border-color: rgb(0, 0, 0); border-radius: 6px; background-color: rgb(35, 181, 156);"
-CSS_MSG_INCORRECTO = "color: rgb(242, 242, 242);border-color: rgb(0, 0, 0); border-radius: 6px; background-color: rgb(234, 86, 61)"
-CSS_MSG_PASAR = "color: rgb(242, 242, 242);border-color: rgb(0, 0, 0); border-radius: 6px; background-color: rgb(234, 202, 110)"
-
-MSG_CORRECTO = "Elegiste bien!"
-MSG_INCORRECTO = "Casi! Vuelve a intentar"
-MSG_PASAR = "Casi! Pasa a la que sigue"
-MSG_TERMINADO = "Has terminado!"
-
 class Cognitask(QtWidgets.QMainWindow, BCIOperador):
    
     def __init__(self):
@@ -81,8 +58,8 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         # Conexion con BCI2000Remote
         self.bci = BCI2000Remote()
         self.bci.WindowVisible = False # hace invisible el operador de BCI2000
-        self.modulos = ("Adquisicion", "Procesamiento", "Aplicacion")
-        self.IniciarModulosBCI2000() # permite modificar los modulos posteriormente a traves de modulos_bci.txt
+        self.CargarConstantes() # Carga los valores puestos en el archivo constantes.txt 
+        self.modulos = [ADQUISICION, PROCESAMIENTO, APLICACION]
         self.bci.Connect()
         self.bci.StartupModules(self.modulos) # inicializa los modulos de BCI2000
         self.InWindow() # introduce P3Speller dentro del modulo de Aplicacion Cognitask
@@ -266,26 +243,22 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         fout.write("Application:Speller%20Targets matrix TargetDefinitions= 9 { Display Enter Display%20Size Icon%20File Sound Intensified%20Icon } ")
         
         if self.calibracion_tarea == 1:
-            # CAMINO
-            lista = ("O O 1 ", "C C 1 ", "D D 1 ", "A A 1 ", "T T 1 ", "N N 1 ", "I I 1 ", "G G 1 ", "M M 1 ") # necesario para construir el archivo prm
             self.ubicacion_img = self.install_dir + "/calibracion/tarea 1"
-            # contamos la cantidad de pasos que contiene la secuencia elegida
-            self.cantidad_pasos = sum(1 for item in os.listdir(self.ubicacion_img) if os.path.isfile(os.path.join(self.ubicacion_img, item)))
-            orden_sec = [6, 1, 9, 2, 7, 5, 4, 8, 3] # el orden debe ser siempre el mismo debido a el comportamiento de BCI2000 en modo calibración
-            text_to_spell = "Application:Speller string TextToSpell= CAMINO // character or string to spell in offline copy mode"
+            lista = LISTA_UNO
+            orden_sec = ORDEN_UNO
+            text_to_spell = "Application:Speller string TextToSpell= " + TAREA_UNO + " // character or string to spell in offline copy mode"
         
         elif self.calibracion_tarea == 2:
-            # BARCOS
-            lista = ("A A 1 ", "R R 1 ", "S S 1 ", "D D 1 ", "G G 1 ", "B B 1 ", "O O 1 ", "C C 1 ", "E E 1 ") # necesario para construir el archivo prm
             self.ubicacion_img = self.install_dir + "/calibracion/tarea 2"
-            orden_sec = [2, 3, 6, 8, 7, 1, 5, 4, 9]
-            text_to_spell = "Application:Speller string TextToSpell= BARCOS // character or string to spell in offline copy mode"
+            lista = LISTA_DOS
+            orden_sec = ORDEN_DOS
+            text_to_spell = "Application:Speller string TextToSpell= " + TAREA_DOS + " // character or string to spell in offline copy mode"
+
         else:
-            # ESCUDO
-            lista = ("U U 1 ", "L L 1 ", "E E 1 ", "D D 1 ", "S S 1 ", "N N 1 ", "C C 1 ", "O O 1 ", "R R 1 ") # necesario para construir el archivo prm
             self.ubicacion_img = self.install_dir + "/calibracion/tarea 3"
-            orden_sec = [4, 8, 1, 5, 2, 9, 3, 6, 7]
-            text_to_spell = "Application:Speller string TextToSpell= ESCUDO // character or string to spell in offline copy mode"
+            lista = LISTA_TRES
+            orden_sec = ORDEN_TRES
+            text_to_spell = "Application:Speller string TextToSpell= " + TAREA_TRES + " // character or string to spell in offline copy mode"
         
         ubicacion_img = self.ubicacion_img.replace(' ', '%20')
 
@@ -809,15 +782,68 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
                 self.consultar_seleccion = True
             self.bci_estado = self.bci.GetSystemState()
     
-    def IniciarModulosBCI2000(self):
-        with open('config/modulos_bci.txt', 'r') as f:
-            self.modulos = [line.strip() for line in f]
-    
     def AbrirP3Classifier(self):
         subprocess.Popen("BCI2000/P300Classifier/P300Classifier.exe")
 
     ## OTRAS FUNCIONES
 
+    def CargarConstantes(self):
+        with open('config/constantes.txt', 'r') as f:
+            lineas = [linea.strip() for linea in f.readlines()]
+            global ADQUISICION
+            ADQUISICION = lineas[1].split(' = ')[1]
+            global PROCESAMIENTO
+            PROCESAMIENTO = lineas[2].split(' = ')[1]
+            global APLICACION
+            APLICACION = lineas[3].split(' = ')[1]
+            global NIVEL_INICIAL
+            NIVEL_INICIAL = int(lineas[6].split(' = ')[1])
+            global NIVEL_INTERMEDIO
+            NIVEL_INTERMEDIO = int(lineas[7].split(' = ')[1])
+            global NIVEL_AVANZADO
+            NIVEL_AVANZADO = int(lineas[8].split(' = ')[1])
+            global INTENTOS_MAXIMOS
+            INTENTOS_MAXIMOS = int(lineas[9].split(' = ')[1])
+            global NIVEL_CALIBRACION
+            NIVEL_CALIBRACION = int(lineas[12].split(' = ')[1])
+            global PASOS_CALIBRACION
+            PASOS_CALIBRACION = int(lineas[13].split(' = ')[1])
+            global TAREA_UNO
+            TAREA_UNO = lineas[15].split(' = ')[1]
+            global LISTA_UNO
+            LISTA_UNO =  lineas[16].split(' = ')[1].split('-')
+            global ORDEN_UNO
+            ORDEN_UNO =  lineas[17].split(' = ')[1].split('-')
+            global TAREA_DOS
+            TAREA_DOS = lineas[19].split(' = ')[1]
+            global LISTA_DOS
+            LISTA_DOS =  lineas[20].split(' = ')[1].split('-')
+            global ORDEN_DOS
+            ORDEN_DOS =  lineas[21].split(' = ')[1].split('-')
+            global TAREA_TRES
+            TAREA_TRES = lineas[23].split(' = ')[1]
+            global LISTA_TRES
+            LISTA_TRES =  lineas[24].split(' = ')[1].split('-')
+            global ORDEN_TRES
+            ORDEN_TRES =  lineas[25].split(' = ')[1].split('-')
+            global MSG_CORRECTO
+            MSG_CORRECTO = lineas[28].split(' = ')[1]
+            global MSG_INCORRECTO
+            MSG_INCORRECTO = lineas[29].split(' = ')[1]
+            global MSG_PASAR
+            MSG_PASAR = lineas[30].split(' = ')[1]
+            global MSG_TERMINADO
+            MSG_TERMINADO = lineas[31].split(' = ')[1]
+        
+        global CSS_MSG_CALIBRACION
+        CSS_MSG_CALIBRACION = "color: rgb(242, 242, 242);border-color: rgb(0, 0, 0); border-radius: 6px; background-color: rgb(35, 181, 156);"
+        global CSS_MSG_CORRECTO
+        CSS_MSG_CORRECTO = "color: rgb(242, 242, 242);border-color: rgb(0, 0, 0); border-radius: 6px; background-color: rgb(35, 181, 156);"
+        global CSS_MSG_INCORRECTO
+        CSS_MSG_INCORRECTO = "color: rgb(242, 242, 242);border-color: rgb(0, 0, 0); border-radius: 6px; background-color: rgb(234, 86, 61)"
+        global CSS_MSG_PASAR
+        CSS_MSG_PASAR = "color: rgb(242, 242, 242);border-color: rgb(0, 0, 0); border-radius: 6px; background-color: rgb(234, 202, 110)"
+    
     # Temporizador para conocer la duracion de cada sesion
     def IniciarTiempo (self):
         self.tiempo_inicial = datetime.now()
