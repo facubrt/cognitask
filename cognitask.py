@@ -323,7 +323,7 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
             self.clasificador_boton.setEnabled(True)
         self.actividad_completada = True
         self.EscribirResumen(3)
-        self.bci.Execute("Wait for Suspended 10")
+        self.bci.Execute("Wait for Suspended 5")
         self.bci.Stop()
     
     # TERAPIA
