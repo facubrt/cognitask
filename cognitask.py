@@ -681,17 +681,17 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         if not file_exists:  
             header = "Resumen de todas las sesiones [" + self.bci.SubjectID + "]\n"
             fout.write(header)
-            #montaje = "Electrodos utilizados ---[Fz Cz Pz PO7 PO8 Oz]\n"
-            #fout.write(montaje)
         if indice == 1:
             today = date.today()
             d = today.strftime("%d-%m-%y")
             if self.modo_calibracion == True and self.sesion_iniciada == False:
                 sesion = "\n--- Sesión del día " + d + " [CALIBRACIÓN] ---\n"
+                sesion = "\n---------------------------------------------" + sesion + "---------------------------------------------\n"
                 fout.write(sesion)
                 self.sesion_iniciada = True
             elif self.modo_calibracion == False and self.sesion_iniciada == False:
                 sesion = "\n--- Sesión del día " + d + " [TERAPIA] ---\n"
+                sesion = "\n-----------------------------------------" + sesion + "-----------------------------------------\n"
                 fout.write(sesion)
                 matriz_text = "\nMatriz de clasificación ---\n"
                 fout.write(matriz_text)
@@ -733,6 +733,8 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
             fout.write(incorrectas)
             aciertos = "\nPorcentaje de aciertos [" + str(self.porcentaje_aciertos) + "%]\n"
             fout.write(aciertos)
+            observaciones = "\nObservaciones ----\n"
+            fout.write(observaciones)
         fout.close()
 
     ## SALIR Y RESTABLECER
