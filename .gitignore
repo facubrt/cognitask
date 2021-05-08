@@ -19,6 +19,9 @@ ui/
 BCI2000/
 recursos/
 release/
+config/
+calibracion/
+terapia/
 
 # Distribution / packaging
 .Python
