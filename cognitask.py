@@ -115,7 +115,8 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
     # PAGINAS
     def nuevaSesionPagina(self):
         self.restablecerConfiguracion()
-        self.sesion.restablecer()
+        self.sesion_iniciada = False # debido a que se cambia de tipo de terapia, se vuelve a escribir la seccion de sesión
+        self.run = 0
         
         # interfaz
         self.seleccion_calibracion_frame.setStyleSheet("background-color: rgb(38, 43, 50);")
@@ -131,7 +132,8 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
     
     def calibracionPagina(self):
         self.restablecerConfiguracion()
-        self.sesion.restablecer()
+        self.sesion_iniciada = False # debido a que se cambia de tipo de terapia, se vuelve a escribir la seccion de sesión
+        self.run = 0
         
         self.seleccion_calibracion_frame.setStyleSheet("background-color: rgb(38, 43, 50);")
         self.seleccion_nueva_sesion_frame.setStyleSheet("background-color: rgb(38, 43, 50);")
@@ -143,7 +145,8 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         
     def terapiaPagina(self):
         self.restablecerConfiguracion()
-        self.sesion.restablecer()
+        self.sesion_iniciada = False # debido a que se cambia de tipo de terapia, se vuelve a escribir la seccion de sesión
+        self.run = 0
         
         self.seleccion_calibracion_frame.setStyleSheet("background-color: rgb(38, 43, 50);")
         self.seleccion_nueva_sesion_frame.setStyleSheet("background-color: rgb(38, 43, 50);")
