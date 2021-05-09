@@ -24,7 +24,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets #########
-import modulos.rec #####################################
+from modulos import rec #####################################
 
 class Ui_Operador(object):
     def setupUi(self, Operador):
@@ -952,6 +952,67 @@ class BCIOperador(Ui_Operador):
         self.left_frame.mouseMoveEvent = moveWindow
     
        # funcion que permite mover la ventana desde left_frame
+    
     def mousePressEvent(self, event):
             self.dragPos = event.globalPos()
-    
+
+    def deshabilitarCambios(self):
+        self.comenzar_calibracion_boton.setText("Suspender")
+        self.comenzar_terapia_boton.setText("Suspender")
+        self.aplicar_terapia_boton.setEnabled(False)
+        self.preparar_calibracion_boton.setEnabled(False)
+        self.terapia_boton.setEnabled(False)
+        self.calibracion_boton.setEnabled(False)
+        self.salir_boton.setEnabled(False)
+        self.nueva_sesion_boton.setEnabled(False)
+        self.iniciar_sesion_boton.setEnabled(False)
+        self.nombre_entrada.setEnabled(False)
+        self.directorio_entrada.setEnabled(False)
+        self.directorio_boton.setEnabled(False)
+        self.clasificador_boton.setEnabled(False)
+        self.modo_terapia_opciones.setEnabled(False)
+        self.modo_terapia_boton.setEnabled(False)
+        self.nivel_opciones.setEnabled(False)
+        self.archivo_calibracion_entrada.setEnabled(False)
+        self.archivo_calibracion_boton.setEnabled(False)
+        self.guia_inicial_opciones.setEnabled(False)
+
+    def habilitarCambios(self):
+        self.comenzar_calibracion_boton.setText("Comenzar")
+        self.comenzar_terapia_boton.setText("Comenzar")
+        self.aplicar_terapia_boton.setEnabled(True)
+        self.preparar_calibracion_boton.setEnabled(True)
+        self.terapia_boton.setEnabled(True)
+        self.calibracion_boton.setEnabled(True)
+        self.salir_boton.setEnabled(True)
+        self.nueva_sesion_boton.setEnabled(True)
+        self.iniciar_sesion_boton.setEnabled(True)
+        self.nombre_entrada.setEnabled(True)
+        self.directorio_entrada.setEnabled(True)
+        self.directorio_boton.setEnabled(True)
+        self.modo_terapia_opciones.setEnabled(True)
+        self.modo_terapia_boton.setEnabled(True)
+        self.nivel_opciones.setEnabled(True)
+        self.archivo_calibracion_entrada.setEnabled(True)
+        self.archivo_calibracion_boton.setEnabled(True)
+        self.guia_inicial_opciones.setEnabled(True)
+
+    def restablecerConfiguracion(self):
+        # Pagina Nueva Sesion
+        self.nombre_entrada.setText("")
+        
+        # Pagina Calibracion
+        self.calibracion_tarea = 1
+        self.calibracion_estado_1.setText("Realizar tarea de calibración Nro. 1")
+        self.calibracion_estado_2.setText("Realizar tarea de calibración Nro. 2")
+        self.calibracion_estado_3.setText("Realizar tarea de calibración Nro. 3")
+        p = QtGui.QPixmap("img/completado_d.png")
+        pr = p.scaled(80, 80, QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation)
+        self.calibracion_completada_1.setPixmap(QtGui.QPixmap(pr))
+        self.calibracion_completada_2.setPixmap(QtGui.QPixmap(pr))
+        self.calibracion_completada_3.setPixmap(QtGui.QPixmap(pr))
+        self.comenzar_calibracion_boton.setEnabled(False)
+        self.clasificador_boton.setEnabled(False)
+        
+        # Pagina Terapia
+        self.comenzar_terapia_boton.setEnabled(False)

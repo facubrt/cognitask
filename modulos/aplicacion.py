@@ -378,8 +378,8 @@ class Ui_BCIAplicacion(object):
         self.titlebar_frame.setMinimumSize(QtCore.QSize(40, 0))
         self.titlebar_frame.setMaximumSize(QtCore.QSize(40, 16777215))
         self.titlebar_frame.setStyleSheet("background-color: rgb(46, 51, 58);\n"
-"border-top-right-radius:6px;\n"
-"border-bottom-right-radius:6px;")
+        "border-top-right-radius:6px;\n"
+        "border-bottom-right-radius:6px;")
         self.titlebar_frame.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.titlebar_frame.setFrameShadow(QtWidgets.QFrame.Plain)
         self.titlebar_frame.setLineWidth(0)
@@ -387,10 +387,10 @@ class Ui_BCIAplicacion(object):
         self.cerrar_boton = QtWidgets.QPushButton(self.titlebar_frame)
         self.cerrar_boton.setGeometry(QtCore.QRect(0, 0, 41, 41))
         self.cerrar_boton.setStyleSheet("QPushButton{\n"
-"border-radius:0px;\n"
-"border-top-right-radius:6px;\n"
-"}\n"
-"QPushButton::hover{ background-color: rgb(234, 86, 61);}")
+        "border-radius:0px;\n"
+        "border-top-right-radius:6px;\n"
+        "}\n"
+        "QPushButton::hover{ background-color: rgb(234, 86, 61);}")
         self.cerrar_boton.setText("")
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("img/close.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -400,7 +400,7 @@ class Ui_BCIAplicacion(object):
         self.maximizar_boton = QtWidgets.QPushButton(self.titlebar_frame)
         self.maximizar_boton.setGeometry(QtCore.QRect(0, 40, 41, 41))
         self.maximizar_boton.setStyleSheet("QPushButton{border-radius:0px;}\n"
-"QPushButton::hover{ background-color: rgb(54, 60, 66);}")
+        "QPushButton::hover{ background-color: rgb(54, 60, 66);}")
         self.maximizar_boton.setText("")
         icon1 = QtGui.QIcon()
         icon1.addPixmap(QtGui.QPixmap("img/maximizar.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -410,7 +410,7 @@ class Ui_BCIAplicacion(object):
         self.minimizar_boton = QtWidgets.QPushButton(self.titlebar_frame)
         self.minimizar_boton.setGeometry(QtCore.QRect(0, 80, 41, 41))
         self.minimizar_boton.setStyleSheet("QPushButton{border-radius:0px;}\n"
-"QPushButton::hover{ background-color: rgb(54, 60, 66);}")
+        "QPushButton::hover{ background-color: rgb(54, 60, 66);}")
         self.minimizar_boton.setText("")
         icon2 = QtGui.QIcon()
         icon2.addPixmap(QtGui.QPixmap("img/minimizar.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -461,6 +461,8 @@ class BCIAplicacion(QtWidgets.QMainWindow, Ui_BCIAplicacion):
         self.minimizar_boton.clicked.connect(lambda: self.showMinimized())
         self.cerrar_boton.clicked.connect(lambda: BCIAplicacion.cerrarAplicacion(self))
         self.expandir_boton.clicked.connect(lambda: self.toggleMenu(310, True))
+
+        self.setWindowFlag(QtCore.Qt.FramelessWindowHint) # Frameless Window
 
         def moveWindow(event):
                 if event.buttons() == QtCore.Qt.LeftButton and GLOBAL_STATE == 0:

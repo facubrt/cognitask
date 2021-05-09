@@ -1,3 +1,4 @@
+import modulos.constantes as constantes
 from PyQt5 import QtCore, QtWidgets, QtGui
 from cognitask import Cognitask
 from modulos.splash import Splash
@@ -16,9 +17,13 @@ def agregarFuentes():
     QtGui.QFontDatabase.addApplicationFont('font/Gilroy-Regular.ttf')
     QtGui.QFontDatabase.addApplicationFont('font/Gilroy-Bold.ttf')
 
+def cargarConstantes():
+    constantes.cargar()
+
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     agregarFuentes()
+    cargarConstantes()
     splashScreen = Splash()
     splashScreen.show()
     app.setWindowIcon(QtGui.QIcon('QRev.ico'))
