@@ -944,17 +944,17 @@ class BCIOperador(Ui_Operador):
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
 
         def moveWindow(event):
-                if event.buttons() == QtCore.Qt.LeftButton:
-                        self.move(self.pos() + event.globalPos() - self.dragPos)
-                        self.dragPos = event.globalPos()
-                        event.accept()
+            if event.buttons() == QtCore.Qt.LeftButton:
+                self.move(self.pos() + event.globalPos() - self.dragPos)
+                self.dragPos = event.globalPos()
+                event.accept()
         
         self.left_frame.mouseMoveEvent = moveWindow
     
        # funcion que permite mover la ventana desde left_frame
     
     def mousePressEvent(self, event):
-            self.dragPos = event.globalPos()
+        self.dragPos = event.globalPos()
 
     def deshabilitarCambios(self):
         self.comenzar_calibracion_boton.setText("Suspender")
