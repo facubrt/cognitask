@@ -22,7 +22,7 @@ def realimentacion(self):
         self.selecciones_correctas += 1
         self.selecciones_realizadas += 1
         informacion.actualizar(self)
-        self.TerapiaFinalizada()
+        self.terapiaFinalizada()
     # cuando no acierta
     elif self.imagen_seleccionada != self.siguiente_seleccion and self.intentos < constantes.INTENTOS_MAXIMOS and self.modo_calibracion == False:
         mostrar(self, constantes.MSG_INCORRECTO, constantes.CSS_MSG_INCORRECTO, True)
@@ -37,7 +37,7 @@ def realimentacion(self):
         self.selecciones_incorrectas += 1
         self.selecciones_realizadas += 1
         informacion.actualizar(self)
-        self.TerapiaFinalizada()
+        self.terapiaFinalizada()
     
     # cuando se equivoca INTENTOS_MAXIMOS veces y no es la ultima
     elif self.imagen_seleccionada != self.siguiente_seleccion and self.intentos == constantes.INTENTOS_MAXIMOS and self.modo_calibracion == False and self.siguiente_seleccion != self.cantidad_pasos:
@@ -74,7 +74,7 @@ def realimentacion(self):
             self.selecciones_correctas += 1
         self.selecciones_realizadas += 1
         progreso.actualizar(self)
-        self.CalibracionFinalizada()
+        self.calibracionFinalizada()
 
     informacion.actualizar(self) # informa al operador de la seleccion
 
