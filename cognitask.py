@@ -1,9 +1,9 @@
 ### Cognitask ############################################################
 ##########################################################################
 ## Autor: Facundo Barreto ### facubrt@gmail.com ##########################
-## 
+##
 ## BCI basada en P300 para rehabilitación cognitiva ######################
-## 
+##
 ## Proyecto Final de Bioingeniería ### 2020 ##############################
 
 ### LICENCIA GPL #########################################################
@@ -22,16 +22,16 @@
 ##  You should have received a copy of the GNU General Public License ####
 ##  along with Cognitask.  If not, see <https://www.gnu.org/licenses/>. ##
 
-from PyQt5 import QtCore, QtGui, QtWidgets ###############################
-from PyQt5.QtWidgets import QFileDialog ##################################
-from datetime import date ######################################
-import subprocess ########################################################
-import inspect ###########################################################
-import os ################################################################
+from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QFileDialog
+from datetime import date
+import subprocess
+import inspect
+import os
 
 from modulos.BCI2000 import BCI2000
-from modulos.aplicacion import BCIAplicacion #############################
-from modulos.operador import BCIOperador #################################
+from modulos.aplicacion import BCIAplicacion
+from modulos.operador import BCIOperador
 import modulos.constantes as c
 import modulos.procesos as procesos
 import modulos.informacion as informacion
@@ -40,13 +40,14 @@ import modulos.mensajes as mensajes
 import modulos.temporizador as temporizador
 import modulos.estados as estados
 import modulos.parametros as parametros
-from modulos.sesion import Sesion 
+from modulos.sesion import Sesion
+
 
 class Cognitask(QtWidgets.QMainWindow, BCIOperador):
-   
+
     def __init__(self):
         super(Cognitask, self).__init__()
-        
+
         # obtener la ubicacion de instalacion de Cognitask
         pyfile = inspect.getfile(inspect.currentframe())
         self.install_dir = os.path.dirname(os.path.realpath(pyfile))
@@ -55,7 +56,7 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         self.Aplicacion = QtWidgets.QMainWindow()
         self.BCIAplicacion = BCIAplicacion()
         self.BCIAplicacion.__init__()
-        
+
         # BCI2000
         self.bci = BCI2000()
 
@@ -63,10 +64,12 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         self.sesion = Sesion()
 
         # Procesos
-        procesos.incorporarMatriz(self) # introduce P3Speller dentro del modulo de Aplicacion Cognitask
-        procesos.ocultarProcesos(self) # hace invisible los procesos de BCI2000
+        # introduce P3Speller dentro del modulo de Aplicacion Cognitask
+        procesos.incorporarMatriz(self)
+        # hace invisible los procesos de BCI2000
+        procesos.ocultarProcesos(self)
 
-        QtCore.QCoreApplication.processEvents() 
+        QtCore.QCoreApplication.processEvents()
 
         # comportamiento de botones
         self.configBotones()
@@ -77,32 +80,39 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         self.config_source = self.install_dir + "/config/" + c.ADQUISICION + ".prm"
         self.secuencia = self.install_dir + "/config/secuencia.prm"
         self.nivel = self.install_dir + "/config/nivel.prm"
-        self.ubicacion_datos = self.install_dir + "\datos" # ubicacion de datos por defecto
+        self.ubicacion_datos = self.install_dir + \
+            "\datos"  # ubicacion de datos por defecto
         self.directorio_entrada.setPlaceholderText(self.ubicacion_datos)
-        self.ubicacion_img = self.install_dir + "/sec/Rompecabezas/Musica" # por defecto
+        self.ubicacion_img = self.install_dir + \
+            "/sec/Rompecabezas/Musica"  # por defecto
         self.matriz_clasificacion = ""
         self.modo_calibracion = False
 
         # variables de sesion
-        self.sesion_estado = "No iniciada" # estado de la sesión. No iniciada, Preparado, Realizando, Completado
+        # estado de la sesión. No iniciada, Preparado, Realizando, Completado
+        self.sesion_estado = "No iniciada"
         self.orden_secuencia = list(range(1, 10))
-        self.siguiente_seleccion = 1 # indica la imagen siguiente que debe elegirse
-        self.imagen_seleccionada = 0 # imagen seleccionada (necesario debido al orden aleatorio de las imagenes)
-        self.target_seleccionado = 0 # target seleccionado
-        self.calibracion_tarea = 1 # permite cambiar entre las distintas tareas de calibración automaticamente
-        self.cantidad_pasos = 9 # cantidad de pasos que contiene la tarea. Por defecto son 9 pasos
+        self.siguiente_seleccion = 1  # indica la imagen siguiente que debe elegirse
+        # imagen seleccionada (necesario debido al orden aleatorio de las imagenes)
+        self.imagen_seleccionada = 0
+        self.target_seleccionado = 0  # target seleccionado
+        # permite cambiar entre las distintas tareas de calibración automaticamente
+        self.calibracion_tarea = 1
+        # cantidad de pasos que contiene la tarea. Por defecto son 9 pasos
+        self.cantidad_pasos = 9
         self.mostrar_guia = True
-        self.intentos = 0 # suma 1 cada vez que el sujeto se equivoca en la sesion de terapia
+        self.intentos = 0  # suma 1 cada vez que el sujeto se equivoca en la sesion de terapia
         self.run = 0
         self.actividad_completada = False
-        self.sesion_iniciada = False # con False se informará en el resumen una nueva sesión. con True se escribirá dentro de la misma
+        # con False se informará en el resumen una nueva sesión. con True se escribirá dentro de la misma
+        self.sesion_iniciada = False
 
         # temporizador
         self.tiempo_inicial = 0
         self.tiempo_sesion = 0
- 
+
         # estados
-        self.running = 0 # permite alternar entre comenzar y suspender una actividad
+        self.running = 0  # permite alternar entre comenzar y suspender una actividad
         self.bci_estado = 'Suspended'
         self.consultar_seleccion = True
 
@@ -111,51 +121,66 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         self.selecciones_correctas = 0
         self.selecciones_incorrectas = 0
         self.porcentaje_aciertos = 0
-                       
+
     # PAGINAS
     def nuevaSesionPagina(self):
         self.restablecerConfiguracion()
-        self.sesion_iniciada = False # debido a que se cambia de tipo de terapia, se vuelve a escribir la seccion de sesión
+        # debido a que se cambia de tipo de terapia, se vuelve a escribir la seccion de sesión
+        self.sesion_iniciada = False
         self.run = 0
-        
+
         # interfaz
-        self.seleccion_calibracion_frame.setStyleSheet("background-color: rgb(38, 43, 50);")
-        self.seleccion_nueva_sesion_frame.setStyleSheet("background-color: rgb(38, 43, 50);")
-        self.seleccion_terapia_frame.setStyleSheet("background-color: rgb(38, 43, 50);")
+        self.seleccion_calibracion_frame.setStyleSheet(
+            "background-color: rgb(38, 43, 50);")
+        self.seleccion_nueva_sesion_frame.setStyleSheet(
+            "background-color: rgb(38, 43, 50);")
+        self.seleccion_terapia_frame.setStyleSheet(
+            "background-color: rgb(38, 43, 50);")
         self.terapia_boton.setEnabled(False)
         self.calibracion_boton.setEnabled(False)
         self.configuracion_stacked_widget.setCurrentIndex(0)
-        self.seleccion_nueva_sesion_frame.setStyleSheet("background-color: rgb(255, 255, 255);")
+        self.seleccion_nueva_sesion_frame.setStyleSheet(
+            "background-color: rgb(255, 255, 255);")
 
         # informacion
         informacion.mostrar(self, "Nueva sesion")
-    
+
     def calibracionPagina(self):
         self.restablecerConfiguracion()
-        self.sesion_iniciada = False # debido a que se cambia de tipo de terapia, se vuelve a escribir la seccion de sesión
+        # debido a que se cambia de tipo de terapia, se vuelve a escribir la seccion de sesión
+        self.sesion_iniciada = False
         self.run = 0
-        
-        self.seleccion_calibracion_frame.setStyleSheet("background-color: rgb(38, 43, 50);")
-        self.seleccion_nueva_sesion_frame.setStyleSheet("background-color: rgb(38, 43, 50);")
-        self.seleccion_terapia_frame.setStyleSheet("background-color: rgb(38, 43, 50);")
+
+        self.seleccion_calibracion_frame.setStyleSheet(
+            "background-color: rgb(38, 43, 50);")
+        self.seleccion_nueva_sesion_frame.setStyleSheet(
+            "background-color: rgb(38, 43, 50);")
+        self.seleccion_terapia_frame.setStyleSheet(
+            "background-color: rgb(38, 43, 50);")
         self.configuracion_stacked_widget.setCurrentIndex(1)
-        self.seleccion_calibracion_frame.setStyleSheet("background-color:rgb(255,255,255);")
+        self.seleccion_calibracion_frame.setStyleSheet(
+            "background-color:rgb(255,255,255);")
 
         informacion.mostrar(self, "Calibracion")
-        
+
     def terapiaPagina(self):
         self.restablecerConfiguracion()
-        self.sesion_iniciada = False # debido a que se cambia de tipo de terapia, se vuelve a escribir la seccion de sesión
+        # debido a que se cambia de tipo de terapia, se vuelve a escribir la seccion de sesión
+        self.sesion_iniciada = False
         self.run = 0
-        
-        self.seleccion_calibracion_frame.setStyleSheet("background-color: rgb(38, 43, 50);")
-        self.seleccion_nueva_sesion_frame.setStyleSheet("background-color: rgb(38, 43, 50);")
-        self.seleccion_terapia_frame.setStyleSheet("background-color: rgb(38, 43, 50);")
+
+        self.seleccion_calibracion_frame.setStyleSheet(
+            "background-color: rgb(38, 43, 50);")
+        self.seleccion_nueva_sesion_frame.setStyleSheet(
+            "background-color: rgb(38, 43, 50);")
+        self.seleccion_terapia_frame.setStyleSheet(
+            "background-color: rgb(38, 43, 50);")
         self.configuracion_stacked_widget.setCurrentIndex(2)
-        self.seleccion_terapia_frame.setStyleSheet("background-color:rgb(255,255,255);")
+        self.seleccion_terapia_frame.setStyleSheet(
+            "background-color:rgb(255,255,255);")
 
         informacion.mostrar(self, "Terapia")
-    
+
     # NUEVA SESION
 
     def iniciarSesion(self):
@@ -163,40 +188,46 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         if self.nombre_entrada.text() != "":
             # Datos de sujeto y sesión
             hoy = date.today().strftime("%d%m%y")
-            self.bci.cargarDatos(self.nombre_entrada.text(), hoy, self.ubicacion_datos)
+            self.bci.cargarDatos(self.nombre_entrada.text(),
+                                 hoy, self.ubicacion_datos)
             self.configuracion_stacked_widget.setCurrentIndex(1)
             self.informacion_stacked_widget.setCurrentIndex(1)
-            self.seleccion_calibracion_frame.setStyleSheet("background-color:rgb(255,255,255);")
-            self.seleccion_nueva_sesion_frame.setStyleSheet("background-color: rgb(38, 43, 50);")
+            self.seleccion_calibracion_frame.setStyleSheet(
+                "background-color:rgb(255,255,255);")
+            self.seleccion_nueva_sesion_frame.setStyleSheet(
+                "background-color: rgb(38, 43, 50);")
             self.nueva_sesion_boton.setEnabled(True)
             self.calibracion_boton.setEnabled(True)
             self.terapia_boton.setEnabled(True)
 
     def seleccionarDirectorio(self):
-        directorio = QFileDialog.getExistingDirectory(None, 'Selecciona una carpeta:', 'C:/', QFileDialog.ShowDirsOnly)
+        directorio = QFileDialog.getExistingDirectory(
+            None, 'Selecciona una carpeta:', 'C:/', QFileDialog.ShowDirsOnly)
         if directorio != "":
             self.ubicacion_datos = directorio
             self.directorio_entrada.setText(self.ubicacion_datos)
-    
+
     # CALIBRACION
 
     def aplicarConfigCalibracion(self):
-        QtCore.QCoreApplication.processEvents() 
-        
+        QtCore.QCoreApplication.processEvents()
+
         # restablecer variables de sesion
         mensajes.restablecer(self)
         self.siguiente_seleccion = 1
         self.selecciones_realizadas = 0
         self.selecciones_correctas = 0
         self.selecciones_incorrectas = 0
-        
+
         self.modo_calibracion = True
         progreso.iniciar(self)
         parametros.aplicarSecuenciaCalibracion(self)
         self.bci.cargarParametros(self.config_calibracion)
-        QtCore.QCoreApplication.processEvents() # evita que la gui se cuelgue cuando se cargan los parametros
+        # evita que la gui se cuelgue cuando se cargan los parametros
+        QtCore.QCoreApplication.processEvents()
         self.bci.cargarParametros(self.config_source)
-        QtCore.QCoreApplication.processEvents() # evita que la gui se cuelgue cuando se cargan los parametros
+        # evita que la gui se cuelgue cuando se cargan los parametros
+        QtCore.QCoreApplication.processEvents()
         self.bci.cargarParametros(self.secuencia)
         self.BCIAplicacion.p3_frame.hide()
         parametros.aplicarNivel(self)
@@ -205,8 +236,8 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
 
         if self.BCIAplicacion.Open == 0:
             self.BCIAplicacion.Open = 1
-            self.BCIAplicacion.show()  
-        
+            self.BCIAplicacion.show()
+
         self.bci.aplicarConfiguracion()
         self.BCIAplicacion.p3_frame.show()
         self.comenzar_terapia_boton.setEnabled(False)
@@ -215,21 +246,21 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         informacion.actualizar(self)
         informacion.mostrar(self, "Resumen")
         informacion.escribir(self, "sesion")
-    
+
     def comenzarCalibracion(self):
-        if self.running == 0: 
+        if self.running == 0:
             self.bci.iniciar()
             self.deshabilitarCambios()
             self.running = 1
             mensajes.mostrar(self, c.MSG_COMENZAR, c.CSS_MSG_COMENZAR, True)
-            
+
             if self.calibracion_tarea == 1:
                 self.calibracion_estado_1.setText("Realizando ...")
             elif self.calibracion_tarea == 2:
                 self.calibracion_estado_2.setText("Realizando ...")
             else:
                 self.calibracion_estado_3.setText("Realizando ...")
-            
+
             self.run += 1
             self.siguiente_seleccion = 1
             self.sesion_estado = "Realizando"
@@ -242,15 +273,17 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
             self.habilitarCambios()
             self.running = 0
             self.sesion_estado = "Interrumpido"
-            mensajes.mostrar(self, c.MSG_SUSPENDIDO, c.CSS_MSG_SUSPENDIDO, False)
+            mensajes.mostrar(self, c.MSG_SUSPENDIDO,
+                             c.CSS_MSG_SUSPENDIDO, False)
             if self.calibracion_tarea == 1:
                 self.calibracion_estado_1.setText("Esperando ...")
             elif self.calibracion_tarea == 2:
                 self.calibracion_estado_2.setText("Esperando ...")
             else:
                 self.calibracion_estado_3.setText("Esperando ...")
-            informacion.escribir(self, "resumen") # si se interrumpe la corrida y se empieza una nueva, se anuncia que no se completo y se da un resumen
-         
+            # si se interrumpe la corrida y se empieza una nueva, se anuncia que no se completo y se da un resumen
+            informacion.escribir(self, "resumen")
+
         self.bci_estado = 'Running'
         estados.observar(self)
 
@@ -259,7 +292,7 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         self.comenzar_calibracion_boton.setEnabled(False)
         self.running = 0
         mensajes.mostrar(self, c.MSG_TERMINADO, c.CSS_MSG_TERMINADO, False)
-        
+
         p = QtGui.QPixmap("img/completado.png")
         if self.calibracion_tarea == 1:
             self.calibracion_estado_1.setText("Completado")
@@ -280,12 +313,12 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         informacion.escribir(self, "resumen")
         self.bci.ejecutar("Wait for Suspended 5")
         self.bci.suspender()
-    
+
     # TERAPIA
 
     def aplicarConfigTerapia(self):
         QtCore.QCoreApplication.processEvents()
-        
+
         # restablecer variables de sesion
         mensajes.restablecer(self)
         self.siguiente_seleccion = 1
@@ -302,12 +335,14 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         parametros.aplicarSecuenciaTerapia(self)
         self.BCIAplicacion.p3_frame.hide()
         self.bci.cargarParametros(self.config)
-        QtCore.QCoreApplication.processEvents() # evita que la gui se cuelgue cuando se cargan los parametros
+        # evita que la gui se cuelgue cuando se cargan los parametros
+        QtCore.QCoreApplication.processEvents()
         self.bci.cargarParametros(self.config_source)
-        QtCore.QCoreApplication.processEvents() # evita que la gui se cuelgue cuando se cargan los parametros
+        # evita que la gui se cuelgue cuando se cargan los parametros
+        QtCore.QCoreApplication.processEvents()
         self.bci.cargarParametros(self.secuencia)
         parametros.aplicarNivel(self)
-        
+
         self.sesion_estado = "Preparado"
         informacion.actualizar(self)
         informacion.mostrar(self, "Resumen")
@@ -316,12 +351,13 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
 
         if self.matriz_clasificacion != "":
             self.bci.cargarParametros(self.matriz_clasificacion)
-        
+
         if self.BCIAplicacion.Open == 0:
             self.BCIAplicacion.Open = 1
-            self.BCIAplicacion.show()   
+            self.BCIAplicacion.show()
 
-        QtCore.QCoreApplication.processEvents() # evita que la gui se cuelgue cuando se cargan los parametros
+        # evita que la gui se cuelgue cuando se cargan los parametros
+        QtCore.QCoreApplication.processEvents()
         self.bci.aplicarConfiguracion()
         self.BCIAplicacion.p3_frame.show()
         self.comenzar_terapia_boton.setEnabled(True)
@@ -329,7 +365,7 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         informacion.escribir(self, "sesion")
 
     def comenzarTerapia(self):
-        if self.bci_estado == 'Suspended': 
+        if self.bci_estado == 'Suspended':
             self.bci.iniciar()
             self.bci_estado = 'Running'
             self.deshabilitarCambios()
@@ -340,33 +376,40 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
             progreso.iniciar(self)
             temporizador.iniciar(self)
             informacion.actualizar(self)
-            informacion.escribir(self, "corrida")  
+            informacion.escribir(self, "corrida")
         else:
             self.bci.suspender()
             self.bci_estado = 'Suspended'
             self.habilitarCambios()
-            mensajes.mostrar(self, c.MSG_SUSPENDIDO, c.CSS_MSG_SUSPENDIDO, False)
+            mensajes.mostrar(self, c.MSG_SUSPENDIDO,
+                             c.CSS_MSG_SUSPENDIDO, False)
             self.sesion_estado = "Interrumpido"
             informacion.actualizar(self)
-            informacion.escribir(self, "resumen") # si se interrumpe la corrida y se empieza una nueva, se anuncia que no se completo y se da un resumen   
+            # si se interrumpe la corrida y se empieza una nueva, se anuncia que no se completo y se da un resumen
+            informacion.escribir(self, "resumen")
 
         estados.observar(self)
 
     def seleccionarSecuencia(self):
         if self.modo_terapia_opciones.currentText() == "Rompecabezas":
-            directorio = QFileDialog.getExistingDirectory(None, 'Selecciona una secuencia:', 'terapia/Rompecabezas/', QFileDialog.ShowDirsOnly)
+            directorio = QFileDialog.getExistingDirectory(
+                None, 'Selecciona una secuencia:', 'terapia/Rompecabezas/', QFileDialog.ShowDirsOnly)
         elif self.modo_terapia_opciones.currentText() == "Actividades":
-            directorio = QFileDialog.getExistingDirectory(None, 'Selecciona una secuencia:', 'terapia/Actividades/', QFileDialog.ShowDirsOnly)
+            directorio = QFileDialog.getExistingDirectory(
+                None, 'Selecciona una secuencia:', 'terapia/Actividades/', QFileDialog.ShowDirsOnly)
         else:
-            directorio = QFileDialog.getExistingDirectory(None, 'Selecciona una secuencia:', 'terapia/Palabras/', QFileDialog.ShowDirsOnly)
+            directorio = QFileDialog.getExistingDirectory(
+                None, 'Selecciona una secuencia:', 'terapia/Palabras/', QFileDialog.ShowDirsOnly)
         if directorio != "":
             self.ubicacion_img = directorio
-        
+
         # contamos la cantidad de pasos que contiene la secuencia elegida
-        self.cantidad_pasos = sum(1 for item in os.listdir(self.ubicacion_img) if os.path.isfile(os.path.join(self.ubicacion_img, item)))
+        self.cantidad_pasos = sum(1 for item in os.listdir(
+            self.ubicacion_img) if os.path.isfile(os.path.join(self.ubicacion_img, item)))
 
     def cargarMatrizClasificacion(self):
-        clas = QFileDialog.getOpenFileName(self, "Seleccione el archivo de calibración: ", "C:/", "PRM (*.prm)")
+        clas = QFileDialog.getOpenFileName(
+            self, "Seleccione el archivo de calibración: ", "C:/", "PRM (*.prm)")
         self.archivo_calibracion_entrada.setText(clas[0])
         self.matriz_clasificacion = clas[0]
 
@@ -379,13 +422,14 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         self.sesion_estado = "Completado"
         informacion.actualizar(self)
         # actualizamos tambien el porcentaje de aciertos
-        self.porcentaje_aciertos = round((self.selecciones_correctas / self.selecciones_realizadas) * 100)
+        self.porcentaje_aciertos = round(
+            (self.selecciones_correctas / self.selecciones_realizadas) * 100)
 
         informacion.escribir(self, "resumen")
 
-        ## BCI2000
-   
-    ## OTRAS FUNCIONES
+        # BCI2000
+
+    # OTRAS FUNCIONES
 
     def abrirP3Classifier(self):
         subprocess.Popen("BCI2000/P300Classifier/P300Classifier.exe")
@@ -393,22 +437,31 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
     def configBotones(self):
         self.iniciar_sesion_boton.clicked.connect(self.iniciarSesion)
         self.aplicar_terapia_boton.clicked.connect(self.aplicarConfigTerapia)
-        self.preparar_calibracion_boton.clicked.connect(self.aplicarConfigCalibracion)
+        self.preparar_calibracion_boton.clicked.connect(
+            self.aplicarConfigCalibracion)
         self.comenzar_terapia_boton.clicked.connect(self.comenzarTerapia)
-        self.comenzar_calibracion_boton.clicked.connect(self.comenzarCalibracion)
+        self.comenzar_calibracion_boton.clicked.connect(
+            self.comenzarCalibracion)
         self.salir_boton.clicked.connect(self.salirCognitask)
         self.directorio_boton.clicked.connect(self.seleccionarDirectorio)
         self.nueva_sesion_boton.clicked.connect(self.nuevaSesionPagina)
         self.calibracion_boton.clicked.connect(self.calibracionPagina)
         self.terapia_boton.clicked.connect(self.terapiaPagina)
         self.modo_terapia_boton.clicked.connect(self.seleccionarSecuencia)
-        self.archivo_calibracion_boton.clicked.connect(self.cargarMatrizClasificacion)
+        self.archivo_calibracion_boton.clicked.connect(
+            self.cargarMatrizClasificacion)
         self.clasificador_boton.clicked.connect(self.abrirP3Classifier)
 
-    ## SALIR
+    # SALIR
 
     def salirCognitask(self):
         self.bci.terminar()
         del self.bci
         self.BCIAplicacion.close()
         Cognitask.close(self)
+
+
+# %%
+print('celula')
+variable = "hello"
+# %%
