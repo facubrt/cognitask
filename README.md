@@ -15,20 +15,22 @@ BCI basada en P300 para rehabilitación cognitiva de la atención por neurofeedb
 - [x] Python 3.6.8
 - [x] PyQt5
 
-## Operador
+## Interfaz de usuario profesional
 <p align="justify">
-Este módulo es visible para el operador. Permite configurar las sesiones, realizar calibraciones y observar la información del usuario en tiempo real mientras realiza una sesión de terapia o calibración.
+La interfaz de usuario profesional permite cargar los datos del paciente, configurar los parámetros de la sesión, y obtener información relevante de la misma en tiempo real (ver imagen). A través de esta interfaz, el profesional puede iniciar, detener, suspender, reanudar o reconfigurar el funcionamiento del sistema. Comúnmente la interfaz de usuario paciente se presenta sola en una pantalla para el paciente, mientras que la interfaz de usuario profesional se muestra en una segunda pantalla y es solamente visible para el profesional que lleva a cabo la terapia.
 </p>
 
 <p align="center">
-  <img src="https://i.imgur.com/lpwty13.png">
+  <img src="https://i.imgur.com/AFX2eVe.png">
 </p>
 
-## Aplicación
+## Interfaz de usuario paciente
 <p align="justify">
-Este módulo es visible para el usuario o paciente. Se trata de una matriz Donchin modificada para lograr la rehabilitación cognitiva de la atención mediante un sistema de recompensas gamificado. Cuando la sesión comienza, la matriz es cargada con imágenes correspondientes a una secuencia, y comienza a iluminar cada una de sus filas o columnas de manera aleatoria (esto se conoce como paradigma <em>oddball</em>. Cuando el usuario se enfoca en una celda de la matriz en particular, cada vez que dicha celda es iluminada se genera un P300, el cual es identificado por el sistema BCI, permitiendo así determinar cuál es la celda que el usuario está atendiendo.
+La interfaz de usuario paciente presenta las tareas que éste debe realizar, el progreso durante el curso de una sesión, y la realimentación sobre su desempeño. En esta interfaz se pueden observar tres áreas: la matriz de estimulación, el progreso y la realimentación (ver imagen). El área de progreso proporciona información visual relacionada con la tarea que debe realizar, tanto antes como durante la realización de la misma. El área de realimentación proporciona al paciente mensajes sobre su desempeño y también sobre los estados de la tarea (por ejemplo, si la tarea es interrumpida o ha finalizado). El área de la matriz de estimulación visual presenta la tarea propiamente dicha, la cual consiste en un conjunto de imágenes ubicadas de manera aleatoria que el paciente debe ordenar correctamente. Existen tres tipos de tareas: Palabras, Sucesiones y Rompecabezas. Si bien todos contienen la misma consigna, cada uno permite realizar tareas diferentes, y pueden resultar más o menos complejas para el paciente.
+
+Cuando la sesión comienza, la matriz comienza a iluminar cada una de sus filas o columnas de manera aleatoria (esto se conoce como paradigma <em>oddball</em>). Cuando el usuario se enfoca en una celda de la matriz en particular, cada vez que dicha celda es iluminada se genera un P300, el cual es identificado por el sistema, permitiendo así determinar cuál es la celda que el usuario está atendiendo.
 </p>
 
 <p align="center">
-  <img src="https://i.imgur.com/JhVBTQ2.png">
+  <img src="https://i.imgur.com/fYV82KH.png">
 </p>
