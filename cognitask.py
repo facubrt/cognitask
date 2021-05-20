@@ -394,9 +394,9 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         if self.modo_terapia_opciones.currentText() == "Rompecabezas":
             directorio = QFileDialog.getExistingDirectory(
                 None, 'Selecciona una secuencia:', 'terapia/Rompecabezas/', QFileDialog.ShowDirsOnly)
-        elif self.modo_terapia_opciones.currentText() == "Actividades":
+        elif self.modo_terapia_opciones.currentText() == "Sucesiones":
             directorio = QFileDialog.getExistingDirectory(
-                None, 'Selecciona una secuencia:', 'terapia/Actividades/', QFileDialog.ShowDirsOnly)
+                None, 'Selecciona una secuencia:', 'terapia/Sucesiones/', QFileDialog.ShowDirsOnly)
         else:
             directorio = QFileDialog.getExistingDirectory(
                 None, 'Selecciona una secuencia:', 'terapia/Palabras/', QFileDialog.ShowDirsOnly)
@@ -459,9 +459,3 @@ class Cognitask(QtWidgets.QMainWindow, BCIOperador):
         del self.bci
         self.BCIAplicacion.close()
         Cognitask.close(self)
-
-
-# %%
-print('celula')
-variable = "hello"
-# %%
