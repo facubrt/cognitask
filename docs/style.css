@@ -9,6 +9,9 @@ body {
     color: var(--dark);
 }
 
+.img-rounded {
+    border-radius: 0px 10px 10px 0px ;
+}
 .py-6 {
     padding-top: 5rem;
     padding-bottom: 5rem;
@@ -81,7 +84,7 @@ section {
 }
 
 .call-to-action {
-    border-radius: 50px;
+    border-radius: 10px;
 }
 
 .call-to-action img {
