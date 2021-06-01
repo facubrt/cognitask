@@ -85,10 +85,13 @@ section {
 
 .call-to-action {
     border-radius: 10px;
+    background-image:url("assets/img/descarga-img.png");
+    background-size: cover;
 }
 
 .call-to-action img {
     max-width: 280px;
+    
 }
 
 .cta-form {
