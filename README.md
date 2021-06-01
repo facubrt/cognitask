@@ -1,5 +1,5 @@
 # Proyecto Final de Bioingeniería
-<strong> desarrollado por Facundo Barreto </strong>
+<strong> Facundo Barreto </strong>
 
 <p align="center">
   <img src="https://i.imgur.com/LNxxl9s.png">
@@ -7,13 +7,12 @@
 
 ## Introducción
 <p align="justify">
-BCI basada en P300 para rehabilitación cognitiva de la atención por neurofeedback.
+Cognitask forma parte del Proyecto Final de Bioingeniería titulado "Desarrollo de una BCI basada en P300 para rehabilitación cognitiva de adultos con déficit de atención" desarrollado en la Facultad de Ingeniería (UNER).
 </p>
 
-## Prerequisitos
+## Desarrolado con
 - [x] BCI2000
 - [x] Python 3.6.8
-- [x] PyQt5
 
 ## Interfaz de usuario profesional
 <p align="justify">
@@ -33,4 +32,12 @@ Cuando la sesión comienza, la matriz comienza a iluminar cada una de sus filas 
 
 <p align="center">
   <img src="https://i.imgur.com/fYV82KH.png">
+</p>
+
+## Diagrama de funcionamiento del sistema Cognitask
+<p align="justify">
+En este diagrama de funcionamiento se muestra de manera resumida cada uno de los pasos y procesos por los que atraviesa el usuario final (profesional y paciente) al utilizar el sistema Cognitask, las diferentes acciones posibles y las funciones más relevantes asociadas, como también los procesos externos que se realizan, las decisiones que el sistema toma a lo largo de una sesión y la comunicación entre la interfaz de usuario profesional y la interfaz de usuario paciente.
+</p>
+<p align="center">
+  <img src="https://i.imgur.com/ZAHQFif.png">
 </p>
