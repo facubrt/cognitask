@@ -24,7 +24,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from modulos import rec
+from utils import rec
 
 
 class Ui_Operador(object):
