@@ -23,7 +23,7 @@
 ##  along with Cognitask.  If not, see <https://www.gnu.org/licenses/>. ##
 
 from PyQt5 import QtCore
-from PyQt5.QtWidgets import QFileDialog, QMainWindow
+from PyQt5.QtWidgets import QFileDialog
 from datetime import date
 import subprocess
 import os
@@ -44,7 +44,7 @@ import cognitask.common.ubicaciones as ubicaciones
 
 # PARA EJECUTAR COGNITASK ESCRIBIR EN CONSOLA: python -m cognitask
 
-class Cognitask(QMainWindow, BCIOperador):
+class Cognitask(BCIOperador):
 
     def __init__(self):
         super(Cognitask, self).__init__()
@@ -154,7 +154,7 @@ class Cognitask(QMainWindow, BCIOperador):
         self.selecciones_correctas = 0
         self.selecciones_incorrectas = 0
 
-        progreso.iniciar(self, True)
+        progreso.mostrarGuia(self, True)
         parametros.aplicarSecuenciaCalibracion(self)
         self.bci.cargarParametros(ubicaciones.CONFIG_CALIBRACION)
         # evita que la gui se cuelgue cuando se cargan los parametros
@@ -237,9 +237,9 @@ class Cognitask(QMainWindow, BCIOperador):
         self.intentos = 0
 
         if self.guiaVisual != "Deshabilitada":
-            progreso.mostrarGuia(self)
+            progreso.mostrarGuia(self, False)
         else:
-            progreso.iniciar(self, self.guiaVisual, False)
+            progreso.iniciar(self, False)
             
         parametros.aplicarSecuenciaTerapia(self)
         # se oculta la matriz antes de configurar para evitar los glitches visuales de BCI2000
@@ -278,7 +278,7 @@ class Cognitask(QMainWindow, BCIOperador):
             self.run += 1
             #self.siguiente_seleccion = 1
             self.sesion.sesion_estado = "Realizando"
-            progreso.iniciar(self, self.guiaVisual, False)
+            progreso.iniciar(self, False)
             temporizador.iniciar(self)
             informacion.actualizar(self, False)
             informacion.escribir(self, "corrida", False)

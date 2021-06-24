@@ -22,12 +22,13 @@
 ##  You should have received a copy of the GNU General Public License ####
 ##  along with Cognitask.  If not, see <https://www.gnu.org/licenses/>. ##
 
+from PyQt5.QtWidgets import QMainWindow
 from cognitask.common import constantes
 from PyQt5 import QtCore, QtGui
 import cognitask.common.ubicaciones as ubicaciones
 from .ui_operador import Ui_BCIOperador
 
-class BCIOperador(Ui_BCIOperador):
+class BCIOperador(QMainWindow, Ui_BCIOperador):
 
     # INICIALIZACION
     # ///////////////////////////////////////////////////////////
