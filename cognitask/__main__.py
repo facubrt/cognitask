@@ -1,4 +1,3 @@
-
 import inspect
 import os
 import sys
@@ -6,14 +5,19 @@ from PyQt5 import QtWidgets, QtGui
 
 import cognitask.common.constantes as constantes
 import cognitask.common.ubicaciones as ubicaciones
-from cognitask.views.splash import Splash
+
+from cognitask.views.aplicacion import BCIAplicacion
+from cognitask.views.operador import BCIOperador
+from cognitask.models.BCI2000 import BCI2000
+from cognitask.controller.cognitask import Cognitask
 
 # FIX Problem for High DPI and Scale above 100%
 os.environ["QT_FONT_DPI"] = "96" 
 
 # MAIN
 # ///////////////////////////////////////////////////////////
-if __name__ == '__main__':
+
+def main():
     app = QtWidgets.QApplication(sys.argv)
     app.setWindowIcon(QtGui.QIcon('img/icon_cognitask.ico'))
     
@@ -31,8 +35,18 @@ if __name__ == '__main__':
     DIR_CTASK = os.path.dirname(DIR_MAIN)
     # cargo las rutas de los archivos de parametros y configuraciones por defecto
     ubicaciones.cargar(DIR_CTASK)
-    
-    splash = Splash()
-    splash.show()
 
+    splash_dir = DIR_CTASK + '\img\splash.png'
+    splash = QtWidgets.QSplashScreen(QtGui.QPixmap(splash_dir))
+    splash.show()
+    
+    bci = BCI2000()
+    operator = BCIOperador()
+    aplicacion = BCIAplicacion()
+    ctask = Cognitask(bci, operator, aplicacion)
+    splash.close()
+    
     sys.exit(app.exec_())
+
+if __name__ == '__main__':
+    main()

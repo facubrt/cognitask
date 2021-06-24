@@ -9,7 +9,7 @@ def realimentar(self, calibracion):
     # TERAPIA
     if calibracion is False:
         
-        if self.tipo_tarea_opciones.currentText() == 'Rompecabezas - mem. espacial':
+        if self.BCIOperador.tipoTarea == 'Rompecabezas - mem. espacial':
             img_seleccionada = self.ubicacion_img + "/img" + str(self.imagen_seleccionada) + " - punto.png"
             img_siguiente = self.ubicacion_img + "/img" + str(self.siguiente_seleccion) + " - punto.png"
             # si la imagen seleccionada es un punto (TRUE) y si la imagen siguiente que debe seleccionarse es punto (TRUE)
@@ -19,7 +19,7 @@ def realimentar(self, calibracion):
             else:
                 seleccionIncorrecta(self, calibracion)
             
-        elif self.tipo_tarea_opciones.currentText() == 'Palabras - al revés':
+        elif self.BCIOperador.tipoTarea == 'Palabras - al revés':
             siguiente_seleccion = (self.cantidad_pasos + 1) - self.siguiente_seleccion
             # cuando acierta
             if self.imagen_seleccionada == siguiente_seleccion:
@@ -67,8 +67,6 @@ def realimentar(self, calibracion):
             progreso.actualizar(self, calibracion)
             self.finalizarCalibracion()
 
-    # INFORMAR SELECCION
-    #informacion.actualizar(self, calibracion) # informa al operador de la seleccion
     
 # ///////////////////////////////////////////////////////////
 
@@ -79,14 +77,14 @@ def seleccionCorrecta(self, calibracion):
         progreso.actualizar(self, calibracion)
         self.selecciones_correctas += 1
         self.selecciones_realizadas += 1
-        informacion.actualizar(self, calibracion) # informa al operador de la seleccion
+        informacion.actualizar(self, self.BCIOperador, self.sesion.sesion_estado, calibracion) # informa al operador de la seleccion
         self.siguiente_seleccion = self.siguiente_seleccion + 1
     else:
         progreso.actualizar(self, calibracion)
         self.intentos = 0
         self.selecciones_correctas += 1
         self.selecciones_realizadas += 1
-        informacion.actualizar(self, calibracion)
+        informacion.actualizar(self, self.BCIOperador, self.sesion.sesion_estado, calibracion)
         self.finalizarTerapia()
         
 def seleccionIncorrecta(self, calibracion):
@@ -95,13 +93,13 @@ def seleccionIncorrecta(self, calibracion):
         self.intentos += 1
         self.selecciones_incorrectas += 1
         self.selecciones_realizadas += 1
-        informacion.actualizar(self, calibracion) # informa al operador de la seleccion
+        informacion.actualizar(self, self.BCIOperador, self.sesion.sesion_estado, calibracion) # informa al operador de la seleccion
     elif self.intentos == constantes.INTENTOS_MAXIMOS and self.siguiente_seleccion == self.cantidad_pasos:
         progreso.siguientePaso(self)
         self.intentos = 0 # restablecemos los valores de intentos
         self.selecciones_incorrectas += 1
         self.selecciones_realizadas += 1
-        informacion.actualizar(self, calibracion)
+        informacion.actualizar(self, self.BCIOperador, self.sesion.sesion_estado, calibracion)
         self.finalizarTerapia()
     elif self.intentos == constantes.INTENTOS_MAXIMOS and self.siguiente_seleccion != self.cantidad_pasos:
         mensajes.mostrar(self, constantes.MSG_PASAR, constantes.CSS_MSG_PASAR, True)
@@ -110,4 +108,4 @@ def seleccionIncorrecta(self, calibracion):
         self.selecciones_incorrectas += 1
         self.selecciones_realizadas += 1
         self.siguiente_seleccion = self.siguiente_seleccion + 1
-        informacion.actualizar(self, calibracion) # informa al operador de la seleccion
+        informacion.actualizar(self, self.BCIOperador, self.sesion.sesion_estado, calibracion) # informa al operador de la seleccion

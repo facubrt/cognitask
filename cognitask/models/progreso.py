@@ -17,13 +17,13 @@ def iniciar(self, calibracion):
     
     if calibracion is False:
         
-        if self.guiaVisual == 'Mantener':
-            for i in range(0, self.cantidad_pasos - 1):
+        if self.BCIOperador.guiaVisual == 'Mantener':
+            for i in range(0, self.cantidad_pasos):
                 self.BCIAplicacion.progreso_lineal[i].setStyleSheet("")
                 self.BCIAplicacion.progreso_grid[i].setStyleSheet("")
                 
         else:
-            for i in range(0, self.cantidad_pasos - 1):
+            for i in range(0, self.cantidad_pasos):
                 self.BCIAplicacion.progreso_lineal[i].setPixmap(QtGui.QPixmap("img/target_v.png"))
                 self.BCIAplicacion.progreso_lineal[i].setStyleSheet("")
                 self.BCIAplicacion.progreso_grid[i].setPixmap(QtGui.QPixmap("img/target_h.png"))
@@ -34,7 +34,7 @@ def iniciar(self, calibracion):
         
     if calibracion is True:
         
-        for i in range(0, constantes.PASOS_CALIBRACION - 1):
+        for i in range(0, constantes.PASOS_CALIBRACION):
             self.BCIAplicacion.progreso_lineal[i].setStyleSheet("")
             self.BCIAplicacion.progreso_grid[i].setStyleSheet("")
     

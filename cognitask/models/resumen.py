@@ -5,7 +5,7 @@ from datetime import date
 def decorador(escribir_resumen):
     pass
 
-def escribir_resumen(self, seccion, calibracion):
+def escribirResumen(self, seccion, calibracion):
     QtCore.QCoreApplication.processEvents()
     path = self.ubicacion_datos + "/" + self.bci.paciente + "/resumen_sesiones.txt"
     file_exists = os.path.isfile(path)
@@ -14,10 +14,10 @@ def escribir_resumen(self, seccion, calibracion):
     if not file_exists:
         header = "Resumen de todas las sesiones [" + self.bci.paciente + "]\n"
         fout.write(header)
-    escribir_seccion(seccion, calibracion, fout)
+    _escribirSeccion(self, seccion, calibracion, fout)
     fout.close()
     
-def escribir_seccion(self, seccion, calibracion, fout):    
+def _escribirSeccion(self, seccion, calibracion, fout):    
     if seccion == "sesion":
         today = date.today()
         d = today.strftime("%d-%m-%y")
@@ -50,20 +50,19 @@ def escribir_seccion(self, seccion, calibracion, fout):
             fout.write(sec)
         else:
             modo = "\nModo ------- [" + \
-                self.tipo_tarea_opciones.currentText() + "]\n"
+                self.BCIOperador.tipoTarea + "]\n"
             fout.write(modo)
-            if (self.tipo_tarea_opciones.currentText().startswith("Rompecabezas")):
-                print('rompecabezas')
+            if (self.BCIOperador.tipoTarea.startswith("Rompecabezas")):
                 sec = "Imagen ----- [" + \
                     os.path.basename(self.ubicacion_img) + "]\n"
-            elif (self.tipo_tarea_opciones.currentText().starstwith("Sucesiones")):
+            elif (self.BCIOperador.tipoTarea.startswith("Sucesiones")):
                 sec = "Actividad -- [" + \
                     os.path.basename(self.ubicacion_img) + "]\n"
-            elif (self.tipo_tarea_opciones.currentText().starstwith("Palabras")):
+            elif (self.BCIOperador.tipoTarea.startswith("Palabras")):
                 sec = "Palabra ---- [" + \
                     os.path.basename(self.ubicacion_img) + "]\n"
             fout.write(sec)
-            n = "Nivel ------ [" + self.nivel_opciones.currentText() + "]\n"
+            n = "Nivel ------ [" + self.BCIOperador.nivel + "]\n"
             fout.write(n)
 
     elif seccion == "resumen":

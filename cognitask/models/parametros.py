@@ -7,15 +7,15 @@ from cognitask.common import ubicaciones
 # PARAMETROS
 
 
-def aplicarNivel(self, calibracion):
+def aplicarNivel(operador, calibracion):
     # ver si faltan mas configuraciones para definir un nivel. Tal vez duracion de estimulo, etc
     QtCore.QCoreApplication.processEvents()
     fout = open("config/nivel.prm", "wt")
 
     if  calibracion is False:
-        if self.nivel_opciones.currentText() == "Avanzado":
+        if operador.nivel == "Avanzado":
             nivel = constantes.NIVEL_AVANZADO
-        elif self.nivel_opciones.currentText() == "Intermedio":
+        elif operador.nivel == "Intermedio":
             nivel = constantes.NIVEL_INTERMEDIO
         else:
             nivel = constantes.NIVEL_INICIAL

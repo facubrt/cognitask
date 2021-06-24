@@ -209,6 +209,9 @@ class BCIOperador(QMainWindow, Ui_BCIOperador):
         return self.tipo_tarea_opciones.currentText()
     
     @property # GETTER
+    def nivel(self):
+        return self.nivel_opciones.currentText()
+    @property # GETTER
     def guiaVisual(self):
         return self.guia_visual_opciones.currentText()
     

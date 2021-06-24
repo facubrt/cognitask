@@ -5,7 +5,7 @@ import cognitask.models.realimentacion as realimentacion
 def observar(self, calibracion):
     while self.bci.bci_estado == 'Running':
         # la actualización se realiza en este lugar para aprovechar el while de Observacion
-        temporizador.actualizar(self)
+        temporizador.actualizar(self, self.BCIOperador)
         QtCore.QCoreApplication.processEvents()
         # me da el numero de target seleccionado (1 a 9)
         starget = self.bci.obtenerEstado('SelectedTarget')
