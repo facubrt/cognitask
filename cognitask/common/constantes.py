@@ -29,6 +29,10 @@ MSG_TERMINADO = "TERMINADO"
 MSG_COMENZAR = "COMENCEMOS"
 MSG_SUSPENDIDO = "ESPERA"
 
+MSG_REALIZANDO_TAREA = "Realizando..."
+MSG_TAREA_SUSPENDIDA = "Esperando..."
+MSG_TAREA_FINALIZADA = "Completado"
+
 CSS_MSG_CALIBRACION = "color: rgb(242, 242, 242);border-color: rgb(0, 0, 0); border-radius: 6px; background-color: rgb(35, 181, 156);"
 CSS_MSG_CORRECTO = "color: rgb(242, 242, 242);border-color: rgb(0, 0, 0); border-radius: 6px; background-color: rgb(35, 181, 156);"
 CSS_MSG_INCORRECTO = "color: rgb(242, 242, 242);border-color: rgb(0, 0, 0); border-radius: 6px; background-color: rgb(234, 86, 61)"

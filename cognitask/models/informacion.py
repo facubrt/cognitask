@@ -16,74 +16,62 @@ def mostrar(self, informacion):
         self.informacion_titulo.setText("¿Cómo empezar?")
         self.informacion_stacked_widget.setCurrentIndex(2)
     elif (informacion == "Resumen"):
-        self.informacion_titulo.setText(self.bci.paciente())
+        self.informacion_titulo.setText(self.bci.paciente)
         self.informacion_stacked_widget.setCurrentIndex(3)
 
 # se muestra el resumen de la sesion actual en la ventana de operador
-
-
-def actualizar(self):
-    if (self.sesion_estado == "Preparado"):
-        if (self.modo_calibracion == True):
+def actualizar(self, calibracion):
+    if self.sesion.sesion_estado == "Preparado":
+        if calibracion is True:
             self.modo_resumen_texto.setText("Calibración")
             self.actividad_resumen_titulo.setText("Tarea")
-            self.actividad_resumen_texto.setText(
-                os.path.basename(self.ubicacion_img))
+            self.actividad_resumen_texto.setText(os.path.basename(self.ubicacion_img))
             self.nivel_resumen_texto.setText("-")
         else:
-            self.modo_resumen_texto.setText(
-                self.modo_terapia_opciones.currentText())
-            if (self.modo_terapia_opciones.currentText() == "Rompecabezas"):
+            self.modo_resumen_texto.setText(self.tipo_tarea_opciones.currentText())
+            if (self.tipo_tarea_opciones.currentText().startswith("Rompecabezas")):
                 self.actividad_resumen_titulo.setText("Imagen")
-            elif (self.modo_terapia_opciones.currentText() == "Sucesiones"):
+            elif (self.tipo_tarea_opciones.currentText().startswith("Sucesiones")):
                 self.actividad_resumen_titulo.setText("Actividad")
-            elif (self.modo_terapia_opciones.currentText() == "Palabras"):
+            elif (self.tipo_tarea_opciones.currentText().startswith("Palabras")):
                 self.actividad_resumen_titulo.setText("Palabra")
-            self.actividad_resumen_texto.setText(
-                os.path.basename(self.ubicacion_img))
+            self.actividad_resumen_texto.setText(os.path.basename(self.ubicacion_img))
             self.nivel_resumen_texto.setText(self.nivel_opciones.currentText())
-            self.selecciones_resumen_texto.setText(
-                str(self.selecciones_realizadas))
-            self.correctas_resumen_texto.setText(
-                str(self.selecciones_correctas))
-            self.incorrectas_resumen_texto.setText(
-                str(self.selecciones_incorrectas))
+            self.selecciones_resumen_texto.setText(str(self.selecciones_realizadas))
+            self.correctas_resumen_texto.setText(str(self.selecciones_correctas))
+            self.incorrectas_resumen_texto.setText(str(self.selecciones_incorrectas))
             self.estado_resumen_texto.setText("Preparado")
-    elif (self.sesion_estado == "Realizando"):
-        self.selecciones_resumen_texto.setText(
-            str(self.selecciones_realizadas))
+    elif (self.sesion.sesion_estado == "Realizando"):
+        self.selecciones_resumen_texto.setText(str(self.selecciones_realizadas))
         self.correctas_resumen_texto.setText(str(self.selecciones_correctas))
-        self.incorrectas_resumen_texto.setText(
-            str(self.selecciones_incorrectas))
+        self.incorrectas_resumen_texto.setText(str(self.selecciones_incorrectas))
         self.estado_resumen_texto.setText("Realizando")
-    elif (self.sesion_estado == "Completado"):
+    elif (self.sesion.sesion_estado == "Completado"):
         self.estado_resumen_texto.setText("Completado")
-    elif (self.sesion_estado == "Interrumpido"):
+    elif (self.sesion.sesion_estado == "Interrumpido"):
         self.estado_resumen_texto.setText("Interrumpido")
 
 # Se escribe el documento con el resumen de todas las sesiones
-
-
-def escribir(self, seccion):
+def escribir(self, seccion, calibracion):
     QtCore.QCoreApplication.processEvents()
-    path = self.ubicacion_datos + "/" + self.bci.paciente() + "/resumen_sesiones.txt"
+    path = self.ubicacion_datos + "/" + self.bci.paciente + "/resumen_sesiones.txt"
     file_exists = os.path.isfile(path)
     fout = open(path, "a")
     if not file_exists:
         header = "Resumen de todas las sesiones [" + \
-            self.bci.paciente() + "]\n"
+            self.bci.paciente + "]\n"
         fout.write(header)
 
     if seccion == "sesion":
         today = date.today()
         d = today.strftime("%d-%m-%y")
-        if self.modo_calibracion == True and self.sesion_iniciada == False:
+        if calibracion is True and self.sesion_iniciada is False:
             sesion = "\n--- Sesión del día " + d + " [CALIBRACIÓN] ---\n"
             sesion = "\n---------------------------------------------" + \
                 sesion + "---------------------------------------------\n"
             fout.write(sesion)
             self.sesion_iniciada = True
-        elif self.modo_calibracion == False and self.sesion_iniciada == False:
+        elif calibracion is False and self.sesion_iniciada is False:
             sesion = "\n--- Sesión del día " + d + " [TERAPIA] ---\n"
             sesion = "\n-----------------------------------------" + \
                 sesion + "-----------------------------------------\n"
@@ -101,20 +89,20 @@ def escribir(self, seccion):
     elif seccion == "corrida":
         r = "\n--------------- Corrida R" + str(self.run).zfill(2) + "\n"
         fout.write(r)
-        if self.modo_calibracion == True:
+        if calibracion is True:
             sec = "\n[Tarea Nro. " + str(self.calibracion_tarea) + "]\n"
             fout.write(sec)
         else:
             modo = "\nModo ------- [" + \
-                self.modo_terapia_opciones.currentText() + "]\n"
+                self.tipo_tarea_opciones.currentText() + "]\n"
             fout.write(modo)
-            if (self.modo_terapia_opciones.currentText() == "Rompecabezas"):
+            if (self.tipo_tarea_opciones.currentText().startswith("Rompecabezas")):
                 sec = "Imagen ----- [" + \
                     os.path.basename(self.ubicacion_img) + "]\n"
-            elif (self.modo_terapia_opciones.currentText() == "Sucesiones"):
+            elif (self.tipo_tarea_opciones.currentText().startswith("Sucesiones")):
                 sec = "Actividad -- [" + \
                     os.path.basename(self.ubicacion_img) + "]\n"
-            elif (self.modo_terapia_opciones.currentText() == "Palabras"):
+            elif (self.tipo_tarea_opciones.currentText().startswith("Palabras")):
                 sec = "Palabra ---- [" + \
                     os.path.basename(self.ubicacion_img) + "]\n"
             fout.write(sec)
@@ -123,7 +111,7 @@ def escribir(self, seccion):
 
     elif seccion == "resumen":
         act = "\nACTIVIDAD INTERRUMPIDA -"
-        if self.actividad_completada == True:
+        if self.actividad_completada is True:
             act = "\nACTIVIDAD COMPLETADA ---"
         fout.write(act)
         tiempo = "\nDuración ------[" + str(self.tiempo_sesion.minute).zfill(
