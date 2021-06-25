@@ -50,6 +50,7 @@ class BCIOperador(QMainWindow, Ui_BCIOperador):
                 event.accept()
     
         self.left_frame.mouseMoveEvent = moveWindow
+        self.show()
 
     # FUNCIONES DE INTERFAZ GENERAL
     # ///////////////////////////////////////////////////////////

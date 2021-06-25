@@ -1,8 +1,5 @@
 from BCI2000.prog.BCI2000Remote import BCI2000Remote
 import cognitask.common.constantes as constantes
-import cognitask.models.temporizador as temporizador
-import cognitask.models.realimentacion as realimentacion
-from PyQt5 import QtCore
 
 
 class BCI2000(object):

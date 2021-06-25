@@ -39,26 +39,26 @@ import cognitask.models.realimentacion as realimentacion
 import cognitask.common.ubicaciones as ubicaciones
 import cognitask.common.constantes as constantes
 
-
-# PARA EJECUTAR COGNITASK ESCRIBIR EN CONSOLA: python -m cognitask
+###################################################################
+# PARA EJECUTAR COGNITASK ESCRIBIR EN CONSOLA: python -m cognitask#
+###################################################################
 
 class Cognitask():
 
-    def __init__(self, bci, operador, aplicacion):
+    def __init__(self, bci, sesion, operador, aplicacion):
         super(Cognitask, self).__init__()
         
         # INTERFAZ PACIENTE
         self.BCIAplicacion = aplicacion
         # INTERFAZ PROFESIONAL
         self.BCIOperador = operador
-        self.BCIOperador.show()
+        # comportamiento de botones
+        self.configBotones()
         # BCI2000
         self.bci = bci
         # SESION
-        self.sesion = Sesion()
-
-        # comportamiento de botones
-        self.configBotones()
+        self.sesion = sesion
+        
         # ubicaciones por defecto
         self.ubicacion_img = ubicaciones.UBICACION_IMG
         self.ubicacion_datos = ubicaciones.UBICACION_DATOS 
@@ -83,13 +83,8 @@ class Cognitask():
         # con False se informará en el resumen una nueva sesión. con True se escribirá dentro de la misma
         self.sesion_iniciada = False
 
-        # temporizador
-        #self.tiempo_inicial = 0
-        #self.tiempo_sesion = 0
-
         # estados
         self.running = 0  # permite alternar entre comenzar y suspender una actividad
-        #self.bci_estado = 'Suspended'
         self.consultar_seleccion = True
 
         # resumen

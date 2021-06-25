@@ -9,8 +9,12 @@ import cognitask.common.procesos as procesos
 
 from cognitask.views.aplicacion import BCIAplicacion
 from cognitask.views.operador import BCIOperador
+
 from cognitask.models.BCI2000 import BCI2000
+from cognitask.models.sesion import Sesion
+
 from cognitask.controller.cognitask import Cognitask
+
 
 # FIX Problem for High DPI and Scale above 100%
 os.environ["QT_FONT_DPI"] = "96" 
@@ -44,6 +48,7 @@ def main():
     bci = BCI2000()
     operator = BCIOperador()
     aplicacion = BCIAplicacion()
+    sesion = Sesion()
     
     # PROCESOS
     # introduce P3Speller dentro del modulo de Aplicacion Cognitask
@@ -51,7 +56,7 @@ def main():
     # hace invisible los procesos de BCI2000
     procesos.ocultarProcesos(bci)
     
-    ctask = Cognitask(bci, operator, aplicacion)
+    ctask = Cognitask(bci, sesion, operator, aplicacion)
     splash.close()
     
     sys.exit(app.exec_())
