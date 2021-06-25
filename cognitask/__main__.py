@@ -5,6 +5,7 @@ from PyQt5 import QtWidgets, QtGui
 
 import cognitask.common.constantes as constantes
 import cognitask.common.ubicaciones as ubicaciones
+import cognitask.common.procesos as procesos
 
 from cognitask.views.aplicacion import BCIAplicacion
 from cognitask.views.operador import BCIOperador
@@ -43,6 +44,13 @@ def main():
     bci = BCI2000()
     operator = BCIOperador()
     aplicacion = BCIAplicacion()
+    
+    # PROCESOS
+    # introduce P3Speller dentro del modulo de Aplicacion Cognitask
+    procesos.incorporarMatriz(aplicacion.p3_frame.winId())
+    # hace invisible los procesos de BCI2000
+    procesos.ocultarProcesos(bci)
+    
     ctask = Cognitask(bci, operator, aplicacion)
     splash.close()
     

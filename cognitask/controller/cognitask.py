@@ -28,44 +28,34 @@ from datetime import date
 import subprocess
 import os
 
-#from cognitask.models.BCI2000 import BCI2000
-#from cognitask.views.aplicacion import BCIAplicacion
-#from cognitask.views.operador import BCIOperador
 from cognitask.models.sesion import Sesion
-import cognitask.common.constantes as constantes
-import cognitask.common.procesos as procesos
 import cognitask.models.informacion as informacion
 import cognitask.models.progreso as progreso
 import cognitask.models.mensajes as mensajes
-import cognitask.models.temporizador as temporizador
-import cognitask.models.estados as estados
 import cognitask.models.parametros as parametros
 import cognitask.models.resumen as resumen
+import cognitask.models.realimentacion as realimentacion
+
 import cognitask.common.ubicaciones as ubicaciones
+import cognitask.common.constantes as constantes
+
 
 # PARA EJECUTAR COGNITASK ESCRIBIR EN CONSOLA: python -m cognitask
 
 class Cognitask():
 
-    def __init__(self, bci, operador, aplicacion ):
+    def __init__(self, bci, operador, aplicacion):
         super(Cognitask, self).__init__()
         
         # INTERFAZ PACIENTE
         self.BCIAplicacion = aplicacion
+        # INTERFAZ PROFESIONAL
         self.BCIOperador = operador
         self.BCIOperador.show()
         # BCI2000
         self.bci = bci
         # SESION
         self.sesion = Sesion()
-
-        # PROCESOS
-        # introduce P3Speller dentro del modulo de Aplicacion Cognitask
-        procesos.incorporarMatriz(self.BCIAplicacion.p3_frame.winId())
-        # hace invisible los procesos de BCI2000
-        procesos.ocultarProcesos(self.bci)
-
-        QtCore.QCoreApplication.processEvents()
 
         # comportamiento de botones
         self.configBotones()
@@ -94,8 +84,8 @@ class Cognitask():
         self.sesion_iniciada = False
 
         # temporizador
-        self.tiempo_inicial = 0
-        self.tiempo_sesion = 0
+        #self.tiempo_inicial = 0
+        #self.tiempo_sesion = 0
 
         # estados
         self.running = 0  # permite alternar entre comenzar y suspender una actividad
@@ -193,7 +183,6 @@ class Cognitask():
             self.sesion.sesion_estado = "Realizando"
             progreso.iniciar(self, True)
             informacion.actualizar(self, self.BCIOperador, self.sesion.sesion_estado, True)
-            temporizador.iniciar(self)
             resumen.escribirResumen(self, "corrida", True)
         else:
             self.bci.suspender()
@@ -206,7 +195,7 @@ class Cognitask():
             resumen.escribirResumen(self, "resumen", True)
 
         self.bci.bci_estado = 'Running'
-        estados.observar(self, True)
+        self.observarEstados(True)
 
     def finalizarCalibracion(self):
         self.BCIOperador.ui_finalizarCalibracion(self.calibracion_tarea)
@@ -282,7 +271,6 @@ class Cognitask():
             #self.siguiente_seleccion = 1
             self.sesion.sesion_estado = "Realizando"
             progreso.iniciar(self, False)
-            temporizador.iniciar(self)
             informacion.actualizar(self, self.BCIOperador, self.sesion.sesion_estado, False)
             resumen.escribirResumen(self, "corrida", False)
         else:
@@ -295,7 +283,7 @@ class Cognitask():
             # si se interrumpe la corrida y se empieza una nueva, se anuncia que no se completo y se da un resumen
             resumen.escribirResumen(self, "resumen", False)
 
-        estados.observar(self, False)
+        self.observarEstados(False)
 
     def seleccionarSecuencia(self):
         # abrir explorador en carpeta segun el tipo de tarea
@@ -329,6 +317,36 @@ class Cognitask():
         # actualizamos tambien el porcentaje de aciertos
         self.porcentaje_aciertos = round((self.selecciones_correctas / self.selecciones_realizadas) * 100)
         resumen.escribirResumen(self, "resumen", False)
+
+    # OBSERVAR ESTADOS BCI2000
+    # ///////////////////////////////////////////////////////////
+    def observarEstados(self, calibracion):
+        
+        #self.tiempo_inicial = datetime.now()
+        #temporizador.iniciar(self)
+        self.sesion.iniciarTiempo()
+        
+        while self.bci.bci_estado == 'Running':
+            # la actualización se realiza en este lugar para aprovechar el while de Observacion
+            #temporizador.actualizar(self, self.BCIOperador)
+            self.sesion.actualizarTiempo()
+            self.BCIOperador.ui_tiempoSesion(self.sesion.tiempo_sesion)
+            QtCore.QCoreApplication.processEvents()
+            # me da el numero de target seleccionado (1 a 9)
+            starget = self.bci.obtenerEstado('SelectedTarget')
+            starget = int(starget)
+
+            if starget != 0 and self.consultar_seleccion == True:
+                # con esto puedo conocer que imagen se encuentra en este target (necesario debido al orden aleatorio de las imagenes)
+                self.imagen_seleccionada = self.orden_secuencia[starget-1]
+                self.target_seleccionado = starget
+                realimentacion.realimentar(self, calibracion)
+                self.consultar_seleccion = False
+
+            elif starget == 0 and self.consultar_seleccion == False:
+                self.consultar_seleccion = True
+            self.bci.bci_estado = self.bci.obtenerEstadoSistema
+
 
     # OTRAS FUNCIONES
     # ///////////////////////////////////////////////////////////

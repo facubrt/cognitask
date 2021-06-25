@@ -23,10 +23,11 @@
 ##  along with Cognitask.  If not, see <https://www.gnu.org/licenses/>. ##
 
 from PyQt5.QtWidgets import QMainWindow
-from cognitask.common import constantes
 from PyQt5 import QtCore, QtGui
-import cognitask.common.ubicaciones as ubicaciones
+
 from .ui_operador import Ui_BCIOperador
+import cognitask.common.ubicaciones as ubicaciones
+from cognitask.common import constantes
 
 class BCIOperador(QMainWindow, Ui_BCIOperador):
 
@@ -211,6 +212,7 @@ class BCIOperador(QMainWindow, Ui_BCIOperador):
     @property # GETTER
     def nivel(self):
         return self.nivel_opciones.currentText()
+    
     @property # GETTER
     def guiaVisual(self):
         return self.guia_visual_opciones.currentText()
@@ -230,3 +232,6 @@ class BCIOperador(QMainWindow, Ui_BCIOperador):
         
     def ui_finalizarTerapia(self):
         self._habilitarCambios()
+        
+    def ui_tiempoSesion(self, tiempo_sesion):
+        self.tiempo_resumen_texto.setText(str(tiempo_sesion.minute).zfill(2) + ' min ' + str(tiempo_sesion.second).zfill(2) + ' s')

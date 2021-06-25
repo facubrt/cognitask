@@ -17,6 +17,8 @@ class Sesion():
         self.intentos = 0 # suma 1 cada vez que el sujeto se equivoca en la sesion de terapia
         self.modo_calibracion = False
         self.run = 0
+        self.tiempo_inicial = 0
+        self.tiempo_sesion = 0
         self.actividad_completada = False
         self.sesion_iniciada = False # con False se informará en el resumen una nueva sesión. con True se escribirá dentro de la misma
 
@@ -38,4 +40,3 @@ class Sesion():
         diferencia = datetime.now() - self.tiempo_inicial
         tiempo_referencia = datetime(self.tiempo_inicial.year, self.tiempo_inicial.month, self.tiempo_inicial.day, 0, 0, 0)
         self.tiempo_sesion = tiempo_referencia + diferencia
-        self.tiempo_resumen_texto.setText(str(self.tiempo_sesion.minute).zfill(2) + ' min ' + str(self.tiempo_sesion.second).zfill(2) + ' s')

@@ -70,8 +70,8 @@ def _escribirSeccion(self, seccion, calibracion, fout):
         if self.actividad_completada is True:
             act = "\nACTIVIDAD COMPLETADA ---"
         fout.write(act)
-        tiempo = "\nDuración ------[" + str(self.tiempo_sesion.minute).zfill(
-            2) + ' min ' + str(self.tiempo_sesion.second).zfill(2) + ' s' + "]"
+        tiempo = "\nDuración ------[" + str(self.sesion.tiempo_sesion.minute).zfill(
+            2) + ' min ' + str(self.sesion.tiempo_sesion.second).zfill(2) + ' s' + "]"
         fout.write(tiempo)
         selecciones = "\nSelecciones realizadas  [" + \
             str(self.selecciones_realizadas).zfill(2) + "]"
