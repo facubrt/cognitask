@@ -18,8 +18,9 @@ class BCI2000(object):
 
     # ESTADOS
     # ///////////////////////////////////////////////////////////
-    def obtenerEstado(self, estado):
-        return self.bci2000.GetStateVariable(estado)
+    @property
+    def obtenerSeleccion(self):
+        return self.bci2000.GetStateVariable('SelectedTarget')
     
     @property # GETTER
     def obtenerEstadoSistema(self):
@@ -42,8 +43,9 @@ class BCI2000(object):
     def paciente(self):
         return self.bci2000.SubjectID
 
-    def matrizClasificacion(self, parametro):
-        return self.bci2000.GetMatrixParameter(parametro)
+    @property # GETTER
+    def matrizClasificacion(self):
+        return self.bci2000.GetMatrixParameter("Classifier")
 
     # CONTROL DE BCI
     # ///////////////////////////////////////////////////////////

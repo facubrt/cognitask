@@ -1,6 +1,30 @@
 from PyQt5 import QtCore, QtGui, QtWidgets #########
+from PyQt5.QtCore import QPropertyAnimation
+
+GLOBAL_STATE = 0
 
 class Ui_BCIAplicacion(object):
+    
+    def __init__(self):
+        self.setupUi(self)
+
+        self.maximizar_boton.clicked.connect(self.maximize_restore)
+        self.minimizar_boton.clicked.connect(self.showMinimized)
+        self.cerrar_boton.clicked.connect(self.cerrarAplicacion)
+        self.expandir_boton.clicked.connect(lambda: self.toggleMenu(310, True))
+
+        self.setWindowFlag(QtCore.Qt.FramelessWindowHint) # Frameless Window
+
+        def moveWindow(event):
+            if event.buttons() == QtCore.Qt.LeftButton and GLOBAL_STATE == 0:
+                self.move(self.pos() + event.globalPos() - self.dragPos)
+                self.dragPos = event.globalPos()
+                event.accept()
+            
+        self.titlebar_frame.mouseMoveEvent = moveWindow
+    
+    # FUNCIONES DE INTERFAZ GRAFICA
+    # ///////////////////////////////////////////////////////////
     def setupUi(self, BCIAplicacion):
         BCIAplicacion.setObjectName("BCIAplicacion")
         BCIAplicacion.resize(1106, 786) ## 745
@@ -423,3 +447,51 @@ class Ui_BCIAplicacion(object):
         self.tu_progreso_texto.setText(_translate("BCIAplicacion", "Tu progreso"))
         self.tu_progreso_texto_grid.setText(_translate("BCIAplicacion", "Tu progreso"))
 
+    # FUNCIONES DE COMPORTAMIENTO GENERAL
+    # ///////////////////////////////////////////////////////////
+    def maximize_restore(self):
+        global GLOBAL_STATE
+        status = GLOBAL_STATE
+
+        # si no está maximizada
+        if status == 0:
+            self.showFullScreen()
+            GLOBAL_STATE = 1
+
+        else:
+            GLOBAL_STATE = 0
+            self.showNormal()
+  
+    def mousePressEvent(self, event):
+        self.dragPos = event.globalPos()
+        
+    def toggleMenu(self, maxWidth, enable):
+        if enable:
+            width = self.right_frame.width()
+            heigth = self.bottom_frame.height()
+            maxHeigth = 150 # bottom frame
+            minHeight = 0 # bottom frame
+            standard = 0
+
+            if width == 0:
+                    widthExtended = maxWidth
+                    nueva_heigth = minHeight
+                    self.expandir_boton.setIcon(self.icon4)
+
+            else:
+                    widthExtended = standard
+                    nueva_heigth = maxHeigth
+                    self.expandir_boton.setIcon(self.icon3)
+            
+            self.animation = QPropertyAnimation(self.right_frame, b"minimumWidth")
+            self.animation_2 = QPropertyAnimation(self.bottom_frame,b"maximumHeight")
+            self.animation.setDuration(400)
+            self.animation_2.setDuration(400)
+            self.animation.setStartValue(width)
+            self.animation_2.setStartValue(heigth)
+            self.animation.setEndValue(widthExtended)
+            self.animation_2.setEndValue(nueva_heigth)
+            self.animation.setEasingCurve(QtCore.QEasingCurve.InOutQuart)
+            self.animation_2.setEasingCurve(QtCore.QEasingCurve.InOutQuart)
+            self.animation.start()
+            self.animation_2.start()

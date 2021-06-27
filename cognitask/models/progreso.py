@@ -41,10 +41,17 @@ def iniciar(self, calibracion):
         _indicarSiguiente(self, 0)  
 
 def siguientePaso(self):
+    
     if self.siguiente_seleccion < self.cantidad_pasos:
-        self.BCIAplicacion.progreso_lineal[self.siguiente_seleccion].setPixmap(QtGui.QPixmap("img/starget_v.png"))
-        self.BCIAplicacion.progreso_grid[self.siguiente_seleccion].setPixmap(QtGui.QPixmap("img/starget_h.png"))
-    img = self.ubicacion_img + "/img" + str(self.siguiente_seleccion) + ".png"
+            _indicarSiguiente(self, self.siguiente_seleccion)
+    
+    # las imagenes utilizadas para memoria espacial llevan el sufijo - punto
+    if os.path.isfile(self.ubicacion_img + "/img" + str(self.imagen_seleccionada) + ".png"):
+        extension = ".png"
+    else:
+        extension = " - punto.png"
+                  
+    img = self.ubicacion_img + "/img" + str(self.siguiente_seleccion) + extension
     p = QtGui.QPixmap(img)
     self.BCIAplicacion.progreso_lineal[self.siguiente_seleccion - 1].setPixmap(QtGui.QPixmap(p))
     self.BCIAplicacion.progreso_grid[self.siguiente_seleccion - 1].setPixmap(QtGui.QPixmap(p))
@@ -105,11 +112,11 @@ def mostrarGuia(self, calibracion):
                 
     elif calibracion is True:
         
-        if self.calibracion_tarea == 1:
+        if self.calibracion_tarea[0] == 1:
             ubicacion_img = ubicaciones.UBICACION_TAREA1
-        elif self.calibracion_tarea == 2:
+        elif self.calibracion_tarea[0] == 2:
             ubicacion_img = ubicaciones.UBICACION_TAREA2
-        elif self.calibracion_tarea == 3:
+        elif self.calibracion_tarea[0] == 3:
             ubicacion_img = ubicaciones.UBICACION_TAREA3
     
         for i in range(0, 9):  

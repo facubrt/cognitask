@@ -1,10 +1,31 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from cognitask.utils import resource_data
 
-# INTERFAZ GRÁFICA
-# ///////////////////////////////////////////////////////////
-# ///////////////////////////////////////////////////////////
 class Ui_BCIOperador(object):
+    
+    def __init__(self):
+        self.setupUi(self)
+        self.configuracionInicial()
+
+        # Eliminacion de la barra de titulo por defecto
+        self.setWindowFlag(QtCore.Qt.FramelessWindowHint)
+        self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
+        
+        # funcion que permite mover la ventana desde left_frame
+        def moveWindow(event):
+            if event.buttons() == QtCore.Qt.LeftButton:
+                self.move(self.pos() + event.globalPos() - self.dragPos)
+                self.dragPos = event.globalPos()
+                event.accept()
+    
+        self.left_frame.mouseMoveEvent = moveWindow
+        self.show()
+    
+    def mousePressEvent(self, event):
+        self.dragPos = event.globalPos()
+        
+    # INTERFAZ GRÁFICA
+    # ///////////////////////////////////////////////////////////
     def setupUi(self, BCIOperador):
         BCIOperador.setObjectName("BCIOperador")
         BCIOperador.resize(800, 512)
@@ -880,34 +901,3 @@ class Ui_BCIOperador(object):
         self.informacion_titulo.setText(_translate("BCIOperador", "¿Cómo empezar?"))
         # AGREGADO
 
-# OPERADOR BASE
-# ///////////////////////////////////////////////////////////
-# ///////////////////////////////////////////////////////////
-class BCIOperador(Ui_BCIOperador):
-
-    # INICIALIZACION
-    # ///////////////////////////////////////////////////////////
-
-    def __init__(self):
-        super(BCIOperador, self).__init__()
-        self.setupUi(self)
-        self.configuracionInicial()
-
-        # Eliminacion de la barra de titulo por defecto
-        self.setWindowFlag(QtCore.Qt.FramelessWindowHint)
-        self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
-        
-        def moveWindow(event):
-            if event.buttons() == QtCore.Qt.LeftButton:
-                self.move(self.pos() + event.globalPos() - self.dragPos)
-                self.dragPos = event.globalPos()
-                event.accept()
-
-        self.left_frame.mouseMoveEvent = moveWindow
-
-       
-    # FUNCIONES DE INTERFAZ
-    # ///////////////////////////////////////////////////////////
-    # funcion que permite mover la ventana desde left_frame        
-    def mousePressEvent(self, event):
-        self.dragPos = event.globalPos()

@@ -29,28 +29,15 @@ from .ui_operador import Ui_BCIOperador
 import cognitask.common.ubicaciones as ubicaciones
 from cognitask.common import constantes
 
+INDICE_NUEVA_SESION = 0
+INDICE_CALIBRACION = 1
+INDICE_TERAPIA = 2
+INDICE_RESUMEN = 3
+
 class BCIOperador(QMainWindow, Ui_BCIOperador):
 
-    # INICIALIZACION
-    # ///////////////////////////////////////////////////////////
     def __init__(self):
         super(BCIOperador, self).__init__()
-        self.setupUi(self)
-        self.configuracionInicial()
-
-        # Eliminacion de la barra de titulo por defecto
-        self.setWindowFlag(QtCore.Qt.FramelessWindowHint)
-        self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
-        
-        # funcion que permite mover la ventana desde left_frame
-        def moveWindow(event):
-            if event.buttons() == QtCore.Qt.LeftButton:
-                self.move(self.pos() + event.globalPos() - self.dragPos)
-                self.dragPos = event.globalPos()
-                event.accept()
-    
-        self.left_frame.mouseMoveEvent = moveWindow
-        self.show()
 
     # FUNCIONES DE INTERFAZ GENERAL
     # ///////////////////////////////////////////////////////////
@@ -65,9 +52,6 @@ class BCIOperador(QMainWindow, Ui_BCIOperador):
             self.clasificador_boton.setEnabled(False)
             self.directorio_entrada.setPlaceholderText(ubicaciones.UBICACION_DATOS)
             
-    def mousePressEvent(self, event):
-        self.dragPos = event.globalPos()
-
     def _deshabilitarCambios(self):
         self.comenzar_calibracion_boton.setText("Suspender")
         self.comenzar_terapia_boton.setText("Suspender")
@@ -123,6 +107,9 @@ class BCIOperador(QMainWindow, Ui_BCIOperador):
         self.configuracion_stacked_widget.setCurrentIndex(0)
         
         self.nombre_entrada.setText("")
+        
+        # como empezar
+        self._comoEmpezar(INDICE_NUEVA_SESION)
     
     def ui_calibracionPagina(self):
         # interfaz
@@ -146,6 +133,8 @@ class BCIOperador(QMainWindow, Ui_BCIOperador):
         self.comenzar_calibracion_boton.setEnabled(False)
         self.clasificador_boton.setEnabled(False)
         
+        self._comoEmpezar(INDICE_CALIBRACION)
+        
     def ui_terapiaPagina(self):
         # interfaz
         self.seleccion_calibracion_frame.setStyleSheet("background-color: rgb(38, 43, 50);")
@@ -158,17 +147,27 @@ class BCIOperador(QMainWindow, Ui_BCIOperador):
         
         self.configuracion_stacked_widget.setCurrentIndex(2)
         self.comenzar_terapia_boton.setEnabled(False)
-            
+        
+        self._comoEmpezar(INDICE_TERAPIA)     
+    
+    def _comoEmpezar(self, pagina):
+        self.informacion_titulo.setText("¿Cómo empezar?")
+        self.informacion_stacked_widget.setCurrentIndex(pagina)
+        
     # NUEVA SESION
     # ///////////////////////////////////////////////////////////
     def ui_seleccionarDirectorio(self, ubicacion_datos):
         self.directorio_entrada.setText(ubicacion_datos)
 
+    @property # GETTER
+    def paciente(self):
+        return self.nombre_entrada.text()
     # CALIBRACION
     # ///////////////////////////////////////////////////////////
-    def ui_prepararCalibracion(self):
+    def ui_prepararCalibracion(self, paciente):
         self.comenzar_terapia_boton.setEnabled(False)
         self.comenzar_calibracion_boton.setEnabled(True)
+        self._mostrarResumen(paciente, INDICE_RESUMEN)
         
     def ui_comenzarCalibracion(self, calibracion_tarea):
         self._deshabilitarCambios()
@@ -218,9 +217,10 @@ class BCIOperador(QMainWindow, Ui_BCIOperador):
     def guiaVisual(self):
         return self.guia_visual_opciones.currentText()
     
-    def ui_aplicarTerapia(self):
+    def ui_aplicarTerapia(self, paciente):
         self.comenzar_terapia_boton.setEnabled(True)
         self.comenzar_calibracion_boton.setEnabled(False)
+        self._mostrarResumen(paciente, INDICE_RESUMEN)
     
     def ui_cargarMatriz(self, matriz):
         self.archivo_calibracion_entrada.setText(matriz[0])
@@ -233,6 +233,34 @@ class BCIOperador(QMainWindow, Ui_BCIOperador):
         
     def ui_finalizarTerapia(self):
         self._habilitarCambios()
+    
+    # RESUMEN SESION
+    # ///////////////////////////////////////////////////////////
+    def _mostrarResumen(self, titulo, pagina):
+        self.informacion_titulo.setText(titulo)
+        self.informacion_stacked_widget.setCurrentIndex(pagina)
+    
+    def ui_iniciarResumen(self, modo, tarea):
+        self.modo_resumen_texto.setText(modo)
+        self.actividad_resumen_titulo.setText('Tarea')
+        if modo == 'Terapia':
+            self.actividad_resumen_titulo.setText(self.tipoTarea)
+        self.actividad_resumen_texto.setText(tarea)
+        self.nivel_resumen_texto.setText(self.nivel)
         
-    def ui_tiempoSesion(self, tiempo_sesion):
+        self.selecciones_resumen_texto.setText('-')
+        self.correctas_resumen_texto.setText('-')
+        self.incorrectas_resumen_texto.setText('-')
+        
+        self.estado_resumen_texto.setText('No iniciado')
+        
+    def ui_actualizarSelecciones(self, selecciones, correctas, incorrectas):
+        self.selecciones_resumen_texto.setText(str(selecciones))
+        self.correctas_resumen_texto.setText(str(correctas))
+        self.incorrectas_resumen_texto.setText(str(incorrectas))
+        
+    def ui_actualizarEstado(self, estado):
+        self.estado_resumen_texto.setText(estado)
+        
+    def ui_actualizarTiempo(self, tiempo_sesion):
         self.tiempo_resumen_texto.setText(str(tiempo_sesion.minute).zfill(2) + ' min ' + str(tiempo_sesion.second).zfill(2) + ' s')

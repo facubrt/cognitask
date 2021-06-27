@@ -28,20 +28,20 @@ from datetime import date
 import subprocess
 import os
 
-from cognitask.models.sesion import Sesion
-import cognitask.models.informacion as informacion
 import cognitask.models.progreso as progreso
-import cognitask.models.mensajes as mensajes
 import cognitask.models.parametros as parametros
 import cognitask.models.resumen as resumen
-import cognitask.models.realimentacion as realimentacion
 
+from cognitask.models.evaluacion_selecciones import EvaluacionSelecciones
 import cognitask.common.ubicaciones as ubicaciones
 import cognitask.common.constantes as constantes
 
-###################################################################
-# PARA EJECUTAR COGNITASK ESCRIBIR EN CONSOLA: python -m cognitask#
-###################################################################
+####################################################################
+# PARA EJECUTAR COGNITASK ESCRIBIR EN CONSOLA: python -m cognitask #
+####################################################################
+
+TERAPIA = "Terapia"
+CALIBRACION = "Calibracion"
 
 class Cognitask():
 
@@ -52,7 +52,6 @@ class Cognitask():
         self.BCIAplicacion = aplicacion
         # INTERFAZ PROFESIONAL
         self.BCIOperador = operador
-        # comportamiento de botones
         self.configBotones()
         # BCI2000
         self.bci = bci
@@ -64,6 +63,10 @@ class Cognitask():
         self.ubicacion_datos = ubicaciones.UBICACION_DATOS 
         self.ubicacion_clasificador = ubicaciones.UBICACION_CLASIFICADOR
 
+        # variables
+        self.paciente = 'Paciente'
+        self.tarea = 'Tarea'
+        
         # variables de sesion
         # estado de la sesión. No iniciada, Preparado, Realizando, Completado
         #self.sesion_estado = "No iniciada"
@@ -71,9 +74,8 @@ class Cognitask():
         self.siguiente_seleccion = 1  # indica la imagen siguiente que debe elegirse
         # imagen seleccionada (necesario debido al orden aleatorio de las imagenes)
         self.imagen_seleccionada = 0
-        self.target_seleccionado = 0  # target seleccionado
         # permite cambiar entre las distintas tareas de calibración automaticamente
-        self.calibracion_tarea = 1
+        self.calibracion_tarea = [1, 'TAREA'] # [numero_tarea, tarea]
         # cantidad de pasos que contiene la tarea. Por defecto son 9 pasos
         self.cantidad_pasos = 9
         self.mostrar_guia = True
@@ -98,29 +100,24 @@ class Cognitask():
     def nuevaSesionPagina(self):
         self.BCIOperador.ui_nuevaSesionPagina()
         self.sesion.restablecer()
-        # informacion
-        informacion.comoEmpezar(self.BCIOperador, "Nueva sesion")
 
     def calibracionPagina(self):
         self.BCIOperador.ui_calibracionPagina()
         self.sesion.restablecer()
-        # informacion
-        informacion.comoEmpezar(self.BCIOperador, "Calibracion")
 
     def terapiaPagina(self):
         self.BCIOperador.ui_terapiaPagina()
         self.sesion.restablecer()
-        # informacion
-        informacion.comoEmpezar(self.BCIOperador, "Terapia")
 
     # NUEVA SESION
     # ///////////////////////////////////////////////////////////
     def iniciarSesion(self):
         # Datos de sujeto y sesión
-        if self.BCIOperador.nombre_entrada.text() != "":
+        if self.BCIOperador.paciente != "":
             # Datos de sujeto y sesión
             hoy = date.today().strftime("%d%m%y")
-            self.bci.cargarDatos(self.BCIOperador.nombre_entrada.text(), hoy, self.ubicacion_datos)
+            self.paciente = self.BCIOperador.paciente
+            self.bci.cargarDatos(self.BCIOperador.paciente, hoy, self.ubicacion_datos)
             # navega a la pagina de calibracion
             self.calibracionPagina()
 
@@ -136,12 +133,22 @@ class Cognitask():
         QtCore.QCoreApplication.processEvents()
 
         # restablecer variables de sesion
-        mensajes.restablecer(self)
+        self.BCIAplicacion.restablecerMensajes()
         self.siguiente_seleccion = 1
         self.selecciones_realizadas = 0
         self.selecciones_correctas = 0
         self.selecciones_incorrectas = 0
 
+        # preparamos la tarea
+        if self.calibracion_tarea[0] == 1:
+            self.calibracion_tarea[1] = constantes.TAREA_UNO
+        if self.calibracion_tarea[0] == 2:
+            self.calibracion_tarea[1] = constantes.TAREA_DOS
+        if self.calibracion_tarea[0] == 3:
+            self.calibracion_tarea[1] = constantes.TAREA_TRES
+            
+        self.tarea = self.calibracion_tarea[1]
+        
         progreso.mostrarGuia(self, True)
         parametros.aplicarSecuenciaCalibracion(self)
         self.bci.cargarParametros(ubicaciones.CONFIG_CALIBRACION)
@@ -152,59 +159,60 @@ class Cognitask():
         QtCore.QCoreApplication.processEvents()
         self.bci.cargarParametros(ubicaciones.CONFIG_SECUENCIA)
         # se oculta la matriz antes de configurar para evitar los glitches visuales de BCI2000
-        self.BCIAplicacion.ocultar()
+        self.BCIAplicacion.ocultarMatriz()
         parametros.aplicarNivel(self.BCIOperador, True)
 
         self.bci.cargarParametros(ubicaciones.CONFIG_NIVEL)
 
         self.bci.aplicarConfiguracion()
         # hace visible la interfaz de usuario paciente
-        self.BCIAplicacion.mostrar()
-        self.BCIOperador.ui_prepararCalibracion()
+        self.BCIAplicacion.mostrarMatriz()
         self.sesion.sesion_estado = "Preparado"
-        informacion.actualizar(self, self.BCIOperador, self.sesion.sesion_estado, True)
-        informacion.mostrarInformacion(self.BCIOperador, self.bci.paciente)
+        self.BCIOperador.ui_prepararCalibracion(self.paciente)
+        self.BCIOperador.ui_iniciarResumen(CALIBRACION, self.tarea)
+        
         resumen.escribirResumen(self, "sesion", True)
 
     def comenzarCalibracion(self):
         if self.running == 0:
             self.bci.iniciar()
-            self.BCIOperador.ui_comenzarCalibracion(self.calibracion_tarea)
+            self.BCIOperador.ui_comenzarCalibracion(self.calibracion_tarea[0])
             self.running = 1
-            mensajes.mostrar(self, constantes.MSG_COMENZAR, constantes.CSS_MSG_COMENZAR, True)
+            self.BCIAplicacion.mostrarMensajes(constantes.MSG_COMENZAR, constantes.CSS_MSG_COMENZAR, True)
 
             self.run += 1
             self.siguiente_seleccion = 1
             self.sesion.sesion_estado = "Realizando"
             progreso.iniciar(self, True)
-            informacion.actualizar(self, self.BCIOperador, self.sesion.sesion_estado, True)
+            # self.BCIOperador.ui_actualizarSelecciones(self.selecciones_realizadas, self.selecciones_correctas, self.selecciones_incorrectas)
+            self.BCIOperador.ui_actualizarEstado(self.sesion.sesion_estado)
             resumen.escribirResumen(self, "corrida", True)
         else:
             self.bci.suspender()
-            self.BCIOperador.ui_suspenderCalibracion(self.calibracion_tarea)
+            self.BCIOperador.ui_suspenderCalibracion(self.calibracion_tarea[0])
             self.running = 0
-            self.sesion.sesion_estado = "Interrumpido"
-            mensajes.mostrar(self, constantes.MSG_SUSPENDIDO, constantes.CSS_MSG_SUSPENDIDO, False)
+            self.BCIAplicacion.mostrarMensajes(constantes.MSG_SUSPENDIDO, constantes.CSS_MSG_SUSPENDIDO, False)
             # si se interrumpe la corrida y se empieza una nueva, se anuncia que no se completo y se da un resumen
-            informacion.actualizar(self, self.BCIOperador, self.sesion.sesion_estado, True)
+            self.sesion.sesion_estado = "Interrumpido"
+            self.BCIOperador.ui_actualizarEstado(self.sesion.sesion_estado)
             resumen.escribirResumen(self, "resumen", True)
 
         self.bci.bci_estado = 'Running'
         self.observarEstados(True)
 
     def finalizarCalibracion(self):
-        self.BCIOperador.ui_finalizarCalibracion(self.calibracion_tarea)
+        self.BCIOperador.ui_finalizarCalibracion(self.calibracion_tarea[0])
         
-        if self.calibracion_tarea < 3:
-            self.calibracion_tarea += 1
+        if self.calibracion_tarea[0] < 3:
+            self.calibracion_tarea[0] += 1
         else:
-            self.calibracion_tarea = 1
+            self.calibracion_tarea[0] = 1
         
         self.running = 0
-        mensajes.mostrar(self, constantes.MSG_TERMINADO, constantes.CSS_MSG_TERMINADO, False)
+        self.BCIAplicacion.mostrarMensajes(constantes.MSG_TERMINADO, constantes.CSS_MSG_TERMINADO, False)
         self.actividad_completada = True
         self.sesion.sesion_estado = "Completado"
-        informacion.actualizar(self, self.BCIOperador, self.sesion.sesion_estado, True)
+        self.BCIOperador.ui_actualizarEstado(self.sesion.sesion_estado)
         resumen.escribirResumen(self, "resumen", True)
         
         self.bci.ejecutar("Wait for Suspended 5")
@@ -216,7 +224,7 @@ class Cognitask():
         QtCore.QCoreApplication.processEvents()
 
         # restablecer variables de sesion
-        mensajes.restablecer(self)
+        self.BCIAplicacion.restablecerMensajes()
         self.siguiente_seleccion = 1
         self.selecciones_realizadas = 0
         self.selecciones_correctas = 0
@@ -230,7 +238,7 @@ class Cognitask():
             
         parametros.aplicarSecuenciaTerapia(self)
         # se oculta la matriz antes de configurar para evitar los glitches visuales de BCI2000
-        self.BCIAplicacion.ocultar()
+        self.BCIAplicacion.ocultarMatriz()
         self.bci.cargarParametros(ubicaciones.CONFIG_BASE)
         # evita que la gui se cuelgue cuando se cargan los parametros
         QtCore.QCoreApplication.processEvents()
@@ -238,10 +246,6 @@ class Cognitask():
         QtCore.QCoreApplication.processEvents()
         self.bci.cargarParametros(ubicaciones.CONFIG_SECUENCIA)
         parametros.aplicarNivel(self.BCIOperador, False)
-
-        self.sesion.sesion_estado = "Preparado"
-        informacion.actualizar(self, self.BCIOperador, self.sesion.sesion_estado, False)
-        informacion.mostrarInformacion(self.BCIOperador, self.bci.paciente)
 
         self.bci.cargarParametros(ubicaciones.CONFIG_NIVEL)
 
@@ -252,8 +256,10 @@ class Cognitask():
         # evita que la gui se cuelgue cuando se cargan los parametros
         QtCore.QCoreApplication.processEvents()
         self.bci.aplicarConfiguracion()
-        self.BCIAplicacion.mostrar()
-        self.BCIOperador.ui_aplicarTerapia()
+        self.BCIAplicacion.mostrarMatriz()
+        self.BCIOperador.ui_aplicarTerapia(self.paciente)
+        self.sesion.sesion_estado = "Preparado"
+        self.BCIOperador.ui_iniciarResumen(TERAPIA, self.tarea)
         resumen.escribirResumen(self, "sesion", False)
 
     def comenzarTerapia(self):
@@ -261,21 +267,21 @@ class Cognitask():
             self.bci.iniciar()
             self.bci.bci_estado = 'Running'
             self.BCIOperador.ui_comenzarTerapia()
-            mensajes.mostrar(self, constantes.MSG_COMENZAR, constantes.CSS_MSG_COMENZAR, True)
+            self.BCIAplicacion.mostrarMensajes(constantes.MSG_COMENZAR, constantes.CSS_MSG_COMENZAR, True)
             self.run += 1
-            #self.siguiente_seleccion = 1
             self.sesion.sesion_estado = "Realizando"
             progreso.iniciar(self, False)
-            informacion.actualizar(self, self.BCIOperador, self.sesion.sesion_estado, False)
+            self.BCIOperador.ui_actualizarSelecciones(self.selecciones_realizadas, self.selecciones_correctas, self.selecciones_incorrectas)
+            self.BCIOperador.ui_actualizarEstado(self.sesion.sesion_estado)
             resumen.escribirResumen(self, "corrida", False)
         else:
             self.bci.suspender()
             self.bci.bci_estado = 'Suspended'
             self.BCIOperador.ui_suspenderTerapia()
-            mensajes.mostrar(self, constantes.MSG_SUSPENDIDO, constantes.CSS_MSG_SUSPENDIDO, False)
+            self.BCIAplicacion.mostrarMensajes(constantes.MSG_SUSPENDIDO, constantes.CSS_MSG_SUSPENDIDO, False)
             self.sesion.sesion_estado = "Interrumpido"
-            informacion.actualizar(self, self.BCIOperador, self.sesion.sesion_estado, False)
             # si se interrumpe la corrida y se empieza una nueva, se anuncia que no se completo y se da un resumen
+            self.BCIOperador.ui_actualizarEstado(self.sesion.sesion_estado)
             resumen.escribirResumen(self, "resumen", False)
 
         self.observarEstados(False)
@@ -292,6 +298,7 @@ class Cognitask():
         # asignar la ubicacion de la tarea elegida
         if directorio != "":
             self.ubicacion_img = directorio
+            self.tarea = os.path.basename(directorio)
 
         # contamos la cantidad de pasos que contiene la secuencia elegida
         self.cantidad_pasos = sum(1 for item in os.listdir(self.ubicacion_img) if os.path.isfile(os.path.join(self.ubicacion_img, item)))
@@ -305,10 +312,11 @@ class Cognitask():
         self.bci.suspender()
         self.BCIOperador.ui_finalizarTerapia()
         self.running = 0
-        mensajes.mostrar(self, constantes.MSG_TERMINADO, constantes.CSS_MSG_TERMINADO, False)
+        self.BCIAplicacion.mostrarMensajes(constantes.MSG_TERMINADO, constantes.CSS_MSG_TERMINADO, False)
         self.actividad_completada = True
         self.sesion.sesion_estado = "Completado"
-        informacion.actualizar(self, self.BCIOperador, self.sesion.sesion_estado, False)
+        self.BCIOperador.ui_actualizarSelecciones(self.selecciones_realizadas, self.selecciones_correctas, self.selecciones_incorrectas)
+        self.BCIOperador.ui_actualizarEstado(self.sesion.sesion_estado)
         # actualizamos tambien el porcentaje de aciertos
         self.porcentaje_aciertos = round((self.selecciones_correctas / self.selecciones_realizadas) * 100)
         resumen.escribirResumen(self, "resumen", False)
@@ -316,33 +324,97 @@ class Cognitask():
     # OBSERVAR ESTADOS BCI2000
     # ///////////////////////////////////////////////////////////
     def observarEstados(self, calibracion):
-        
-        #self.tiempo_inicial = datetime.now()
-        #temporizador.iniciar(self)
+
         self.sesion.iniciarTiempo()
         
         while self.bci.bci_estado == 'Running':
-            # la actualización se realiza en este lugar para aprovechar el while de Observacion
-            #temporizador.actualizar(self, self.BCIOperador)
-            self.sesion.actualizarTiempo()
-            self.BCIOperador.ui_tiempoSesion(self.sesion.tiempo_sesion)
             QtCore.QCoreApplication.processEvents()
-            # me da el numero de target seleccionado (1 a 9)
-            starget = self.bci.obtenerEstado('SelectedTarget')
-            starget = int(starget)
+            
+            self.sesion.actualizarTiempo()
+            self.BCIOperador.ui_actualizarTiempo(self.sesion.tiempo_sesion)
+            # me da el numero de celda seleccionado (1 a 9)
+            celda_seleccionada = int(self.bci.obtenerSeleccion)
 
-            if starget != 0 and self.consultar_seleccion == True:
+            if celda_seleccionada != 0 and self.consultar_seleccion == True:
                 # con esto puedo conocer que imagen se encuentra en este target (necesario debido al orden aleatorio de las imagenes)
-                self.imagen_seleccionada = self.orden_secuencia[starget-1]
-                self.target_seleccionado = starget
-                realimentacion.realimentar(self, calibracion)
+                self.imagen_seleccionada = self.orden_secuencia[celda_seleccionada - 1]
+                
+                # PROGRESO - REALIMENTACION
+                #############                
+                # CALIBRACION
+                if calibracion:
+                    msg_calibracion = "Elige la letra " + self.calibracion_tarea[1][self.siguiente_seleccion]
+                    self.BCIAplicacion.mostrarMensajes(msg_calibracion, constantes.CSS_MSG_CALIBRACION, True)
+                    self.selecciones_realizadas += 1
+                    progreso.actualizar(self, calibracion)
+                    if self.siguiente_seleccion < constantes.PASOS_CALIBRACION:
+                        self.siguiente_seleccion += 1
+                    else:
+                        self.finalizarCalibracion()
+                # TERAPIA
+                else:
+                    if self.BCIOperador.tipoTarea == 'Rompecabezas - mem. espacial':
+                        seleccion_correcta = EvaluacionSelecciones.evaluar_memoria_espacial(self)
+                    elif self.BCIOperador.tipoTarea == 'Palabras - al revés':
+                        seleccion_correcta = EvaluacionSelecciones.evaluar_atencion_inversa(self)
+                    else:
+                        seleccion_correcta = EvaluacionSelecciones.evaluar_atencion(self)
+                    
+                    if seleccion_correcta:
+                        self.seleccionCorrecta(calibracion)
+                    else:
+                        self.seleccionIncorrecta(calibracion)
+                        
+                    self.BCIOperador.ui_actualizarSelecciones(self.selecciones_realizadas, self.selecciones_correctas, self.selecciones_incorrectas)
+                ###########
                 self.consultar_seleccion = False
 
-            elif starget == 0 and self.consultar_seleccion == False:
+            elif celda_seleccionada == 0 and self.consultar_seleccion == False:
                 self.consultar_seleccion = True
             self.bci.bci_estado = self.bci.obtenerEstadoSistema
 
+    # SELECCIONES
+    # ///////////////////////////////////////////////////////////
+    def seleccionCorrecta(self, calibracion):
+        
+        if self.siguiente_seleccion < self.cantidad_pasos:
+            self.BCIAplicacion.mostrarMensajes(constantes.MSG_CORRECTO, constantes.CSS_MSG_CORRECTO, True)
+            self.intentos = 0
+            progreso.actualizar(self, calibracion)
+            self.selecciones_correctas += 1
+            self.selecciones_realizadas += 1
+            self.siguiente_seleccion = self.siguiente_seleccion + 1
+            
+        else:
+            progreso.actualizar(self, calibracion)
+            self.intentos = 0
+            self.selecciones_correctas += 1
+            self.selecciones_realizadas += 1
+            self.finalizarTerapia()
+            
+    def seleccionIncorrecta(self, calibracion):
+    
+        if self.intentos < constantes.INTENTOS_MAXIMOS:
+            self.BCIAplicacion.mostrarMensajes(constantes.MSG_INCORRECTO, constantes.CSS_MSG_INCORRECTO, True)
+            self.intentos += 1
+            self.selecciones_incorrectas += 1
+            self.selecciones_realizadas += 1
 
+        elif self.intentos == constantes.INTENTOS_MAXIMOS and self.siguiente_seleccion == self.cantidad_pasos:
+            progreso.siguientePaso(self, calibracion)
+            self.intentos = 0 # restablecemos los valores de intentos
+            self.selecciones_incorrectas += 1
+            self.selecciones_realizadas += 1
+            self.finalizarTerapia()
+            
+        elif self.intentos == constantes.INTENTOS_MAXIMOS and self.siguiente_seleccion != self.cantidad_pasos:
+            self.BCIAplicacion.mostrarMensajes(constantes.MSG_PASAR, constantes.CSS_MSG_PASAR, True)
+            progreso.siguientePaso(self, calibracion)
+            self.intentos = 0
+            self.selecciones_incorrectas += 1
+            self.selecciones_realizadas += 1
+            self.siguiente_seleccion = self.siguiente_seleccion + 1  
+      
     # OTRAS FUNCIONES
     # ///////////////////////////////////////////////////////////
     def abrirP3Classifier(self):

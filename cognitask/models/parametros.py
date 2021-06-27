@@ -1,6 +1,7 @@
 from PyQt5 import QtCore
 import random
 import os
+
 import cognitask.common.constantes as constantes
 from cognitask.common import ubicaciones
 

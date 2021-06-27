@@ -35,7 +35,7 @@ def _escribirSeccion(self, seccion, calibracion, fout):
             matriz_text = "\nMatriz de clasificación ---\n"
             fout.write(matriz_text)
             # me dice la matriz usada en la corrida
-            matriz = self.bci.matrizClasificacion("Classifier")
+            matriz = self.bci.matrizClasificacion
             for c in range(len(matriz)):
                 m = str(matriz[c][0]) + " " + str(matriz[c][1]) + " " + \
                     str(matriz[c][2]) + " " + str(matriz[c][3]) + "\n"

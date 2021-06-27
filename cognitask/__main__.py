@@ -46,7 +46,7 @@ def main():
     splash.show()
     
     bci = BCI2000()
-    operator = BCIOperador()
+    operador = BCIOperador()
     aplicacion = BCIAplicacion()
     sesion = Sesion()
     
@@ -56,7 +56,7 @@ def main():
     # hace invisible los procesos de BCI2000
     procesos.ocultarProcesos(bci)
     
-    ctask = Cognitask(bci, sesion, operator, aplicacion)
+    ctask = Cognitask(bci, sesion, operador, aplicacion)
     splash.close()
     
     sys.exit(app.exec_())
