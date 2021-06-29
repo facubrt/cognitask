@@ -22,7 +22,8 @@
 ##  You should have received a copy of the GNU General Public License ####
 ##  along with Cognitask.  If not, see <https://www.gnu.org/licenses/>. ##
 # from PyQt5.QtCore import QPropertyAnimation
-from PyQt5 import QtCore
+import os
+from PyQt5 import QtCore, QtGui
 from PyQt5.QtWidgets import QMainWindow
 
 from .ui_aplicacion import Ui_BCIAplicacion
@@ -61,3 +62,79 @@ class BCIAplicacion(QMainWindow, Ui_BCIAplicacion):
     def restablecerMensajes(self):
         self.feedback_label.hide()
         self.feedback_label.setStyleSheet(constantes.CSS_MSG_CORRECTO) # restaura valores por defecto   
+      
+    # PROGRESO
+    # ///////////////////////////////////////////////////////////    
+    def ui_iniciar_progreso(self, guia, cantidad_pasos, calibracion):
+        if calibracion:
+            for i in range(0, cantidad_pasos):
+                self.progreso_lineal[i].setStyleSheet("")
+                self.progreso_grid[i].setStyleSheet("")   
+        else:
+            for i in range(0, 9):
+                if i < cantidad_pasos:
+                    if guia != 'Mantener':
+                        self.progreso_lineal[i].setPixmap(QtGui.QPixmap("img/target_v.png"))
+                        self.progreso_grid[i].setPixmap(QtGui.QPixmap("img/target_h.png"))
+                else:
+                    self.progreso_lineal[i].setPixmap(QtGui.QPixmap("img/bloqueado_v.png"))
+                    self.progreso_grid[i].setPixmap(QtGui.QPixmap("img/bloqueado_h.png"))   
+                self.progreso_lineal[i].setStyleSheet("")
+                self.progreso_grid[i].setStyleSheet("")
+        self.ui_siguiente_seleccion(0)
+
+    def ui_siguiente_seleccion(self, siguiente_seleccion):
+        if siguiente_seleccion != 0:
+            self.progreso_lineal[siguiente_seleccion - 1].setStyleSheet("")
+            self.progreso_grid[siguiente_seleccion - 1].setStyleSheet("")
+                
+        self.progreso_lineal[siguiente_seleccion].setStyleSheet("border: 3px solid #23B59C;")
+        self.progreso_grid[siguiente_seleccion].setStyleSheet("border: 3px solid #23B59C;")
+    
+    def ui_mostrar_guia(self):
+        pass
+    
+    def ui_actualizar_progreso(self, tipo_tarea, sesion, calibracion):
+        if calibracion is True:
+            if sesion.siguiente_seleccion < constantes.PASOS_CALIBRACION:
+                self.ui_siguiente_seleccion(sesion.siguiente_seleccion)
+            img = "img/paso_completado.png"
+            
+        else:
+            if sesion.siguiente_seleccion < sesion.cantidad_pasos:
+                self.ui_siguiente_seleccion(sesion.siguiente_seleccion)
+                
+            if tipo_tarea == 'Rompecabezas - mem. espacial':
+                # las imagenes utilizadas para memoria espacial llevan el sufijo - punto
+                if os.path.isfile(sesion.ubicacion_img + "/img" + str(sesion.siguiente_seleccion) + ".png"):
+                    extension = ".png"
+                else:
+                    extension = " - punto.png"
+                img = sesion.ubicacion_img + "/img" + str(sesion.siguiente_seleccion) + extension
+            else:
+                img = sesion.ubicacion_img + "/img" + str(sesion.imagen_seleccionada) + ".png"
+        
+        p = QtGui.QPixmap(img)
+        self.progreso_lineal[sesion.siguiente_seleccion - 1].setPixmap(QtGui.QPixmap(p))
+        self.progreso_grid[sesion.siguiente_seleccion - 1].setPixmap(QtGui.QPixmap(p))
+
+    def ui_pasar(self, sesion, tipo_tarea):
+
+        if tipo_tarea == 'Palabras - al revés':
+            siguiente_seleccion = (sesion.cantidad_pasos + 1) - sesion.siguiente_seleccion
+        else:
+            siguiente_seleccion = sesion.siguiente_seleccion
+        
+        if sesion.siguiente_seleccion < sesion.cantidad_pasos:
+                self.ui_siguiente_seleccion(sesion.siguiente_seleccion)
+    
+        # las imagenes utilizadas para memoria espacial llevan el sufijo - punto
+        if os.path.isfile(sesion.ubicacion_img + "/img" + str(siguiente_seleccion) + ".png"):
+            extension = ".png"
+        else:
+            extension = " - punto.png"
+                    
+        img = sesion.ubicacion_img + "/img" + str(siguiente_seleccion) + extension
+        p = QtGui.QPixmap(img)
+        self.progreso_lineal[sesion.siguiente_seleccion - 1].setPixmap(QtGui.QPixmap(p))
+        self.progreso_grid[sesion.siguiente_seleccion - 1].setPixmap(QtGui.QPixmap(p))        

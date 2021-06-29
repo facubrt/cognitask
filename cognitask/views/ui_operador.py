@@ -5,22 +5,18 @@ class Ui_BCIOperador(object):
     
     def __init__(self):
         self.setupUi(self)
-        self.configuracionInicial()
-
         # Eliminacion de la barra de titulo por defecto
         self.setWindowFlag(QtCore.Qt.FramelessWindowHint)
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
-        
         # funcion que permite mover la ventana desde left_frame
         def moveWindow(event):
             if event.buttons() == QtCore.Qt.LeftButton:
                 self.move(self.pos() + event.globalPos() - self.dragPos)
                 self.dragPos = event.globalPos()
                 event.accept()
-    
         self.left_frame.mouseMoveEvent = moveWindow
         self.show()
-    
+        
     def mousePressEvent(self, event):
         self.dragPos = event.globalPos()
         

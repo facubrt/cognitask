@@ -2,12 +2,9 @@ import os
 from PyQt5 import QtCore
 from datetime import date
 
-def decorador(escribir_resumen):
-    pass
-
 def escribirResumen(self, seccion, calibracion):
     QtCore.QCoreApplication.processEvents()
-    path = self.ubicacion_datos + "/" + self.bci.paciente + "/resumen_sesiones.txt"
+    path = self.sesion.ubicacion_datos + "/" + self.bci.paciente + "/resumen_sesiones.txt"
     file_exists = os.path.isfile(path)
     fout = open(path, "a")
     
@@ -21,13 +18,13 @@ def _escribirSeccion(self, seccion, calibracion, fout):
     if seccion == "sesion":
         today = date.today()
         d = today.strftime("%d-%m-%y")
-        if calibracion is True and self.sesion_iniciada is False:
+        if calibracion is True and self.sesion.sesion_iniciada is False:
             sesion = "\n--- Sesión del día " + d + " [CALIBRACIÓN] ---\n"
             sesion = "\n---------------------------------------------" + \
                 sesion + "---------------------------------------------\n"
             fout.write(sesion)
-            self.sesion_iniciada = True
-        elif calibracion is False and self.sesion_iniciada is False:
+            self.sesion.sesion_iniciada = True
+        elif calibracion is False and self.sesion.sesion_iniciada is False:
             sesion = "\n--- Sesión del día " + d + " [TERAPIA] ---\n"
             sesion = "\n-----------------------------------------" + \
                 sesion + "-----------------------------------------\n"
@@ -40,50 +37,50 @@ def _escribirSeccion(self, seccion, calibracion, fout):
                 m = str(matriz[c][0]) + " " + str(matriz[c][1]) + " " + \
                     str(matriz[c][2]) + " " + str(matriz[c][3]) + "\n"
                 fout.write(m)
-            self.sesion_iniciada = True
+            self.sesion.sesion_iniciada = True
 
     elif seccion == "corrida":
-        r = "\n--------------- Corrida R" + str(self.run).zfill(2) + "\n"
+        r = "\n--------------- Corrida R" + str(self.sesion.run).zfill(2) + "\n"
         fout.write(r)
         if calibracion is True:
-            sec = "\n[Tarea Nro. " + str(self.calibracion_tarea) + "]\n"
+            sec = "\n[Tarea Nro. " + str(self.sesion.indice_tarea) + "]\n"
             fout.write(sec)
         else:
             modo = "\nModo ------- [" + \
-                self.BCIOperador.tipoTarea + "]\n"
+                self.BCIOperador.tipo_tarea + "]\n"
             fout.write(modo)
-            if (self.BCIOperador.tipoTarea.startswith("Rompecabezas")):
+            if (self.BCIOperador.tipo_tarea.startswith("Rompecabezas")):
                 sec = "Imagen ----- [" + \
-                    os.path.basename(self.ubicacion_img) + "]\n"
-            elif (self.BCIOperador.tipoTarea.startswith("Sucesiones")):
+                    os.path.basename(self.sesion.ubicacion_img) + "]\n"
+            elif (self.BCIOperador.tipo_tarea.startswith("Sucesiones")):
                 sec = "Actividad -- [" + \
-                    os.path.basename(self.ubicacion_img) + "]\n"
-            elif (self.BCIOperador.tipoTarea.startswith("Palabras")):
+                    os.path.basename(self.sesion.ubicacion_img) + "]\n"
+            elif (self.BCIOperador.tipo_tarea.startswith("Palabras")):
                 sec = "Palabra ---- [" + \
-                    os.path.basename(self.ubicacion_img) + "]\n"
+                    os.path.basename(self.sesion.ubicacion_img) + "]\n"
             fout.write(sec)
             n = "Nivel ------ [" + self.BCIOperador.nivel + "]\n"
             fout.write(n)
 
     elif seccion == "resumen":
         act = "\nACTIVIDAD INTERRUMPIDA -"
-        if self.actividad_completada is True:
+        if self.sesion.actividad_completada is True:
             act = "\nACTIVIDAD COMPLETADA ---"
         fout.write(act)
         tiempo = "\nDuración ------[" + str(self.sesion.tiempo_sesion.minute).zfill(
             2) + ' min ' + str(self.sesion.tiempo_sesion.second).zfill(2) + ' s' + "]"
         fout.write(tiempo)
         selecciones = "\nSelecciones realizadas  [" + \
-            str(self.selecciones_realizadas).zfill(2) + "]"
+            str(self.sesion.selecciones_realizadas).zfill(2) + "]"
         fout.write(selecciones)
         correctas = "\nSelecciones correctas   [" + \
-            str(self.selecciones_correctas).zfill(2) + "]"
+            str(self.sesion.selecciones_correctas).zfill(2) + "]"
         fout.write(correctas)
         incorrectas = "\nSelecciones incorrectas [" + \
-            str(self.selecciones_incorrectas).zfill(2) + "]\n"
+            str(self.sesion.selecciones_incorrectas).zfill(2) + "]\n"
         fout.write(incorrectas)
         aciertos = "\nPorcentaje de aciertos [" + \
-            str(self.porcentaje_aciertos) + "%]\n"
+            str(self.sesion.porcentaje_aciertos) + "%]\n"
         fout.write(aciertos)
         observaciones = "\nObservaciones ----\n"
         fout.write(observaciones)

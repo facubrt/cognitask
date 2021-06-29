@@ -13,32 +13,32 @@ def _indicarSiguiente(self, siguiente_seleccion):
     self.BCIAplicacion.progreso_lineal[siguiente_seleccion].setStyleSheet("border: 3px solid #23B59C;")
     self.BCIAplicacion.progreso_grid[siguiente_seleccion].setStyleSheet("border: 3px solid #23B59C;")
 
-def iniciar(self, calibracion):
+# def iniciar(self, calibracion):
     
-    if calibracion is False:
+#     if calibracion is False:
         
-        if self.BCIOperador.guiaVisual == 'Mantener':
-            for i in range(0, self.cantidad_pasos):
-                self.BCIAplicacion.progreso_lineal[i].setStyleSheet("")
-                self.BCIAplicacion.progreso_grid[i].setStyleSheet("")
+#         if self.BCIOperador.guiaVisual == 'Mantener':
+#             for i in range(0, self.cantidad_pasos):
+#                 self.BCIAplicacion.progreso_lineal[i].setStyleSheet("")
+#                 self.BCIAplicacion.progreso_grid[i].setStyleSheet("")
                 
-        else:
-            for i in range(0, self.cantidad_pasos):
-                self.BCIAplicacion.progreso_lineal[i].setPixmap(QtGui.QPixmap("img/target_v.png"))
-                self.BCIAplicacion.progreso_lineal[i].setStyleSheet("")
-                self.BCIAplicacion.progreso_grid[i].setPixmap(QtGui.QPixmap("img/target_h.png"))
-                self.BCIAplicacion.progreso_grid[i].setStyleSheet("")
+#         else:
+#             for i in range(0, self.cantidad_pasos):
+#                 self.BCIAplicacion.progreso_lineal[i].setPixmap(QtGui.QPixmap("img/target_v.png"))
+#                 self.BCIAplicacion.progreso_lineal[i].setStyleSheet("")
+#                 self.BCIAplicacion.progreso_grid[i].setPixmap(QtGui.QPixmap("img/target_h.png"))
+#                 self.BCIAplicacion.progreso_grid[i].setStyleSheet("")
                     
-        _indicarSiguiente(self, 0)        
+#         _indicarSiguiente(self, 0)        
                     
         
-    if calibracion is True:
+#     if calibracion is True:
         
-        for i in range(0, constantes.PASOS_CALIBRACION):
-            self.BCIAplicacion.progreso_lineal[i].setStyleSheet("")
-            self.BCIAplicacion.progreso_grid[i].setStyleSheet("")
+#         for i in range(0, constantes.PASOS_CALIBRACION):
+#             self.BCIAplicacion.progreso_lineal[i].setStyleSheet("")
+#             self.BCIAplicacion.progreso_grid[i].setStyleSheet("")
     
-        _indicarSiguiente(self, 0)  
+#         _indicarSiguiente(self, 0)  
 
 def siguientePaso(self):
     
@@ -84,19 +84,21 @@ def mostrarGuia(self, calibracion):
     
     if calibracion is False:
         for i in range(0, 9):
-            if i < self.cantidad_pasos:
+            self.BCIAplicacion.progreso_lineal[i].setStyleSheet("")
+            self.BCIAplicacion.progreso_grid[i].setStyleSheet("")
+            if i < self.sesion.cantidad_pasos:
                 # las imagenes utilizadas para memoria espacial llevan el sufijo - punto
-                if os.path.isfile(self.ubicacion_img + "/img" + str(i+1) + ".png"):
+                if os.path.isfile(self.sesion.ubicacion_img + "/img" + str(i+1) + ".png"):
                     extension = ".png"
                 else:
                     extension = " - punto.png"
                 
-                img = self.ubicacion_img + "/img" + str(i+1) + extension
+                img = self.sesion.ubicacion_img + "/img" + str(i+1) + extension
                 
                 new_pix = QtGui.QPixmap(img)
                 new_pix.fill(QtCore.Qt.transparent)
                 painter = QtGui.QPainter(new_pix)
-                painter.setOpacity(0.4)
+                painter.setOpacity(0.2)
                 painter.drawPixmap(QtCore.QPoint(), QtGui.QPixmap(img))
                 painter.drawPixmap(QtCore.QPoint(), QtGui.QPixmap(img))
                 painter.end()
@@ -112,11 +114,11 @@ def mostrarGuia(self, calibracion):
                 
     elif calibracion is True:
         
-        if self.calibracion_tarea[0] == 1:
+        if self.sesion.indice_tarea == 1:
             ubicacion_img = ubicaciones.UBICACION_TAREA1
-        elif self.calibracion_tarea[0] == 2:
+        elif self.sesion.indice_tarea == 2:
             ubicacion_img = ubicaciones.UBICACION_TAREA2
-        elif self.calibracion_tarea[0] == 3:
+        elif self.sesion.indice_tarea == 3:
             ubicacion_img = ubicaciones.UBICACION_TAREA3
     
         for i in range(0, 9):  
@@ -127,7 +129,7 @@ def mostrarGuia(self, calibracion):
                 new_pix = QtGui.QPixmap(img)
                 new_pix.fill(QtCore.Qt.transparent)
                 painter = QtGui.QPainter(new_pix)
-                painter.setOpacity(0.4)
+                painter.setOpacity(0.2)
                 painter.drawPixmap(QtCore.QPoint(), QtGui.QPixmap(img))
                 painter.drawPixmap(QtCore.QPoint(), QtGui.QPixmap(img))
                 painter.end()
