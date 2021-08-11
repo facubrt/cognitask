@@ -21,105 +21,123 @@
 ##
 ##  You should have received a copy of the GNU General Public License ####
 ##  along with Cognitask.  If not, see <https://www.gnu.org/licenses/>. ##
+# from PyQt5.QtCore import QPropertyAnimation
+import os
+from PyQt5 import QtCore, QtGui
+from PyQt5.QtWidgets import QMainWindow
 
 from .ui_aplicacion import Ui_BCIAplicacion
-from PyQt5.QtCore import QPropertyAnimation
-from PyQt5 import QtCore, QtWidgets
+import cognitask.common.constantes as constantes
 
-GLOBAL_STATE = 0
+# GLOBAL_STATE = 0
 
-class BCIAplicacion(QtWidgets.QMainWindow, Ui_BCIAplicacion):
-   
-# INICIALIZACION
-# ///////////////////////////////////////////////////////////
+class BCIAplicacion(QMainWindow, Ui_BCIAplicacion):
+    
     def __init__(self):
         super(BCIAplicacion, self).__init__()
-        self.setupUi(self)
-
-        self.maximizar_boton.clicked.connect(lambda: BCIAplicacion.maximize_restore(self))
-        self.minimizar_boton.clicked.connect(lambda: self.showMinimized())
-        self.cerrar_boton.clicked.connect(lambda: BCIAplicacion.cerrarAplicacion(self))
-        self.expandir_boton.clicked.connect(lambda: self.toggleMenu(310, True))
-
-        self.setWindowFlag(QtCore.Qt.FramelessWindowHint) # Frameless Window
-
-        def moveWindow(event):
-                if event.buttons() == QtCore.Qt.LeftButton and GLOBAL_STATE == 0:
-                        self.move(self.pos() + event.globalPos() - self.dragPos)
-                        self.dragPos = event.globalPos()
-                        event.accept()
-        
-        self.titlebar_frame.mouseMoveEvent = moveWindow
-
-# FUNCIONES DE INTERFAZ GENERAL
-# ///////////////////////////////////////////////////////////
-    def maximize_restore(self):
-        global GLOBAL_STATE
-        status = GLOBAL_STATE
-
-        # si no está maximizada
-        if status == 0:
-                self.showFullScreen()
-                GLOBAL_STATE = 1
-
-        else:
-                GLOBAL_STATE = 0
-                self.showNormal()
     
     def cerrarAplicacion(self):
-            self.Open = 0
-            self.close()
-  
-    def mousePressEvent(self, event):
-        self.dragPos = event.globalPos()
-
-    def toggleMenu(self, maxWidth, enable):
-            if enable:
-                width = self.right_frame.width()
-                heigth = self.bottom_frame.height()
-                maxHeigth = 150 # bottom frame
-                minHeight = 0 # bottom frame
-                standard = 0
-
-                if width == 0:
-                        widthExtended = maxWidth
-                        nueva_heigth = minHeight
-                        self.expandir_boton.setIcon(self.icon4)
-
-                else:
-                        widthExtended = standard
-                        nueva_heigth = maxHeigth
-                        self.expandir_boton.setIcon(self.icon3)
-                
-                self.animation = QPropertyAnimation(self.right_frame, b"minimumWidth")
-                self.animation_2 = QPropertyAnimation(self.bottom_frame,b"maximumHeight")
-                self.animation.setDuration(400)
-                self.animation_2.setDuration(400)
-                self.animation.setStartValue(width)
-                self.animation_2.setStartValue(heigth)
-                self.animation.setEndValue(widthExtended)
-                self.animation_2.setEndValue(nueva_heigth)
-                self.animation.setEasingCurve(QtCore.QEasingCurve.InOutQuart)
-                self.animation_2.setEasingCurve(QtCore.QEasingCurve.InOutQuart)
-                self.animation.start()
-                self.animation_2.start()
-        
-    def ocultar(self):
+        self.Open = 0
+        self.close()
+         
+    def ocultarMatriz(self):
         self.p3_frame.hide() 
     
-    def mostrar(self):
+    def mostrarMatriz(self):
         if self.Open == 0:
             self.Open = 1
             self.show()
         self.p3_frame.show()
-                
-# FUNCIONES DE INTERFAZ GENERAL
-# ///////////////////////////////////////////////////////////
-    def mostrarMatriz(self, mostrar):
         
-        if mostrar is True:
-                self.p3_frame.show()
-                print('mostrar true')
+    # MENSAJES
+    # ///////////////////////////////////////////////////////////
+    def mostrarMensajes(self, mensaje, estilo, temporal):
+        QtCore.QCoreApplication.processEvents()
+        self.feedback_label.setText(mensaje)
+        self.feedback_label.setStyleSheet(estilo)
+        self.feedback_label.show()
+        if temporal == True:
+            QtCore.QTimer.singleShot(2000, self.restablecerMensajes)
+            
+    def restablecerMensajes(self):
+        self.feedback_label.hide()
+        self.feedback_label.setStyleSheet(constantes.CSS_MSG_CORRECTO) # restaura valores por defecto   
+      
+    # PROGRESO
+    # ///////////////////////////////////////////////////////////    
+    def ui_iniciar_progreso(self, guia, cantidad_pasos, calibracion):
+        QtCore.QCoreApplication.processEvents()
+        if calibracion:
+            for i in range(0, cantidad_pasos):
+                self.progreso_lineal[i].setStyleSheet("")
+                self.progreso_grid[i].setStyleSheet("")   
         else:
-                self.p3_frame.hide()
-                print('mostrar false')
+            for i in range(0, 9):
+                if i < cantidad_pasos:
+                    if guia != 'Mantener':
+                        self.progreso_lineal[i].setPixmap(QtGui.QPixmap("img/target_v.png"))
+                        self.progreso_grid[i].setPixmap(QtGui.QPixmap("img/target_h.png"))
+                else:
+                    self.progreso_lineal[i].setPixmap(QtGui.QPixmap("img/bloqueado_v.png"))
+                    self.progreso_grid[i].setPixmap(QtGui.QPixmap("img/bloqueado_h.png"))   
+                self.progreso_lineal[i].setStyleSheet("")
+                self.progreso_grid[i].setStyleSheet("")
+        self.ui_siguiente_seleccion(0)
+
+    def ui_siguiente_seleccion(self, siguiente_seleccion):
+        QtCore.QCoreApplication.processEvents()
+        if siguiente_seleccion != 0:
+            self.progreso_lineal[siguiente_seleccion - 1].setStyleSheet("")
+            self.progreso_grid[siguiente_seleccion - 1].setStyleSheet("")
+                
+        self.progreso_lineal[siguiente_seleccion].setStyleSheet("border: 3px solid #23B59C;")
+        self.progreso_grid[siguiente_seleccion].setStyleSheet("border: 3px solid #23B59C;")
+    
+    def ui_mostrar_guia(self):
+        pass
+    
+    def ui_actualizar_progreso(self, tipo_tarea, sesion, calibracion):
+        QtCore.QCoreApplication.processEvents()
+        if calibracion is True:
+            if sesion.siguiente_seleccion < constantes.PASOS_CALIBRACION:
+                self.ui_siguiente_seleccion(sesion.siguiente_seleccion)
+            img = "img/paso_completado.png"
+            
+        else:
+            if sesion.siguiente_seleccion < sesion.cantidad_pasos:
+                self.ui_siguiente_seleccion(sesion.siguiente_seleccion)
+                
+            if tipo_tarea == 'Rompecabezas - mem. espacial':
+                # las imagenes utilizadas para memoria espacial llevan el sufijo - punto
+                if os.path.isfile(sesion.ubicacion_img + "/img" + str(sesion.siguiente_seleccion) + ".png"):
+                    extension = ".png"
+                else:
+                    extension = " - punto.png"
+                img = sesion.ubicacion_img + "/img" + str(sesion.siguiente_seleccion) + extension
+            else:
+                img = sesion.ubicacion_img + "/img" + str(sesion.imagen_seleccionada) + ".png"
+        
+        p = QtGui.QPixmap(img)
+        self.progreso_lineal[sesion.siguiente_seleccion - 1].setPixmap(QtGui.QPixmap(p))
+        self.progreso_grid[sesion.siguiente_seleccion - 1].setPixmap(QtGui.QPixmap(p))
+
+    def ui_pasar(self, sesion, tipo_tarea):
+        QtCore.QCoreApplication.processEvents()
+        if tipo_tarea == 'Palabras - al revés':
+            siguiente_seleccion = (sesion.cantidad_pasos + 1) - sesion.siguiente_seleccion
+        else:
+            siguiente_seleccion = sesion.siguiente_seleccion
+        
+        if sesion.siguiente_seleccion < sesion.cantidad_pasos:
+                self.ui_siguiente_seleccion(sesion.siguiente_seleccion)
+    
+        # las imagenes utilizadas para memoria espacial llevan el sufijo - punto
+        if os.path.isfile(sesion.ubicacion_img + "/img" + str(siguiente_seleccion) + ".png"):
+            extension = ".png"
+        else:
+            extension = " - punto.png"
+                    
+        img = sesion.ubicacion_img + "/img" + str(siguiente_seleccion) + extension
+        p = QtGui.QPixmap(img)
+        self.progreso_lineal[sesion.siguiente_seleccion - 1].setPixmap(QtGui.QPixmap(p))
+        self.progreso_grid[sesion.siguiente_seleccion - 1].setPixmap(QtGui.QPixmap(p))        

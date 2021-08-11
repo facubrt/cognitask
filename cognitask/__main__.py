@@ -1,4 +1,3 @@
-
 import inspect
 import os
 import sys
@@ -6,14 +5,24 @@ from PyQt5 import QtWidgets, QtGui
 
 import cognitask.common.constantes as constantes
 import cognitask.common.ubicaciones as ubicaciones
-from cognitask.views.splash import Splash
+import cognitask.common.procesos as procesos
+
+from cognitask.views.aplicacion import BCIAplicacion
+from cognitask.views.operador import BCIOperador
+
+from cognitask.models.BCI2000 import BCI2000
+from cognitask.models.sesion import Sesion
+
+from cognitask.controller.cognitask import Cognitask
+
 
 # FIX Problem for High DPI and Scale above 100%
 os.environ["QT_FONT_DPI"] = "96" 
 
 # MAIN
 # ///////////////////////////////////////////////////////////
-if __name__ == '__main__':
+
+def main():
     app = QtWidgets.QApplication(sys.argv)
     app.setWindowIcon(QtGui.QIcon('img/icon_cognitask.ico'))
     
@@ -31,8 +40,28 @@ if __name__ == '__main__':
     DIR_CTASK = os.path.dirname(DIR_MAIN)
     # cargo las rutas de los archivos de parametros y configuraciones por defecto
     ubicaciones.cargar(DIR_CTASK)
-    
-    splash = Splash()
-    splash.show()
 
+    #IMAGEN DE CARGA
+    splash_dir = DIR_CTASK + '\img\splash.png'
+    splash = QtWidgets.QSplashScreen(QtGui.QPixmap(splash_dir))
+    splash.show()
+    
+    #Instancio BCI2000, OPERADOR, APLICACION Y SESIÓN para pasarlo al controlador
+    bci = BCI2000()
+    operador = BCIOperador()
+    aplicacion = BCIAplicacion()
+    sesion = Sesion()
+    
+    # PROCESOS
+    # introduce P3Speller dentro del modulo de Aplicacion Cognitask
+    procesos.incorporarMatriz(aplicacion.p3_frame.winId())
+    # hace invisible los procesos de BCI2000
+    procesos.ocultarProcesos(bci)
+    
+    ctask = Cognitask(bci, sesion, operador, aplicacion)
+    splash.close()
+    
     sys.exit(app.exec_())
+
+if __name__ == '__main__':
+    main()
