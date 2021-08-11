@@ -15,10 +15,9 @@ from datetime import date
 import subprocess
 import os
 
-import cognitask.models.progreso as progreso
-import cognitask.models.parametros as parametros
-
+from cognitask.models.parametros import Parametros
 from cognitask.models.evaluacion_selecciones import EvaluacionSelecciones
+
 import cognitask.common.ubicaciones as ubicaciones
 import cognitask.common.constantes as constantes
 
@@ -60,7 +59,7 @@ class Cognitask():
         self.paciente = 'Paciente'
         self.tarea = 'Tarea'
         
-        self.orden_secuencia = list(range(1, 10))
+        #self.orden_secuencia = list(range(1, 10))
 
         # estados
         self.consultar_seleccion = True
@@ -151,8 +150,8 @@ class Cognitask():
             self.sesion.actualizar_tarea_calibracion(constantes.TAREA_TRES)
         self.tarea = self.sesion.tarea_calibracion
         
-        progreso.mostrarGuia(self, True)
-        parametros.aplicarSecuenciaCalibracion(self)
+        self.BCIAplicacion.ui_mostrar_guia_calibracion(self.sesion)
+        Parametros.aplicar_tarea_calibracion(self.sesion)
         self.bci.cargar_parametros(ubicaciones.CONFIG_CALIBRACION)
         # Refrezca la interfaz grafica evitando que se congele
         QtCore.QCoreApplication.processEvents()
@@ -162,7 +161,7 @@ class Cognitask():
         self.bci.cargar_parametros(ubicaciones.CONFIG_SECUENCIA)
         # se oculta la matriz antes de configurar para evitar los glitches visuales de BCI2000
         self.BCIAplicacion.ocultarMatriz()
-        parametros.aplicarNivel(self.BCIOperador, True)
+        Parametros.aplicar_nivel_calibracion()
 
         self.bci.cargar_parametros(ubicaciones.CONFIG_NIVEL)
 
@@ -263,11 +262,11 @@ class Cognitask():
         self.sesion.restablecer_selecciones()
 
         if self.BCIOperador.guia_visual != "Deshabilitada":
-            progreso.mostrarGuia(self, False)
+            self.BCIAplicacion.ui_mostrar_guia_terapia(self.sesion)
         else:
             self.BCIAplicacion.ui_iniciar_progreso(self.BCIOperador.guia_visual, self.sesion.cantidad_pasos, False)
             
-        parametros.aplicarSecuenciaTerapia(self)
+        Parametros.aplicar_tarea_terapia(self.sesion, self.BCIOperador.tipo_tarea)
         # se oculta la matriz antes de configurar para evitar los glitches visuales de BCI2000
         self.BCIAplicacion.ocultarMatriz()
         self.bci.cargar_parametros(ubicaciones.CONFIG_BASE)
@@ -277,7 +276,7 @@ class Cognitask():
         # Refrezca la interfaz grafica evitando que se congele
         QtCore.QCoreApplication.processEvents()
         self.bci.cargar_parametros(ubicaciones.CONFIG_SECUENCIA)
-        parametros.aplicarNivel(self.BCIOperador, False)
+        Parametros.aplicar_nivel_terapia(self.BCIOperador.nivel)
 
         self.bci.cargar_parametros(ubicaciones.CONFIG_NIVEL)
 
@@ -423,7 +422,7 @@ class Cognitask():
             
             if celda_seleccionada != 0 and self.consultar_seleccion == True:
                 # con esto puedo conocer que imagen se encuentra en este target (necesario debido al orden aleatorio)
-                imagen_seleccionada = self.orden_secuencia[celda_seleccionada - 1]
+                imagen_seleccionada = self.sesion.orden_secuencia[celda_seleccionada - 1]
                 self.sesion.actualizar_imagen_seleccionada(imagen_seleccionada)
                 # PROGRESO - REALIMENTACION
                 #############                
