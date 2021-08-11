@@ -1,86 +1,120 @@
 import os
-from PyQt5 import QtCore
 from datetime import date
+from PyQt5 import QtCore
 
-def escribirResumen(self, seccion, calibracion):
-    QtCore.QCoreApplication.processEvents()
-    path = self.sesion.ubicacion_datos + "/" + self.bci.paciente + "/resumen_sesiones.txt"
-    file_exists = os.path.isfile(path)
-    fout = open(path, "a")
+class Resumen():
     
-    if not file_exists:
-        header = "Resumen de todas las sesiones [" + self.bci.paciente + "]\n"
-        fout.write(header)
-    _escribirSeccion(self, seccion, calibracion, fout)
-    fout.close()
-    
-def _escribirSeccion(self, seccion, calibracion, fout):    
-    if seccion == "sesion":
+    def escribir_resumen(sesion, bci, operador, seccion, calibracion):
+        QtCore.QCoreApplication.processEvents()
+        path = sesion.ubicacion_datos + "/" + bci.paciente + "/resumen_sesiones.txt"
+        file_exists = os.path.isfile(path)
+        fout = open(path, "a")
+        if not file_exists:
+            header = "Resumen de todas las sesiones [" + bci.paciente + "]\n"
+            fout.write(header)
+        if seccion == 'sesion':
+            if calibracion:
+                Resumen.escribir_sesion_calibracion(fout, sesion.estado_sesion)
+            else:
+                Resumen.escribir_sesion_terapia(fout, sesion.estado_sesion, bci.matriz_clasificacion)
+        
+        elif seccion == 'corrida':
+            if calibracion:
+                Resumen.escribir_corrida_calibracion(fout, sesion.corrida, sesion.indice_tarea)
+            else:
+                Resumen.escribir_corrida_terapia(fout, sesion.corrida, operador.tipo_tarea, operador.nivel, sesion.ubicacion_img)
+        
+        elif seccion == 'resumen':
+            if calibracion:
+                Resumen.escribir_resumen_calibracion(fout, sesion.tiempo_sesion, sesion.selecciones_realizadas, sesion.actividad_completada)
+            else:    
+                Resumen.escribir_resumen_terapia(fout, sesion.tiempo_sesion, sesion.selecciones_realizadas, sesion.selecciones_correctas, sesion.selecciones_incorrectas, sesion.porcentaje_aciertos, sesion.actividad_completada)
+        fout.close()
+            
+    def escribir_sesion_terapia(fout, estado_sesion, matriz_clasificacion):
+        QtCore.QCoreApplication.processEvents()
         today = date.today()
         d = today.strftime("%d-%m-%y")
-        if calibracion is True and self.sesion.sesion_iniciada is False:
-            sesion = "\n--- Sesión del día " + d + " [CALIBRACIÓN] ---\n"
-            sesion = "\n---------------------------------------------" + \
-                sesion + "---------------------------------------------\n"
-            fout.write(sesion)
-            self.sesion.sesion_iniciada = True
-        elif calibracion is False and self.sesion.sesion_iniciada is False:
+        if estado_sesion == 'No iniciada':
             sesion = "\n--- Sesión del día " + d + " [TERAPIA] ---\n"
-            sesion = "\n-----------------------------------------" + \
-                sesion + "-----------------------------------------\n"
+            sesion = "\n-----------------------------------------" + sesion + "-----------------------------------------\n"
             fout.write(sesion)
             matriz_text = "\nMatriz de clasificación ---\n"
             fout.write(matriz_text)
             # me dice la matriz usada en la corrida
-            matriz = self.bci.matrizClasificacion
+            matriz = matriz_clasificacion
             for c in range(len(matriz)):
-                m = str(matriz[c][0]) + " " + str(matriz[c][1]) + " " + \
-                    str(matriz[c][2]) + " " + str(matriz[c][3]) + "\n"
+                m = str(matriz[c][0]) + " " + str(matriz[c][1]) + " " + str(matriz[c][2]) + " " + str(matriz[c][3]) + "\n"
                 fout.write(m)
-            self.sesion.sesion_iniciada = True
-
-    elif seccion == "corrida":
-        r = "\n--------------- Corrida R" + str(self.sesion.run).zfill(2) + "\n"
+            
+    def escribir_sesion_calibracion(fout, estado_sesion):
+        QtCore.QCoreApplication.processEvents()
+        today = date.today()
+        d = today.strftime("%d-%m-%y")
+        if estado_sesion == 'No iniciada':
+            sesion = "\n--- Sesión del día " + d + " [CALIBRACIÓN] ---\n"
+            sesion = "\n---------------------------------------------" + sesion + "---------------------------------------------\n"
+            fout.write(sesion)
+            
+    def escribir_corrida_terapia(fout, corrida, tipo_tarea, nivel, ubicacion_img):
+        QtCore.QCoreApplication.processEvents()
+        r = "\n--------------- Corrida R" + str(corrida).zfill(2) + "\n"
         fout.write(r)
-        if calibracion is True:
-            sec = "\n[Tarea Nro. " + str(self.sesion.indice_tarea) + "]\n"
-            fout.write(sec)
-        else:
-            modo = "\nModo ------- [" + \
-                self.BCIOperador.tipo_tarea + "]\n"
-            fout.write(modo)
-            if (self.BCIOperador.tipo_tarea.startswith("Rompecabezas")):
-                sec = "Imagen ----- [" + \
-                    os.path.basename(self.sesion.ubicacion_img) + "]\n"
-            elif (self.BCIOperador.tipo_tarea.startswith("Sucesiones")):
-                sec = "Actividad -- [" + \
-                    os.path.basename(self.sesion.ubicacion_img) + "]\n"
-            elif (self.BCIOperador.tipo_tarea.startswith("Palabras")):
-                sec = "Palabra ---- [" + \
-                    os.path.basename(self.sesion.ubicacion_img) + "]\n"
-            fout.write(sec)
-            n = "Nivel ------ [" + self.BCIOperador.nivel + "]\n"
-            fout.write(n)
-
-    elif seccion == "resumen":
+        
+        modo = "\nModo ------- [" + tipo_tarea + "]\n"
+        fout.write(modo)
+        if tipo_tarea.startswith("Rompecabezas"):
+            sec = "Imagen ----- [" + os.path.basename(ubicacion_img) + "]\n"
+        elif tipo_tarea.startswith("Sucesiones"):
+            sec = "Actividad -- [" + os.path.basename(ubicacion_img) + "]\n"
+        elif tipo_tarea.startswith("Palabras"):
+            sec = "Palabra ---- [" + os.path.basename(ubicacion_img) + "]\n"
+        fout.write(sec)
+        n = "Nivel ------ [" + nivel + "]\n"
+        fout.write(n)
+        
+    def escribir_corrida_calibracion(fout, corrida, indice_tarea):
+        QtCore.QCoreApplication.processEvents()
+        r = "\n--------------- Corrida R" + str(corrida).zfill(2) + "\n"
+        fout.write(r)
+        
+        sec = "\n[Tarea Nro. " + str(indice_tarea) + "]\n"
+        fout.write(sec)
+            
+    def escribir_resumen_terapia(fout, tiempo_sesion, selecciones_realizadas, selecciones_correctas, selecciones_incorrectas, porcentaje_aciertos, actividad_completada):
+        QtCore.QCoreApplication.processEvents()
         act = "\nACTIVIDAD INTERRUMPIDA -"
-        if self.sesion.actividad_completada is True:
+        if actividad_completada is True:
             act = "\nACTIVIDAD COMPLETADA ---"
         fout.write(act)
-        tiempo = "\nDuración ------[" + str(self.sesion.tiempo_sesion.minute).zfill(
-            2) + ' min ' + str(self.sesion.tiempo_sesion.second).zfill(2) + ' s' + "]"
+        tiempo = "\nDuración ------[" + str(tiempo_sesion.minute).zfill(2) + ' min ' + str(tiempo_sesion.second).zfill(2) + ' s' + "]"
         fout.write(tiempo)
-        selecciones = "\nSelecciones realizadas  [" + \
-            str(self.sesion.selecciones_realizadas).zfill(2) + "]"
+        selecciones = "\nSelecciones realizadas  [" + str(selecciones_realizadas).zfill(2) + "]"
         fout.write(selecciones)
-        correctas = "\nSelecciones correctas   [" + \
-            str(self.sesion.selecciones_correctas).zfill(2) + "]"
+        correctas = "\nSelecciones correctas   [" + str(selecciones_correctas).zfill(2) + "]"
         fout.write(correctas)
-        incorrectas = "\nSelecciones incorrectas [" + \
-            str(self.sesion.selecciones_incorrectas).zfill(2) + "]\n"
+        incorrectas = "\nSelecciones incorrectas [" + str(selecciones_incorrectas).zfill(2) + "]\n"
         fout.write(incorrectas)
-        aciertos = "\nPorcentaje de aciertos [" + \
-            str(self.sesion.porcentaje_aciertos) + "%]\n"
+        aciertos = "\nPorcentaje de aciertos [" + str(porcentaje_aciertos) + "%]\n"
         fout.write(aciertos)
+        observaciones = "\nObservaciones ----\n"
+        fout.write(observaciones)
+        
+    def escribir_resumen_calibracion(fout, tiempo_sesion, selecciones_realizadas, actividad_completada):
+        QtCore.QCoreApplication.processEvents()
+        act = "\nACTIVIDAD INTERRUMPIDA -"
+        if actividad_completada is True:
+            act = "\nACTIVIDAD COMPLETADA ---"
+        fout.write(act)
+        tiempo = "\nDuración ------[" + str(tiempo_sesion.minute).zfill(2) + ' min ' + str(tiempo_sesion.second).zfill(2) + ' s' + "]"
+        fout.write(tiempo)
+        selecciones = "\nSelecciones realizadas  [" + str(selecciones_realizadas).zfill(2) + "]"
+        fout.write(selecciones)
+        # correctas = "\nSelecciones correctas   [" + str(selecciones_correctas).zfill(2) + "]"
+        # fout.write(correctas)
+        # incorrectas = "\nSelecciones incorrectas [" + str(selecciones_incorrectas).zfill(2) + "]\n"
+        # fout.write(incorrectas)
+        # aciertos = "\nPorcentaje de aciertos [" + str(porcentaje_aciertos) + "%]\n"
+        # fout.write(aciertos)
         observaciones = "\nObservaciones ----\n"
         fout.write(observaciones)

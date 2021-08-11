@@ -43,6 +43,7 @@ class BCIOperador(QMainWindow, Ui_BCIOperador):
     # FUNCIONES DE INTERFAZ GENERAL
     # ///////////////////////////////////////////////////////////
     def configuracion_inicial(self):
+        QtCore.QCoreApplication.processEvents()
         self.configuracion_stacked_widget.setCurrentIndex(0)
         self.informacion_stacked_widget.setCurrentIndex(0)
         self.nueva_sesion_boton.setEnabled(False)
@@ -54,6 +55,7 @@ class BCIOperador(QMainWindow, Ui_BCIOperador):
         self.directorio_entrada.setPlaceholderText(ubicaciones.UBICACION_DATOS)
             
     def _deshabilitar_cambios(self):
+        QtCore.QCoreApplication.processEvents()
         self.comenzar_calibracion_boton.setText("Suspender")
         self.comenzar_terapia_boton.setText("Suspender")
         self.aplicar_terapia_boton.setEnabled(False)
@@ -75,6 +77,7 @@ class BCIOperador(QMainWindow, Ui_BCIOperador):
         self.guia_visual_opciones.setEnabled(False)
 
     def _habilitar_cambios(self):
+        QtCore.QCoreApplication.processEvents()
         self.comenzar_calibracion_boton.setText("Comenzar")
         self.comenzar_terapia_boton.setText("Comenzar")
         self.aplicar_terapia_boton.setEnabled(True)
@@ -97,6 +100,7 @@ class BCIOperador(QMainWindow, Ui_BCIOperador):
     # PAGINAS 
     # ///////////////////////////////////////////////////////////
     def ui_nueva_sesion_pagina (self):
+        QtCore.QCoreApplication.processEvents()
         # interfaz
         self.seleccion_calibracion_frame.setStyleSheet("background-color: rgb(38, 43, 50);")
         self.seleccion_nueva_sesion_frame.setStyleSheet("background-color: rgb(255, 255, 255);")
@@ -113,6 +117,7 @@ class BCIOperador(QMainWindow, Ui_BCIOperador):
         self._como_empezar(INDICE_NUEVA_SESION)
     
     def ui_calibracion_pagina(self):
+        QtCore.QCoreApplication.processEvents()
         # interfaz
         self.seleccion_calibracion_frame.setStyleSheet("background-color:rgb(255,255,255);")
         self.seleccion_nueva_sesion_frame.setStyleSheet("background-color: rgb(38, 43, 50);")
@@ -137,6 +142,7 @@ class BCIOperador(QMainWindow, Ui_BCIOperador):
         self._como_empezar(INDICE_CALIBRACION)
         
     def ui_terapia_pagina(self):
+        QtCore.QCoreApplication.processEvents()
         # interfaz
         self.seleccion_calibracion_frame.setStyleSheet("background-color: rgb(38, 43, 50);")
         self.seleccion_nueva_sesion_frame.setStyleSheet("background-color: rgb(38, 43, 50);")
@@ -166,11 +172,13 @@ class BCIOperador(QMainWindow, Ui_BCIOperador):
     # CALIBRACION
     # ///////////////////////////////////////////////////////////
     def ui_preparar_calibracion(self, paciente):
+        QtCore.QCoreApplication.processEvents()
         self.comenzar_terapia_boton.setEnabled(False)
         self.comenzar_calibracion_boton.setEnabled(True)
         self._mostrar_resumen(paciente, INDICE_RESUMEN)
         
     def ui_comenzar_calibracion(self, calibracion_tarea):
+        QtCore.QCoreApplication.processEvents()
         self._deshabilitar_cambios()
         if calibracion_tarea == 1:
                 self.calibracion_estado_1.setText(constantes.MSG_REALIZANDO_TAREA)
@@ -180,6 +188,7 @@ class BCIOperador(QMainWindow, Ui_BCIOperador):
                 self.calibracion_estado_3.setText(constantes.MSG_REALIZANDO_TAREA)
     
     def ui_suspender_calibracion(self, calibracion_tarea):
+        QtCore.QCoreApplication.processEvents()
         self._habilitar_cambios()
         if calibracion_tarea == 1:
                 self.calibracion_estado_1.setText(constantes.MSG_TAREA_SUSPENDIDA)
@@ -189,6 +198,7 @@ class BCIOperador(QMainWindow, Ui_BCIOperador):
                 self.calibracion_estado_3.setText(constantes.MSG_TAREA_SUSPENDIDA)
     
     def ui_finalizar_calibracion(self, calibracion_tarea):
+        QtCore.QCoreApplication.processEvents()
         self._habilitar_cambios()
         self.comenzar_calibracion_boton.setEnabled(False)
         p = QtGui.QPixmap("img/completado.png")
@@ -219,6 +229,7 @@ class BCIOperador(QMainWindow, Ui_BCIOperador):
         return self.guia_visual_opciones.currentText()
     
     def ui_aplicar_terapia(self, paciente):
+        QtCore.QCoreApplication.processEvents()
         self.comenzar_terapia_boton.setEnabled(True)
         self.comenzar_calibracion_boton.setEnabled(False)
         self._mostrar_resumen(paciente, INDICE_RESUMEN)
@@ -242,6 +253,7 @@ class BCIOperador(QMainWindow, Ui_BCIOperador):
         self.informacion_stacked_widget.setCurrentIndex(pagina)
     
     def ui_iniciar_resumen(self, modo, tarea):
+        QtCore.QCoreApplication.processEvents()
         self.modo_resumen_texto.setText(modo)
         self.actividad_resumen_titulo.setText('Tarea')
         if modo == 'Terapia':
@@ -256,6 +268,7 @@ class BCIOperador(QMainWindow, Ui_BCIOperador):
         self.estado_resumen_texto.setText('No iniciado')
         
     def ui_actualizar_selecciones(self, selecciones, correctas, incorrectas):
+        QtCore.QCoreApplication.processEvents()
         self.selecciones_resumen_texto.setText(str(selecciones))
         self.correctas_resumen_texto.setText(str(correctas))
         self.incorrectas_resumen_texto.setText(str(incorrectas))

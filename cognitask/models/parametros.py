@@ -9,7 +9,6 @@ from cognitask.common import ubicaciones
 
 
 def aplicarNivel(operador, calibracion):
-    # ver si faltan mas configuraciones para definir un nivel. Tal vez duracion de estimulo, etc
     QtCore.QCoreApplication.processEvents()
     fout = open("config/nivel.prm", "wt")
 
@@ -35,8 +34,9 @@ def aplicarSecuenciaTerapia(self):
     QtCore.QCoreApplication.processEvents()
     orden_secuencia = list(range(1, 10))
 
-    if self.sesion.cantidad_pasos < 9:
-        for i in range(self.sesion.cantidad_pasos, 9):
+    elementos = self.sesion.cantidad_pasos + self.sesion.cantidad_distractores
+    if elementos < 9:
+        for i in range(elementos, 9):
             orden_secuencia[i] = 0
 
     # escribimos el archivo de configuracion BCI2000
@@ -71,6 +71,8 @@ def aplicarSecuenciaTerapia(self):
             if orden_secuencia[i] != 0:
                 if os.path.isfile(self.sesion.ubicacion_img + "/img" + str(orden_secuencia[i]) + ".png"):
                     orden_img = lista[i] + img_path + "/img" + str(orden_secuencia[i]) + ".png % % "
+                elif os.path.isfile(self.sesion.ubicacion_img + "/distractor - img" + str(orden_secuencia[i]) + ".png"):
+                    orden_img = lista[i] + img_path + "/distractor%20-%20img" + str(orden_secuencia[i]) + ".png % % "
                 else:
                     orden_img = lista[i] + img_path + "/img" + str(orden_secuencia[i]) + "%20-%20punto.png % % "
             else:

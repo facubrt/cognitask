@@ -52,7 +52,7 @@ class BCIAplicacion(QMainWindow, Ui_BCIAplicacion):
     # MENSAJES
     # ///////////////////////////////////////////////////////////
     def mostrarMensajes(self, mensaje, estilo, temporal):
-        
+        QtCore.QCoreApplication.processEvents()
         self.feedback_label.setText(mensaje)
         self.feedback_label.setStyleSheet(estilo)
         self.feedback_label.show()
@@ -66,6 +66,7 @@ class BCIAplicacion(QMainWindow, Ui_BCIAplicacion):
     # PROGRESO
     # ///////////////////////////////////////////////////////////    
     def ui_iniciar_progreso(self, guia, cantidad_pasos, calibracion):
+        QtCore.QCoreApplication.processEvents()
         if calibracion:
             for i in range(0, cantidad_pasos):
                 self.progreso_lineal[i].setStyleSheet("")
@@ -84,6 +85,7 @@ class BCIAplicacion(QMainWindow, Ui_BCIAplicacion):
         self.ui_siguiente_seleccion(0)
 
     def ui_siguiente_seleccion(self, siguiente_seleccion):
+        QtCore.QCoreApplication.processEvents()
         if siguiente_seleccion != 0:
             self.progreso_lineal[siguiente_seleccion - 1].setStyleSheet("")
             self.progreso_grid[siguiente_seleccion - 1].setStyleSheet("")
@@ -95,6 +97,7 @@ class BCIAplicacion(QMainWindow, Ui_BCIAplicacion):
         pass
     
     def ui_actualizar_progreso(self, tipo_tarea, sesion, calibracion):
+        QtCore.QCoreApplication.processEvents()
         if calibracion is True:
             if sesion.siguiente_seleccion < constantes.PASOS_CALIBRACION:
                 self.ui_siguiente_seleccion(sesion.siguiente_seleccion)
@@ -119,7 +122,7 @@ class BCIAplicacion(QMainWindow, Ui_BCIAplicacion):
         self.progreso_grid[sesion.siguiente_seleccion - 1].setPixmap(QtGui.QPixmap(p))
 
     def ui_pasar(self, sesion, tipo_tarea):
-
+        QtCore.QCoreApplication.processEvents()
         if tipo_tarea == 'Palabras - al revés':
             siguiente_seleccion = (sesion.cantidad_pasos + 1) - sesion.siguiente_seleccion
         else:

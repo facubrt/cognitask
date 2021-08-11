@@ -19,22 +19,22 @@ class BCI2000(object):
     # ESTADOS
     # ///////////////////////////////////////////////////////////
     @property
-    def obtenerSeleccion(self):
+    def obtener_seleccion(self):
         return self.bci2000.GetStateVariable('SelectedTarget')
     
     @property # GETTER
-    def obtenerEstadoSistema(self):
+    def obtener_estado_sistema(self):
         return self.bci2000.GetSystemState()
     
     # PARAMETROS
     # ///////////////////////////////////////////////////////////
-    def cargarParametros(self, parametros):
+    def cargar_parametros(self, parametros):
         self.bci2000.LoadParametersRemote(parametros)
 
-    def aplicarConfiguracion(self):
+    def aplicar_configuracion(self):
         self.bci2000.SetConfig()
     
-    def cargarDatos(self, paciente, sesion, ubicacion_datos):
+    def cargar_datos(self, paciente, sesion, ubicacion_datos):
         self.bci2000.SubjectID = paciente
         self.bci2000.SessionID = sesion
         self.bci2000.DataDirectory = ubicacion_datos
@@ -44,7 +44,7 @@ class BCI2000(object):
         return self.bci2000.SubjectID
 
     @property # GETTER
-    def matrizClasificacion(self):
+    def matriz_clasificacion(self):
         return self.bci2000.GetMatrixParameter("Classifier")
 
     # CONTROL DE BCI
@@ -53,6 +53,7 @@ class BCI2000(object):
         self.bci2000.Start()
 
     def suspender(self):
+        #self.ejecutar("Wait for Suspended 5")
         self.bci2000.Stop()
 
     def ejecutar(self, comando):

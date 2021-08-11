@@ -41,10 +41,12 @@ def main():
     # cargo las rutas de los archivos de parametros y configuraciones por defecto
     ubicaciones.cargar(DIR_CTASK)
 
+    #IMAGEN DE CARGA
     splash_dir = DIR_CTASK + '\img\splash.png'
     splash = QtWidgets.QSplashScreen(QtGui.QPixmap(splash_dir))
     splash.show()
     
+    #Instancio BCI2000, OPERADOR, APLICACION Y SESIÓN para pasarlo al controlador
     bci = BCI2000()
     operador = BCIOperador()
     aplicacion = BCIAplicacion()
