@@ -13,6 +13,9 @@ __pycache__/
 LICENSE.txt
 
 # Carpetas
+config/
+calibracion/
+terapia/
 documentos/
 datos/
 ui/
