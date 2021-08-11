@@ -1,6 +1,16 @@
-import inspect
+### Cognitask ############################################################
+##########################################################################
+## Autor: Facundo Barreto ### facubrt@outlook.com ########################
+##                                                                      ##
+## Sistema para rehabilitación cognitiva basado en BCI por P300 ##########
+##                                                                      ##
+## Proyecto Final de Bioingeniería ### 2021 ##############################
+##########################################################################
+##########################################################################
+
 import os
 import sys
+import inspect
 from PyQt5 import QtWidgets, QtGui
 
 import cognitask.common.constantes as constantes

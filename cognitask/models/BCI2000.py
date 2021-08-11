@@ -14,7 +14,7 @@ class BCI2000(object):
         # inicializa los modulos de BCI2000
         self.bci2000.StartupModules(self.modulos)
         
-        self.bci_estado = 'Suspended'
+        self.estado = 'Suspended'
 
     # ESTADOS
     # ///////////////////////////////////////////////////////////

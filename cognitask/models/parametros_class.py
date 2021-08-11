@@ -37,12 +37,13 @@ class Parametros():
         fout.close()
     
     def aplicar_tarea_calibracion(sesion):
+        # Refrezca la interfaz grafica evitando que se congele
         QtCore.QCoreApplication.processEvents()
         fout = open("config/secuencia.prm", "wt")
         fout.write("Application:Speller%20Targets matrix TargetDefinitions= 9 { Display Enter Display%20Size Icon%20File Sound Intensified%20Icon } ")
         
         if sesion.indice_tarea == 1:
-            ubicacion_img = ubicaciones.INSTALL_DIR + "/calibracion/tarea 1"
+            sesion.ubicacion_img = ubicaciones.INSTALL_DIR + "/calibracion/tarea 1"
             # esto es necesario para BCI2000, ya que permite conocer como se ordenaran las imagenes en la matriz
             lista = constantes.LISTA_UNO
             orden_sec = constantes.ORDEN_UNO
@@ -61,7 +62,7 @@ class Parametros():
             text_to_spell = "Application:Speller string TextToSpell= " + constantes.TAREA_TRES + " // character or string to spell in offline copy mode"
             
         ubicacion_img = sesion.ubicacion_img.replace(' ', '%20')
-        # evita que la gui se cuelgue cuando se cargan los parametros
+        # Refrezca la interfaz grafica evitando que se congele
         QtCore.QCoreApplication.processEvents()
         for i in range(0, 9):
             orden_img = lista[i] + ubicacion_img + "/img" + str(orden_sec[i]) + ".png % % "
@@ -69,7 +70,7 @@ class Parametros():
         fout.write("// speller target properties\n")
         fout.write(text_to_spell)
         fout.close()
-        self.orden_secuencia = orden_sec
+        sesion.orden_secuencia = orden_sec
     
     def aplicar_tarea_terapia(sesion, tipo_tarea):
         QtCore.QCoreApplication.processEvents()

@@ -110,11 +110,5 @@ class Resumen():
         fout.write(tiempo)
         selecciones = "\nSelecciones realizadas  [" + str(selecciones_realizadas).zfill(2) + "]"
         fout.write(selecciones)
-        # correctas = "\nSelecciones correctas   [" + str(selecciones_correctas).zfill(2) + "]"
-        # fout.write(correctas)
-        # incorrectas = "\nSelecciones incorrectas [" + str(selecciones_incorrectas).zfill(2) + "]\n"
-        # fout.write(incorrectas)
-        # aciertos = "\nPorcentaje de aciertos [" + str(porcentaje_aciertos) + "%]\n"
-        # fout.write(aciertos)
         observaciones = "\nObservaciones ----\n"
         fout.write(observaciones)

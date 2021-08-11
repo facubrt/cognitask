@@ -1,27 +1,13 @@
-### Módulo de Aplicación #################################################
+### Cognitask ############################################################
 ##########################################################################
-## Autor: Facundo Barreto ### facubrt@gmail.com ##########################
-## 
-## BCI basada en P300 para rehabilitación cognitiva ######################
-## 
-## Proyecto Final de Bioingeniería ### 2020 ##############################
+## Autor: Facundo Barreto ### facubrt@outlook.com ########################
+##                                                                      ##
+## Sistema para rehabilitación cognitiva basado en BCI por P300 ##########
+##                                                                      ##
+## Proyecto Final de Bioingeniería ### 2021 ##############################
+##########################################################################
+##########################################################################
 
-### LICENCIA GPL #########################################################
-## This file is part of Cognitask. #######################################
-##
-##  Cognitask is free software: you can redistribute it and/or modify ####
-##  it under the terms of the GNU General Public License as published by #
-##  the Free Software Foundation, either version 3 of the License, or ####
-##  (at your option) any later version. ##################################
-##
-##  Cognitask is distributed in the hope that it will be useful, #########
-##  but WITHOUT ANY WARRANTY; without even the implied warranty of #######
-##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the ########
-##  GNU General Public License for more details. #########################
-##
-##  You should have received a copy of the GNU General Public License ####
-##  along with Cognitask.  If not, see <https://www.gnu.org/licenses/>. ##
-# from PyQt5.QtCore import QPropertyAnimation
 import os
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtWidgets import QMainWindow
