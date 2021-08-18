@@ -33,21 +33,30 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-            <li class="nav-item d-flex">
-              <a class="nav-link align-self-center text-dark" aria-current="page" href="#interfaz-profesional">Interfaz
-                Profesional</a>
+            
+            <li class="nav-item dropdown d-flex">
+              <a class="nav-link dropdown-toggle align-self-center text-dark" href="#" id="interfaz" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Interfaz
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="#interfaz-profesional">Profesional</a></li>
+                <li><a class="dropdown-item" href="#interfaz-paciente">Paciente</a></li>
+              </ul>
             </li>
-            <li class="nav-item d-flex">
-              <a class="nav-link align-self-center text-dark" href="#interfaz-paciente">Interfaz Paciente</a>
-            </li>
-            <li class="nav-item d-flex">
-              <a class="nav-link align-self-center text-dark" href="#evaluacion-funcionamiento">Evaluaciones</a>
-            </li>
-            <li class="nav-item d-flex">
-              <a class="nav-link align-self-center text-dark" href="#descarga">Descarga</a>
+            <li class="nav-item dropdown d-flex">
+              <a class="nav-link dropdown-toggle align-self-center text-dark" href="#" id="evaluaciones" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Evaluaciones
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="#evaluacion-funcionamiento">Funcionamiento</a></li>
+                <li><a class="dropdown-item" href="#evaluacion-desempenio">Desempeño</a></li>
+              </ul>
             </li>
             <li class="nav-item d-flex">
               <a class="nav-link align-self-center text-dark" href="#acerca-de">Acerca de</a>
+            </li>
+            <li class="nav-item d-flex">
+              <a class="nav-link align-self-center text-dark" href="#descarga">Descarga</a>
             </li>
           </ul>
         </div>
