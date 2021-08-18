@@ -106,7 +106,8 @@ class Sesion():
         self.__selecciones_realizadas = 0
         self.__selecciones_correctas = 0
         self.__selecciones_incorrectas = 0 
-        self.__porcentaje_aciertos = 0  
+        self.__porcentaje_aciertos = 0
+        self.__intentos = 0 
     
     def actualizar_selecciones_realizadas(self):
         self.__selecciones_realizadas += 1

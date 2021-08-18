@@ -8,16 +8,14 @@
 ##########################################################################
 ##########################################################################
 
-from cognitask.models.resumen import Resumen
+import os
+import subprocess
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QFileDialog
 from datetime import date
-import subprocess
-import os
-
 from cognitask.models.parametros import Parametros
-from cognitask.models.evaluacion_selecciones import EvaluacionSelecciones
-
+from cognitask.models.evaluacion import Evaluacion
+from cognitask.models.resumen import Resumen
 import cognitask.common.ubicaciones as ubicaciones
 import cognitask.common.constantes as constantes
 
@@ -424,37 +422,13 @@ class Cognitask():
                 # con esto puedo conocer que imagen se encuentra en este target (necesario debido al orden aleatorio)
                 imagen_seleccionada = self.sesion.orden_secuencia[celda_seleccionada - 1]
                 self.sesion.actualizar_imagen_seleccionada(imagen_seleccionada)
-                # PROGRESO - REALIMENTACION
-                #############                
+                                
                 # CALIBRACION
                 if calibracion:
-                    self.sesion.actualizar_selecciones_realizadas()
-                    self.BCIAplicacion.ui_actualizar_progreso(self.BCIOperador.tipo_tarea, self.sesion, calibracion)
-                    if self.sesion.siguiente_seleccion < constantes.PASOS_CALIBRACION:
-                        msg_calibracion = "Elige la letra " + self.sesion.tarea_calibracion[self.sesion.siguiente_seleccion]
-                        self.BCIAplicacion.mostrarMensajes(msg_calibracion, constantes.CSS_MSG_CALIBRACION, True)
-                        self.sesion.actualizar_siguiente_seleccion()
-                    else:
-                        self.BCIAplicacion.mostrarMensajes(constantes.MSG_TERMINADO, constantes.CSS_MSG_TERMINADO, False)
-                        self.finalizar_calibracion()
-                
+                    self.actualizar_selecciones_calibracion()
                 # TERAPIA
                 else:
-                    # ROMPECABEZAS - MEM. ESPACIAL y PALABRAS - REVES tienen algoritmos de evaluacion diferentes
-                    if self.BCIOperador.tipo_tarea == 'Rompecabezas - mem. espacial':
-                        seleccion_correcta = EvaluacionSelecciones.evaluar_rompecabezas_me(self)
-                    elif self.BCIOperador.tipo_tarea == 'Palabras - al revés':
-                        seleccion_correcta = EvaluacionSelecciones.evaluar_palabras_reves(self)
-                    else:
-                        seleccion_correcta = EvaluacionSelecciones.evaluar_seleccion(self)
-                    
-                    if seleccion_correcta:
-                        self.seleccion_correcta(calibracion)
-                    else:
-                        self.seleccion_incorrecta(calibracion)
-                        
-                    self.BCIOperador.ui_actualizar_selecciones(self.sesion.selecciones_realizadas, self.sesion.selecciones_correctas, self.sesion.selecciones_incorrectas)
-                ###########
+                    self.actualizar_selecciones_terapia()
                 
                 self.consultar_seleccion = False
 
@@ -464,7 +438,41 @@ class Cognitask():
 
     # SELECCIONES
     # ///////////////////////////////////////////////////////////
-    def seleccion_correcta(self, calibracion):
+    def actualizar_selecciones_calibracion(self):
+        '''------------
+        DOCUMENTACIÓN -
+        Actualiza las selecciones realizadas durante la tarea de calibracion.
+        - Actualiza las selecciones realizadas sin evaluar las mismas
+        ------------'''
+        self.actualizar_selecciones_calibracion()
+        self.sesion.actualizar_selecciones_realizadas()
+        self.BCIAplicacion.ui_actualizar_progreso(self.BCIOperador.tipo_tarea, self.sesion, True)
+        if self.sesion.siguiente_seleccion < constantes.PASOS_CALIBRACION:
+            msg_calibracion = "Elige la letra " + self.sesion.tarea_calibracion[self.sesion.siguiente_seleccion]
+            self.BCIAplicacion.mostrarMensajes(msg_calibracion, constantes.CSS_MSG_CALIBRACION, True)
+            self.sesion.actualizar_siguiente_seleccion()
+        else:
+            self.BCIAplicacion.mostrarMensajes(constantes.MSG_TERMINADO, constantes.CSS_MSG_TERMINADO, False)
+            self.finalizar_calibracion()
+                
+    def actualizar_selecciones_terapia(self):
+        '''------------
+        DOCUMENTACIÓN -
+        Actualiza las selecciones realizadas durante la tarea de terapia y evalua si son correctas o incorrectas.
+        - Evalua la seleccion segun el tipo de tarea
+        - Actualiza las selecciones realizadas en Operador
+        ------------'''
+        # ROMPECABEZAS - MEM. ESPACIAL y PALABRAS - REVES tienen algoritmos de evaluacion diferentes
+        seleccion_correcta = Evaluacion.evaluar_seleccion(self.BCIOperador.tipo_tarea, self.sesion)
+        
+        if seleccion_correcta:
+            self.seleccion_correcta()
+        else:
+            self.seleccion_incorrecta()
+            
+        self.BCIOperador.ui_actualizar_selecciones(self.sesion.selecciones_realizadas, self.sesion.selecciones_correctas, self.sesion.selecciones_incorrectas)
+    
+    def seleccion_correcta(self):
         '''------------
         DOCUMENTACIÓN -
         Determina el comportamiento del sistema cuando se realiza una seleccion correcta.
@@ -476,7 +484,7 @@ class Cognitask():
         ------------'''
         self.sesion.actualizar_selecciones_correctas()
         self.sesion.restablecer_intentos()
-        self.BCIAplicacion.ui_actualizar_progreso(self.BCIOperador.tipo_tarea, self.sesion, calibracion)
+        self.BCIAplicacion.ui_actualizar_progreso(self.BCIOperador.tipo_tarea, self.sesion, False)
         
         if self.sesion.siguiente_seleccion < self.sesion.cantidad_pasos:
             self.BCIAplicacion.mostrarMensajes(constantes.MSG_CORRECTO, constantes.CSS_MSG_CORRECTO, True)
@@ -485,7 +493,7 @@ class Cognitask():
         else:
             self.finalizar_terapia()
             
-    def seleccion_incorrecta(self, calibracion):
+    def seleccion_incorrecta(self):
         '''------------
         DOCUMENTACIÓN -
         Determina el comportamiento del sistema cuando se realiza una seleccion incorrecta.
