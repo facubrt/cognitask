@@ -64,14 +64,7 @@ class Sesion():
     
     def actualizar_corrida(self):
         self.__corrida += 1
-    
-    @property # GETTER
-    def estado_sesion(self):
-        return self.__estado_sesion
-    
-    def actualizar_estado_sesion(self, estado):
-        self.__estado_sesion = estado
-    
+        
     @property # GETTER
     def ubicacion_datos(self):
         return self.__ubicacion_datos

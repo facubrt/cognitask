@@ -168,9 +168,8 @@ class Cognitask():
         self.BCIAplicacion.mostrarMatriz()
         self.BCIOperador.ui_preparar_calibracion(self.paciente)
         self.BCIOperador.ui_iniciar_resumen(CALIBRACION, self.tarea)
-        
         Resumen.escribir_resumen(self.sesion, self.bci, self.BCIOperador, "sesion", True)
-        self.sesion.actualizar_estado_sesion('Preparado')
+        self.sesion.actualizar_estado('Preparado')
 
     def comenzar_calibracion(self):
         '''------------
@@ -286,10 +285,9 @@ class Cognitask():
         self.bci.aplicar_configuracion()
         self.BCIAplicacion.mostrarMatriz()
         self.BCIOperador.ui_aplicar_terapia(self.paciente)
-        self.sesion.actualizar_estado("Preparado")
         self.BCIOperador.ui_iniciar_resumen(TERAPIA, self.tarea)
         Resumen.escribir_resumen(self.sesion, self.bci, self.BCIOperador, "sesion", False)
-        self.sesion.actualizar_estado_sesion('Preparado')
+        self.sesion.actualizar_estado('Preparado')
 
     def comenzar_terapia(self):
         '''------------
@@ -444,7 +442,7 @@ class Cognitask():
         Actualiza las selecciones realizadas durante la tarea de calibracion.
         - Actualiza las selecciones realizadas sin evaluar las mismas
         ------------'''
-        self.actualizar_selecciones_calibracion()
+    
         self.sesion.actualizar_selecciones_realizadas()
         self.BCIAplicacion.ui_actualizar_progreso(self.BCIOperador.tipo_tarea, self.sesion, True)
         if self.sesion.siguiente_seleccion < constantes.PASOS_CALIBRACION:

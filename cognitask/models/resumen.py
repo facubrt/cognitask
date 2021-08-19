@@ -10,13 +10,13 @@ class Resumen():
         file_exists = os.path.isfile(path)
         fout = open(path, "a")
         if not file_exists:
-            header = "Resumen de todas las sesiones [" + bci.paciente + "]\n"
+            header = "RESUMEN DE TODAS LAS SESIONES [" + bci.paciente + "]\n"
             fout.write(header)
         if seccion == 'sesion':
             if calibracion:
-                Resumen.escribir_sesion_calibracion(fout, sesion.estado_sesion)
+                Resumen.escribir_sesion_calibracion(fout, sesion.estado)
             else:
-                Resumen.escribir_sesion_terapia(fout, sesion.estado_sesion, bci.matriz_clasificacion)
+                Resumen.escribir_sesion_terapia(fout, sesion.estado, bci.matriz_clasificacion)
         
         elif seccion == 'corrida':
             if calibracion:
