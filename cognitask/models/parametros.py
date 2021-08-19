@@ -1,3 +1,15 @@
+### Cognitask ############################################################
+##########################################################################
+## Autor: Facundo Barreto ### facubrt@outlook.com ########################
+##                                                                      ##
+## Sistema para rehabilitación cognitiva basado en BCI por P300 ##########
+##                                                                      ##
+## Pagina del proyecto ### https://facubrt.github.io/cognitask ###########
+##                                                                      ##
+## Proyecto Final de Bioingeniería ### 2021 ##############################
+##########################################################################
+##########################################################################
+
 import random
 import os
 from PyQt5 import QtCore
@@ -7,6 +19,11 @@ from cognitask.common import ubicaciones
 class Parametros():
     
     def aplicar_nivel_terapia(nivel_seleccionado):
+        '''------------
+        DOCUMENTACIÓN -
+        Escribe los parametros correspondientes al nivel seleccionado durante una sesion de terapia.
+        - Modifica el documento nivel.prm ubicado en  cognitask/config
+        ------------'''
         # Refrezca la interfaz grafica evitando que se congele
         QtCore.QCoreApplication.processEvents()
         fout = open("config/nivel.prm", "wt")
@@ -25,6 +42,11 @@ class Parametros():
         fout.close()
     
     def aplicar_nivel_calibracion():
+        '''------------
+        DOCUMENTACIÓN -
+        Escribe los parametros correspondientes al nivel seleccionado durante una sesion de calibracion.
+        - Modifica el documento nivel.prm ubicado en  cognitask/config
+        ------------'''
         # Refrezca la interfaz grafica evitando que se congele
         QtCore.QCoreApplication.processEvents()
         fout = open("config/nivel.prm", "wt")
@@ -38,6 +60,12 @@ class Parametros():
         fout.close()
     
     def aplicar_tarea_calibracion(sesion):
+        '''------------
+        DOCUMENTACIÓN -
+        Escribe los parametros correspondientes a la tarea seleccionada durante una sesion de calibracion.
+        - Modifica el documento secuencia.prm ubicado en  cognitask/config
+        - Utiliza tres tareas preestablecidas ubicadas en cognitask/calibracion
+        ------------'''
         # Refrezca la interfaz grafica evitando que se congele
         QtCore.QCoreApplication.processEvents()
         fout = open("config/secuencia.prm", "wt")
@@ -74,6 +102,12 @@ class Parametros():
         sesion.orden_secuencia = orden_sec
     
     def aplicar_tarea_terapia(sesion, tipo_tarea):
+        '''------------
+        DOCUMENTACIÓN -
+        Escribe los parametros correspondientes al nivel seleccionado durante una sesion de terapia.
+        - Modifica el documento secuencia.prm ubicado en  cognitask/config
+        - Distribuye las imagenes de la tarea seleccionada en forma aleatoria
+        ------------'''
         # Refrezca la interfaz grafica evitando que se congele
         QtCore.QCoreApplication.processEvents()
         orden_secuencia = list(range(1, 10))

@@ -4,6 +4,8 @@
 ##                                                                      ##
 ## Sistema para rehabilitación cognitiva basado en BCI por P300 ##########
 ##                                                                      ##
+## Pagina del proyecto ### https://facubrt.github.io/cognitask ###########
+##                                                                      ##
 ## Proyecto Final de Bioingeniería ### 2021 ##############################
 ##########################################################################
 ##########################################################################
@@ -21,16 +23,32 @@ import cognitask.common.ubicaciones as ubicaciones
 class BCIAplicacion(QMainWindow, Ui_BCIAplicacion):
     
     def __init__(self):
+        '''------------
+        DOCUMENTACIÓN -
+        Inicializa el modulo de Aplicacion (Interfaz de usuario Paciente) de Cognitask.
+        ------------'''
         super(BCIAplicacion, self).__init__()
     
     def cerrarAplicacion(self):
+        '''------------
+        DOCUMENTACIÓN -
+        Cierra el modulo de Aplicacion (Interfaz de usuario Paciente) de Cognitask.
+        ------------'''
         self.Open = 0
         self.close()
          
     def ocultarMatriz(self):
+        '''------------
+        DOCUMENTACIÓN -
+        Oculta la matriz de estimulacion en el modulo de Aplicacion (Interfaz de usuario Paciente) de Cognitask.
+        ------------'''
         self.p3_frame.hide() 
     
     def mostrarMatriz(self):
+        '''------------
+        DOCUMENTACIÓN -
+        Muestra la matriz de estimulacion en el modulo de Aplicacion (Interfaz de usuario Paciente) de Cognitask.
+        ------------'''
         if self.Open == 0:
             self.Open = 1
             self.show()
@@ -39,6 +57,11 @@ class BCIAplicacion(QMainWindow, Ui_BCIAplicacion):
     # MENSAJES
     # ///////////////////////////////////////////////////////////
     def mostrarMensajes(self, mensaje, estilo, temporal):
+        '''------------
+        DOCUMENTACIÓN -
+        Muestra el area de mensaje en el modulo de Aplicacion (Interfaz de usuario Paciente) de Cognitask.
+        - Permite que este area sea solo visible por un tiempo
+        ------------'''
         QtCore.QCoreApplication.processEvents()
         self.feedback_label.setText(mensaje)
         self.feedback_label.setStyleSheet(estilo)
@@ -47,20 +70,20 @@ class BCIAplicacion(QMainWindow, Ui_BCIAplicacion):
             QtCore.QTimer.singleShot(2000, self.restablecerMensajes)
             
     def restablecerMensajes(self):
+        '''------------
+        DOCUMENTACIÓN -
+        Restablece el area de mensaje en el modulo de Aplicacion (Interfaz de usuario Paciente) de Cognitask.
+        ------------'''
         self.feedback_label.hide()
         self.feedback_label.setStyleSheet(constantes.CSS_MSG_CORRECTO) # restaura valores por defecto   
       
     # PROGRESO
     # ///////////////////////////////////////////////////////////    
-    def _indicar_siguiente(self, siguiente_seleccion):
-        if siguiente_seleccion != 0:
-            self.progreso_lineal[siguiente_seleccion - 1].setStyleSheet("")
-            self.progreso_grid[siguiente_seleccion - 1].setStyleSheet("")
-                
-        self.progreso_lineal[siguiente_seleccion].setStyleSheet("border: 3px solid #23B59C;")
-        self.progreso_grid[siguiente_seleccion].setStyleSheet("border: 3px solid #23B59C;")
-    
     def ui_iniciar_progreso(self, guia, cantidad_pasos, calibracion):
+        '''------------
+        DOCUMENTACIÓN -
+        Inicia el progreso en el modulo de Aplicacion (Interfaz de usuario Paciente) de Cognitask.
+        ------------'''
         QtCore.QCoreApplication.processEvents()
         if calibracion:
             for i in range(0, cantidad_pasos):
@@ -80,6 +103,11 @@ class BCIAplicacion(QMainWindow, Ui_BCIAplicacion):
         self.ui_siguiente_seleccion(0)
 
     def ui_siguiente_seleccion(self, siguiente_seleccion):
+        '''------------
+        DOCUMENTACIÓN -
+        Indica la seleccion siguiente en el area de progreso en el modulo de Aplicacion (Interfaz de usuario Paciente) de Cognitask.
+        - Marca con un borde la seleccion siguiente
+        ------------'''
         QtCore.QCoreApplication.processEvents()
         if siguiente_seleccion != 0:
             self.progreso_lineal[siguiente_seleccion - 1].setStyleSheet("")
@@ -89,6 +117,11 @@ class BCIAplicacion(QMainWindow, Ui_BCIAplicacion):
         self.progreso_grid[siguiente_seleccion].setStyleSheet("border: 3px solid #23B59C;")
     
     def ui_mostrar_guia_calibracion(self, sesion):
+        '''------------
+        DOCUMENTACIÓN -
+        Muestra la guia en el area de progreso para una sesion de calibracion.
+        - Muestra el orden correcto de las imagenes antes de comenzar con la estimulacion visual
+        ------------'''
         if sesion.indice_tarea == 1:
             ubicacion_img = ubicaciones.UBICACION_TAREA1
         elif sesion.indice_tarea == 2:
@@ -118,9 +151,15 @@ class BCIAplicacion(QMainWindow, Ui_BCIAplicacion):
                 self.progreso_lineal[i].setPixmap(QtGui.QPixmap("img/bloqueado_v.png"))
                 self.progreso_grid[i].setPixmap(QtGui.QPixmap("img/bloqueado_h.png")) 
         
-        self._indicar_siguiente(0) 
+        self.ui_siguiente_seleccion(0) 
     
     def ui_mostrar_guia_terapia(self, sesion):
+        '''------------
+        DOCUMENTACIÓN -
+        Muestra la guia en el area de progreso para una sesion de terapia.
+        - Muestra el orden correcto de las imagenes antes de comenzar con la estimulacion visual.
+        - Permite mantener la guia durante la realizacion de la tarea
+        ------------'''
          
         for i in range(0, 9):
             self.progreso_lineal[i].setStyleSheet("")
@@ -151,9 +190,14 @@ class BCIAplicacion(QMainWindow, Ui_BCIAplicacion):
                 self.progreso_lineal[i].setPixmap(QtGui.QPixmap("img/bloqueado_v.png"))
                 self.progreso_grid[i].setPixmap(QtGui.QPixmap("img/bloqueado_h.png"))  
         
-        self._indicar_siguiente(0) 
+        self.ui_siguiente_seleccion(0) 
     
     def ui_actualizar_progreso(self, tipo_tarea, sesion, calibracion):
+        '''------------
+        DOCUMENTACIÓN -
+        Actualiza el progreso de la tarea.
+        - Carga la imagen seleccionada en el area de progreso
+        ------------'''
         QtCore.QCoreApplication.processEvents()
         if calibracion is True:
             if sesion.siguiente_seleccion < constantes.PASOS_CALIBRACION:
@@ -179,6 +223,11 @@ class BCIAplicacion(QMainWindow, Ui_BCIAplicacion):
         self.progreso_grid[sesion.siguiente_seleccion - 1].setPixmap(QtGui.QPixmap(p))
 
     def ui_pasar(self, sesion, tipo_tarea):
+        '''------------
+        DOCUMENTACIÓN -
+        Actualiza el area de progreso luego de equivocarse un numero de intentos determinados.
+        - Pasa a la siguiente seleccion.
+        ------------'''
         QtCore.QCoreApplication.processEvents()
         if tipo_tarea == 'Palabras - al revés':
             siguiente_seleccion = (sesion.cantidad_pasos + 1) - sesion.siguiente_seleccion

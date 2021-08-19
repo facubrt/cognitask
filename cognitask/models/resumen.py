@@ -1,3 +1,15 @@
+### Cognitask ############################################################
+##########################################################################
+## Autor: Facundo Barreto ### facubrt@outlook.com ########################
+##                                                                      ##
+## Sistema para rehabilitación cognitiva basado en BCI por P300 ##########
+##                                                                      ##
+## Pagina del proyecto ### https://facubrt.github.io/cognitask ###########
+##                                                                      ##
+## Proyecto Final de Bioingeniería ### 2021 ##############################
+##########################################################################
+##########################################################################
+
 import os
 from datetime import date
 from PyQt5 import QtCore
@@ -5,6 +17,12 @@ from PyQt5 import QtCore
 class Resumen():
     
     def escribir_resumen(sesion, bci, operador, seccion, calibracion):
+        '''------------
+        DOCUMENTACIÓN -
+        Escribe el documento resumen_sesiones.txt en la carpeta del paciente.
+        - Escribe la seccion indicada, la cual puede ser SESION, CORRIDA, RESUMEN
+        ------------'''
+        # Refrezca la interfaz grafica evitando que se congele
         QtCore.QCoreApplication.processEvents()
         path = sesion.ubicacion_datos + "/" + bci.paciente + "/resumen_sesiones.txt"
         file_exists = os.path.isfile(path)
@@ -32,6 +50,12 @@ class Resumen():
         fout.close()
             
     def escribir_sesion_terapia(fout, estado_sesion, matriz_clasificacion):
+        '''------------
+        DOCUMENTACIÓN -
+        Escribe la seccion SESION en el documento resumen_sesiones.txt en la carpeta del paciente.
+        - Indica el tipo de sesion (TERAPIA) y la fecha de la misma
+        ------------'''
+        # Refrezca la interfaz grafica evitando que se congele
         QtCore.QCoreApplication.processEvents()
         today = date.today()
         d = today.strftime("%d-%m-%y")
@@ -48,6 +72,12 @@ class Resumen():
                 fout.write(m)
             
     def escribir_sesion_calibracion(fout, estado_sesion):
+        '''------------
+        DOCUMENTACIÓN -
+        Escribe la seccion SESION en el documento resumen_sesiones.txt en la carpeta del paciente.
+        - Indica el tipo de sesion (CALIBRACION) y la fecha de la misma
+        ------------'''
+        # Refrezca la interfaz grafica evitando que se congele
         QtCore.QCoreApplication.processEvents()
         today = date.today()
         d = today.strftime("%d-%m-%y")
@@ -57,6 +87,14 @@ class Resumen():
             fout.write(sesion)
             
     def escribir_corrida_terapia(fout, corrida, tipo_tarea, nivel, ubicacion_img):
+        '''------------
+        DOCUMENTACIÓN -
+        Escribe la seccion CORRIDA para una sesion de terapia en el documento resumen_sesiones.txt en la carpeta del paciente.
+        - Indica el numero de corrida
+        - Indica el tipo de tarea utilizada
+        - Indica el nivel
+        ------------'''
+        # Refrezca la interfaz grafica evitando que se congele
         QtCore.QCoreApplication.processEvents()
         r = "\n--------------- Corrida R" + str(corrida).zfill(2) + "\n"
         fout.write(r)
@@ -74,6 +112,13 @@ class Resumen():
         fout.write(n)
         
     def escribir_corrida_calibracion(fout, corrida, indice_tarea):
+        '''------------
+        DOCUMENTACIÓN -
+        Escribe la seccion CORRIDA para una sesion de calibracion en el documento resumen_sesiones.txt en la carpeta del paciente.
+        - Indica el numero de corrida
+        - Indica el numero de tarea realizada
+        ------------'''
+        # Refrezca la interfaz grafica evitando que se congele
         QtCore.QCoreApplication.processEvents()
         r = "\n--------------- Corrida R" + str(corrida).zfill(2) + "\n"
         fout.write(r)
@@ -82,6 +127,15 @@ class Resumen():
         fout.write(sec)
             
     def escribir_resumen_terapia(fout, tiempo_sesion, selecciones_realizadas, selecciones_correctas, selecciones_incorrectas, porcentaje_aciertos, actividad_completada):
+        '''------------
+        DOCUMENTACIÓN -
+        Escribe la seccion RESUMEN para una sesion de terapia en el documento resumen_sesiones.txt en la carpeta del paciente.
+        - Indica el estado de la tarea
+        - Indica las selecciones realizadas, correctas e incorrectas
+        - Indica la duracion de la tarea
+        - Indica el porcentaje de aciertos
+        ------------'''
+        # Refrezca la interfaz grafica evitando que se congele
         QtCore.QCoreApplication.processEvents()
         act = "\nACTIVIDAD INTERRUMPIDA -"
         if actividad_completada is True:
@@ -101,6 +155,14 @@ class Resumen():
         fout.write(observaciones)
         
     def escribir_resumen_calibracion(fout, tiempo_sesion, selecciones_realizadas, actividad_completada):
+        '''------------
+        DOCUMENTACIÓN -
+        Escribe la seccion RESUMEN para una sesion de calibracion en el documento resumen_sesiones.txt en la carpeta del paciente.
+        - Indica el estado de la tarea
+        - Indica la duracion de la tarea
+        - Indica las selecciones realizadas
+        ------------'''
+        # Refrezca la interfaz grafica evitando que se congele
         QtCore.QCoreApplication.processEvents()
         act = "\nACTIVIDAD INTERRUMPIDA -"
         if actividad_completada is True:

@@ -4,6 +4,8 @@
 ##                                                                      ##
 ## Sistema para rehabilitación cognitiva basado en BCI por P300 ##########
 ##                                                                      ##
+## Pagina del proyecto ### https://facubrt.github.io/cognitask ###########
+##                                                                      ##
 ## Proyecto Final de Bioingeniería ### 2021 ##############################
 ##########################################################################
 ##########################################################################
@@ -442,7 +444,6 @@ class Cognitask():
         Actualiza las selecciones realizadas durante la tarea de calibracion.
         - Actualiza las selecciones realizadas sin evaluar las mismas
         ------------'''
-    
         self.sesion.actualizar_selecciones_realizadas()
         self.BCIAplicacion.ui_actualizar_progreso(self.BCIOperador.tipo_tarea, self.sesion, True)
         if self.sesion.siguiente_seleccion < constantes.PASOS_CALIBRACION:
