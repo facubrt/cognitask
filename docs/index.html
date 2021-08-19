@@ -223,11 +223,52 @@
               <h2 class="display-6 fw-bold mb-4 text-white">Descarga
               </h2>
               <p class="small mb-4 text-white">Descarga Cognitask en su versión R210.</p>
-              <a href="https://github.com/facubrt/cognitask/releases/download/R210/Instalar.Cognitask.R210.exe"
-                class="btn btn-primary">Descargar</a>
+              <!-- <a href="https://github.com/facubrt/cognitask/releases/download/R210/Instalar.Cognitask.R210.exe"
+                class="btn btn-primary">Descargar</a> -->
+                <!-- Button trigger modal -->
+              <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ModalDescarga">
+                Descargar
+              </button>
+
             </div>
           </div>
           <div class="col-lg-5 d-flex">
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modal descarga -->
+    <div class="modal fade" id="ModalDescarga" tabindex="-1" aria-labelledby="ModalDescargaLabel" aria-hidden="true">
+      <div class="modal-lg modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          
+          <div class="modal-body p-0">
+            <div class="row align-items-stretch">
+              
+              <div class="col bg-descarga px-4 d-none d-lg-block rounded-start">
+
+              </div>
+              <div class="col px-5 py-4">
+                <h4 class="fw-bold text-center py-4">Descarga Cognitask</h4>
+                <form action="#" id="form">
+                  <select class="form-select" id="opcion" aria-label="Default select example">
+                    <option selected>Selecciona una versión...</option>
+                    <option value="R210">Cognitask R210</option>
+                    <option value="R212">Cognitask R212</option>
+                  </select>
+                  <p class="text-licencia pt-4">Cognitask es accesible bajo la licencia GNU Licencia Pública General. Como consecuencia, la utilización y distribución de Cognitask es protegida por la misma licencia GPL.</p>
+                  <div class="form-check">
+                    <input type="checkbox" id="acuerdo" class="form-check-input" name="licencia">
+                    <label for="licencia" class="form-check-label">Estoy de acuerdo</label>
+                  </div>
+                  <p id="error" class="pt-2 small text-danger invisible">Selecciona una de las versiones de Cognitask</p>
+                  <button type="button" class="btn bg-light me-2" data-bs-dismiss="modal">Cancelar</button>
+                  <button id="boton-descarga" type="submit" href="#" class= "btn btn-primary ms-2">Descargar</button>
+                  
+                </form>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -292,6 +333,7 @@
     integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
     crossorigin="anonymous"></script>
   <script src="https://kit.fontawesome.com/ffec4ec2ed.js" crossorigin="anonymous"></script>
+  <script src="script.js"></script>
 </body>
 
 </html>

@@ -9,6 +9,10 @@ body {
     color: var(--dark);
 }
 
+.text-licencia {  
+    font-size: 8pt;
+}
+
 .img-rounded {
     border-radius: 0px 10px 10px 0px ;
 }
@@ -50,6 +54,11 @@ body {
 
 .bg-primary {
     background-color: var(--primary) !important;
+}
+
+.bg-descarga {
+    background-image: url(assets/img/descarga-img.png);
+    background-position: center center;
 }
 
 .bg-light {
@@ -120,4 +129,8 @@ section {
     .w-75 {
         width: 100% !important;
     }
+}
+
+.text-licencia {
+    font-size: 4;
 }
