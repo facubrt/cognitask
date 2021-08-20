@@ -25,12 +25,21 @@ INDICE_RESUMEN = 3
 class BCIOperador(QMainWindow, Ui_BCIOperador):
 
     def __init__(self):
+        '''------------
+        DOCUMENTACIÓN -
+        Inicializa el Operador (Interfaz de usuario Profesional) de Cognitask.
+        ------------'''
         super(BCIOperador, self).__init__()
         self.configuracion_inicial()
 
     # FUNCIONES DE INTERFAZ GENERAL
     # ///////////////////////////////////////////////////////////
     def configuracion_inicial(self):
+        '''------------
+        DOCUMENTACIÓN -
+        Establece valores y estados por defecto en el Operador.
+        - Pagina inicial, estado de botones, etc
+        ------------'''
         QtCore.QCoreApplication.processEvents()
         self.configuracion_stacked_widget.setCurrentIndex(0)
         self.informacion_stacked_widget.setCurrentIndex(0)
@@ -43,6 +52,11 @@ class BCIOperador(QMainWindow, Ui_BCIOperador):
         self.directorio_entrada.setPlaceholderText(ubicaciones.UBICACION_DATOS)
             
     def _deshabilitar_cambios(self):
+        '''------------
+        DOCUMENTACIÓN -
+        Deshabilita la posibilidad de realizar cambios en los parámetros cuando la tarea ha comenzado.
+        - Bloquea o modifica el comportamiento de botones, paginas, etc
+        ------------'''
         QtCore.QCoreApplication.processEvents()
         self.comenzar_calibracion_boton.setText("Suspender")
         self.comenzar_terapia_boton.setText("Suspender")
@@ -65,6 +79,11 @@ class BCIOperador(QMainWindow, Ui_BCIOperador):
         self.guia_visual_opciones.setEnabled(False)
 
     def _habilitar_cambios(self):
+        '''------------
+        DOCUMENTACIÓN -
+        Habilita la posibilidad de realizar cambios en los parámetros cuando la tarea ha finalizado.
+        - Desbloquea o modifica el comportamiento de botones, paginas, etc
+        ------------'''
         QtCore.QCoreApplication.processEvents()
         self.comenzar_calibracion_boton.setText("Comenzar")
         self.comenzar_terapia_boton.setText("Comenzar")
@@ -88,6 +107,12 @@ class BCIOperador(QMainWindow, Ui_BCIOperador):
     # PAGINAS 
     # ///////////////////////////////////////////////////////////
     def ui_nueva_sesion_pagina (self):
+        '''------------
+        DOCUMENTACIÓN -
+        Configura la pagina de Nueva sesion.
+        - Muestra la informacion correspondiente a la pagina Nueva sesion y deshabilita las otras paginas
+        ------------'''
+        # Refrezca la interfaz grafica evitando que se congele
         QtCore.QCoreApplication.processEvents()
         # interfaz
         self.seleccion_calibracion_frame.setStyleSheet("background-color: rgb(38, 43, 50);")
@@ -105,6 +130,11 @@ class BCIOperador(QMainWindow, Ui_BCIOperador):
         self._como_empezar(INDICE_NUEVA_SESION)
     
     def ui_calibracion_pagina(self):
+        '''------------
+        DOCUMENTACIÓN -
+        Configura la pagina de Calibracion.
+        - Muestra la informacion correspondiente a la pagina Calibracion
+        ------------'''
         QtCore.QCoreApplication.processEvents()
         # interfaz
         self.seleccion_calibracion_frame.setStyleSheet("background-color:rgb(255,255,255);")
@@ -130,6 +160,11 @@ class BCIOperador(QMainWindow, Ui_BCIOperador):
         self._como_empezar(INDICE_CALIBRACION)
         
     def ui_terapia_pagina(self):
+        '''------------
+        DOCUMENTACIÓN -
+        Configura la pagina de Calibracion.
+        - Muestra la informacion correspondiente a la pagina Terapia
+        ------------'''
         QtCore.QCoreApplication.processEvents()
         # interfaz
         self.seleccion_calibracion_frame.setStyleSheet("background-color: rgb(38, 43, 50);")
@@ -146,26 +181,49 @@ class BCIOperador(QMainWindow, Ui_BCIOperador):
         self._como_empezar(INDICE_TERAPIA)     
     
     def _como_empezar(self, pagina):
+        '''------------
+        DOCUMENTACIÓN -
+        Guia rapida ¿Como empezar?.
+        - Muestra la informacion necesaria para configurar y comenzar una sesion
+        ------------'''
         self.informacion_titulo.setText("¿Cómo empezar?")
         self.informacion_stacked_widget.setCurrentIndex(pagina)
         
     # NUEVA SESION
     # ///////////////////////////////////////////////////////////
     def ui_seleccionar_directorio(self, ubicacion_datos):
+        '''------------
+        DOCUMENTACIÓN -
+        Muestra en el Operador la direccion seleccionada para la ubicacion de los datos.
+        ------------'''
         self.directorio_entrada.setText(ubicacion_datos)
 
     @property # GETTER
     def paciente(self):
+        '''------------
+        DOCUMENTACIÓN -
+        Devuelve el nombre del paciente ingresado en el campo de texto
+        ------------'''
         return self.nombre_entrada.text()
     # CALIBRACION
     # ///////////////////////////////////////////////////////////
     def ui_preparar_calibracion(self, paciente):
+        '''------------
+        DOCUMENTACIÓN -
+        Prepara la sesion de calibracion.
+        - Bloquea o modifica el comportamiento de los botones, paginas, etc cuando se selecciona "Preparar"
+        ------------'''
         QtCore.QCoreApplication.processEvents()
         self.comenzar_terapia_boton.setEnabled(False)
         self.comenzar_calibracion_boton.setEnabled(True)
         self._mostrar_resumen(paciente, INDICE_RESUMEN)
         
     def ui_comenzar_calibracion(self, calibracion_tarea):
+        '''------------
+        DOCUMENTACIÓN -
+        Comienza la sesion de calibracion.
+        - Bloquea o modifica el comportamiento de los botones, paginas, etc cuando se selecciona "Comenzar"
+        ------------'''
         QtCore.QCoreApplication.processEvents()
         self._deshabilitar_cambios()
         if calibracion_tarea == 1:
@@ -176,6 +234,11 @@ class BCIOperador(QMainWindow, Ui_BCIOperador):
                 self.calibracion_estado_3.setText(constantes.MSG_REALIZANDO_TAREA)
     
     def ui_suspender_calibracion(self, calibracion_tarea):
+        '''------------
+        DOCUMENTACIÓN -
+        Suspende la sesion de calibracion.
+        - Desbloquea o modifica el comportamiento de los botones, paginas, etc cuando se selecciona "Suspender"
+        ------------'''
         QtCore.QCoreApplication.processEvents()
         self._habilitar_cambios()
         if calibracion_tarea == 1:
@@ -186,6 +249,11 @@ class BCIOperador(QMainWindow, Ui_BCIOperador):
                 self.calibracion_estado_3.setText(constantes.MSG_TAREA_SUSPENDIDA)
     
     def ui_finalizar_calibracion(self, calibracion_tarea):
+        '''------------
+        DOCUMENTACIÓN -
+        Finaliza la sesion de calibracion.
+        - Desbloquea o modifica el comportamiento de los botones, paginas, etc cuando se finaliza la tarea
+        ------------'''
         QtCore.QCoreApplication.processEvents()
         self._habilitar_cambios()
         self.comenzar_calibracion_boton.setEnabled(False)
@@ -206,41 +274,86 @@ class BCIOperador(QMainWindow, Ui_BCIOperador):
     # ///////////////////////////////////////////////////////////
     @property # GETTER
     def tipo_tarea(self):
+        '''------------
+        DOCUMENTACIÓN -
+        Devuelve el tipo de tarea seleccionada.
+        ------------'''
         return self.tipo_tarea_opciones.currentText()
     
     @property # GETTER
     def nivel(self):
+        '''------------
+        DOCUMENTACIÓN -
+        Devuelve el nivel seleccionado.
+        ------------'''
         return self.nivel_opciones.currentText()
     
     @property # GETTER
     def guia_visual(self):
+        '''------------
+        DOCUMENTACIÓN -
+        Devuelve la opcion seleccionada de guia visual.
+        ------------'''
         return self.guia_visual_opciones.currentText()
     
     def ui_aplicar_terapia(self, paciente):
+        '''------------
+        DOCUMENTACIÓN -
+        Aplica las opciones seleccionadas para la sesion de terapia.
+        - Bloquea o modifica el comportamiento de los botones, paginas, etc cuando se selecciona "Aplicar"
+        ------------'''
         QtCore.QCoreApplication.processEvents()
         self.comenzar_terapia_boton.setEnabled(True)
         self.comenzar_calibracion_boton.setEnabled(False)
         self._mostrar_resumen(paciente, INDICE_RESUMEN)
     
     def ui_cargar_matriz(self, matriz):
+        '''------------
+        DOCUMENTACIÓN -
+        Carga en el cuadro de texto la direccion de la matriz de clasificacion seleccionada.
+        ------------'''
         self.archivo_calibracion_entrada.setText(matriz[0])
     
     def ui_comenzar_terapia(self):
+        '''------------
+        DOCUMENTACIÓN -
+        Comienza la sesion de terapia.
+        - Bloquea o modifica el comportamiento de los botones, paginas, etc cuando se selecciona "Comenzar"
+        ------------'''
         self._deshabilitar_cambios()
     
     def ui_suspender_terapia(self):
+        '''------------
+        DOCUMENTACIÓN -
+        Suspende la sesion de terapia.
+        - Desbloquea o modifica el comportamiento de los botones, paginas, etc cuando se selecciona "Suspender"
+        ------------'''
         self._habilitar_cambios()
         
     def ui_finalizar_terapia(self):
+        '''------------
+        DOCUMENTACIÓN -
+        Finaliza la sesion de terapia.
+        - Desbloquea o modifica el comportamiento de los botones, paginas, etc cuando se finaliza la tarea
+        ------------'''
         self._habilitar_cambios()
     
     # RESUMEN SESION
     # ///////////////////////////////////////////////////////////
     def _mostrar_resumen(self, titulo, pagina):
+        '''------------
+        DOCUMENTACIÓN -
+        Reemplaza la informacion de ¿Como empezar? por el resumen cuando se prepara una sesion de calibracion o terapia.
+        ------------'''
         self.informacion_titulo.setText(titulo)
         self.informacion_stacked_widget.setCurrentIndex(pagina)
     
     def ui_iniciar_resumen(self, modo, tarea):
+        '''------------
+        DOCUMENTACIÓN -
+        Inicia el resumen de la sesion.
+        - Establece los valores iniciales antes de comenzar con la tarea
+        ------------'''
         QtCore.QCoreApplication.processEvents()
         self.modo_resumen_texto.setText(modo)
         self.actividad_resumen_titulo.setText('Tarea')
@@ -256,13 +369,28 @@ class BCIOperador(QMainWindow, Ui_BCIOperador):
         self.estado_resumen_texto.setText('No iniciado')
         
     def ui_actualizar_selecciones(self, selecciones, correctas, incorrectas):
+        '''------------
+        DOCUMENTACIÓN -
+        Actualiza la informacion en el resumen.
+        - Actualiza las selecciones realizadas
+        ------------'''
         QtCore.QCoreApplication.processEvents()
         self.selecciones_resumen_texto.setText(str(selecciones))
         self.correctas_resumen_texto.setText(str(correctas))
         self.incorrectas_resumen_texto.setText(str(incorrectas))
         
     def ui_actualizar_estado(self, estado):
+        '''------------
+        DOCUMENTACIÓN -
+        Actualiza la informacion en el resumen.
+        - Actualiza el estado de la sesion
+        ------------'''
         self.estado_resumen_texto.setText(estado)
         
     def ui_actualizar_tiempo(self, tiempo_sesion):
+        '''------------
+        DOCUMENTACIÓN -
+        Actualiza la informacion en el resumen.
+        - Actualiza el tiempo transcurrido de la sesion
+        ------------'''
         self.tiempo_resumen_texto.setText(str(tiempo_sesion.minute).zfill(2) + ' min ' + str(tiempo_sesion.second).zfill(2) + ' s')
