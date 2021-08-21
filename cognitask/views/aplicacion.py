@@ -208,7 +208,7 @@ class BCIAplicacion(QMainWindow, Ui_BCIAplicacion):
             if sesion.siguiente_seleccion < sesion.cantidad_pasos:
                 self.ui_siguiente_seleccion(sesion.siguiente_seleccion)
                 
-            if tipo_tarea == 'Rompecabezas - mem. espacial':
+            if tipo_tarea == 'Bloque C2':
                 # las imagenes utilizadas para memoria espacial llevan el sufijo - punto
                 if os.path.isfile(sesion.ubicacion_img + "/img" + str(sesion.siguiente_seleccion) + ".png"):
                     extension = ".png"
@@ -229,7 +229,7 @@ class BCIAplicacion(QMainWindow, Ui_BCIAplicacion):
         - Pasa a la siguiente seleccion.
         ------------'''
         QtCore.QCoreApplication.processEvents()
-        if tipo_tarea == 'Palabras - al revés':
+        if tipo_tarea == 'Bloque B2':
             siguiente_seleccion = (sesion.cantidad_pasos + 1) - sesion.siguiente_seleccion
         else:
             siguiente_seleccion = sesion.siguiente_seleccion
