@@ -24,15 +24,17 @@ class Evaluacion():
         Evalua la seleccion en una sesion de terapia dependiendo del tipo de tarea utilizada.
         - Determina si una seleccion es correcta segun el tipo utilizado
         ------------'''
-        if tipo_tarea == 'Palabras':
+        if tipo_tarea == 'Bloque B1':
             seleccion = Evaluacion.modo_palabras(sesion)
-        elif tipo_tarea == 'Palabras - al revés':
+        elif tipo_tarea == 'Bloque B2':
             seleccion = Evaluacion.modo_palabras_invertido(sesion)
-        elif tipo_tarea == 'Sucesiones':
+        elif tipo_tarea == 'Bloque A1':
             seleccion = Evaluacion.modo_sucesiones(sesion)
-        elif tipo_tarea == 'Rompecabezas':
+        elif tipo_tarea == 'Bloque A2':
+            seleccion = Evaluacion.modo_sucesiones(sesion)
+        elif tipo_tarea == 'Bloque C1':
             seleccion = Evaluacion.modo_rompecabezas(sesion)
-        elif tipo_tarea == 'Rompecabezas - mem. espacial':
+        elif tipo_tarea == 'Bloque C2':
             seleccion = Evaluacion.modo_rompecabezas_me(sesion)
         else:
             raise Exception('El tipo de tarea no es correcto')

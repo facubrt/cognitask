@@ -329,22 +329,27 @@ class Cognitask():
         - Determina la presencia de distractores en la tarea
         ------------'''
         # abrir explorador en carpeta segun el tipo de tarea
-        if self.BCIOperador.tipo_tarea.startswith("Rompecabezas"):
-            directorio = QFileDialog.getExistingDirectory(None, 'Selecciona una secuencia:', 'terapia/Rompecabezas/', QFileDialog.ShowDirsOnly)
-        elif self.BCIOperador.tipo_tarea.startswith("Sucesiones"):
-            directorio = QFileDialog.getExistingDirectory(None, 'Selecciona una secuencia:', 'terapia/Sucesiones/', QFileDialog.ShowDirsOnly)
-        elif self.BCIOperador.tipo_tarea.startswith("Palabras"):
-            directorio = QFileDialog.getExistingDirectory(None, 'Selecciona una secuencia:', 'terapia/Palabras/', QFileDialog.ShowDirsOnly)
+        if self.BCIOperador.tipo_tarea.startswith("Bloque C1"):
+            directorio = QFileDialog.getExistingDirectory(None, 'Selecciona una secuencia:', 'terapia/Rompecabezas/C1/', QFileDialog.ShowDirsOnly)
+        elif self.BCIOperador.tipo_tarea.startswith("Bloque C2"):
+            directorio = QFileDialog.getExistingDirectory(None, 'Selecciona una secuencia:', 'terapia/Rompecabezas/C2/', QFileDialog.ShowDirsOnly)
+        elif self.BCIOperador.tipo_tarea.startswith("Bloque A1"):
+            directorio = QFileDialog.getExistingDirectory(None, 'Selecciona una secuencia:', 'terapia/Sucesiones/A1/', QFileDialog.ShowDirsOnly)
+        elif self.BCIOperador.tipo_tarea.startswith("Bloque A2"):
+            directorio = QFileDialog.getExistingDirectory(None, 'Selecciona una secuencia:', 'terapia/Sucesiones/A2/', QFileDialog.ShowDirsOnly)
+        elif self.BCIOperador.tipo_tarea.startswith("Bloque B1"):
+            directorio = QFileDialog.getExistingDirectory(None, 'Selecciona una secuencia:', 'terapia/Palabras/B1/', QFileDialog.ShowDirsOnly)
+        elif self.BCIOperador.tipo_tarea.startswith("Bloque B2"):
+            directorio = QFileDialog.getExistingDirectory(None, 'Selecciona una secuencia:', 'terapia/Palabras/B2/', QFileDialog.ShowDirsOnly)
         
         # asignar la ubicacion de la tarea elegida
         if directorio != "":
             self.sesion.ubicacion_img = directorio
             self.tarea = os.path.basename(directorio)
-
-        # contamos la cantidad de pasos que contiene la secuencia elegida. En el caso de que se incluyan distractores estos no se cuentan
-        self.sesion.cantidad_pasos = sum(1 for item in os.listdir(self.sesion.ubicacion_img) if os.path.isfile(os.path.join(self.sesion.ubicacion_img, item)) and item.startswith('img'))
-        # contamos la cantidad de distractores que contiene la secuencia elegida. Puede no tener
-        self.sesion.cantidad_distractores = sum(1 for item in os.listdir(self.sesion.ubicacion_img) if os.path.isfile(os.path.join(self.sesion.ubicacion_img, item)) and item.startswith('distractor'))
+            # contamos la cantidad de pasos que contiene la secuencia elegida. En el caso de que se incluyan distractores estos no se cuentan
+            self.sesion.cantidad_pasos = sum(1 for item in os.listdir(self.sesion.ubicacion_img) if os.path.isfile(os.path.join(self.sesion.ubicacion_img, item)) and item.startswith('img'))
+            # contamos la cantidad de distractores que contiene la secuencia elegida. Puede no tener
+            self.sesion.cantidad_distractores = sum(1 for item in os.listdir(self.sesion.ubicacion_img) if os.path.isfile(os.path.join(self.sesion.ubicacion_img, item)) and item.startswith('distractor'))
 
     def cargar_matriz_clasificacion(self):
         '''------------

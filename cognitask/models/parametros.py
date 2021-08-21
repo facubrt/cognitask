@@ -126,7 +126,7 @@ class Parametros():
         lista = ("A A 1 ", "B B 1 ", "C C 1 ", "D D 1 ", "E E 1 ", "F F 1 ", "G G 1 ", "H H 1 ", "I I 1 ")
           
         ## caso especial de matriz estática para memoria espacial
-        if tipo_tarea == 'Rompecabezas - mem. espacial':
+        if tipo_tarea == 'Bloque C2':
             orden_secuencia = list(range(1, 10))
             for i in range(0, 9):
                 if i == 3:
