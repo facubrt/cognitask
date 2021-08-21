@@ -101,12 +101,7 @@ class Resumen():
         
         modo = "\nModo ------- [" + tipo_tarea + "]\n"
         fout.write(modo)
-        if tipo_tarea.startswith("Rompecabezas"):
-            sec = "Imagen ----- [" + os.path.basename(ubicacion_img) + "]\n"
-        elif tipo_tarea.startswith("Sucesiones"):
-            sec = "Actividad -- [" + os.path.basename(ubicacion_img) + "]\n"
-        elif tipo_tarea.startswith("Palabras"):
-            sec = "Palabra ---- [" + os.path.basename(ubicacion_img) + "]\n"
+        sec = "Tarea ----- [" + os.path.basename(ubicacion_img) + "]\n"
         fout.write(sec)
         n = "Nivel ------ [" + nivel + "]\n"
         fout.write(n)
