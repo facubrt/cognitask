@@ -15,7 +15,7 @@ form.onsubmit = function(e) {
           }
           else if (opcion.value ==='R212') {
             error.className = "pt-2 small text-danger invisible"
-            location.href = "https://github.com/facubrt/cognitask/releases/download/R210/Instalar.Cognitask.R210.exe"
+            location.href = "https://github.com/facubrt/cognitask/releases/download/R212/Instalar.-.Cognitask.R212.exe"
           }
           else {
             error.innerHTML = "Selecciona una versión de Cognitask"
