@@ -149,8 +149,9 @@ class Resumen():
         fout.write(correctas)
         incorrectas = "\nSelecciones incorrectas [" + str(selecciones_incorrectas).zfill(2) + "]\n"
         fout.write(incorrectas)
-        aciertos = "\nPorcentaje de aciertos [" + str(porcentaje_aciertos) + "%]\n"
-        fout.write(aciertos)
+        if act == "\nACTIVIDAD COMPLETADA ---":
+            aciertos = "\nPorcentaje de aciertos [" + str(porcentaje_aciertos) + "%]\n"
+            fout.write(aciertos)
         observaciones = "\nObservaciones ----\n"
         fout.write(observaciones)
         
