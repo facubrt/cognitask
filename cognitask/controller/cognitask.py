@@ -341,10 +341,10 @@ class Cognitask():
             self.sesion.ubicacion_img = directorio
             self.tarea = os.path.basename(directorio)
 
-        # contamos la cantidad de pasos que contiene la secuencia elegida. En el caso de que se incluyan distractores estos no se cuentan
-        self.sesion.cantidad_pasos = sum(1 for item in os.listdir(self.sesion.ubicacion_img) if os.path.isfile(os.path.join(self.sesion.ubicacion_img, item)) and item.startswith('img'))
-        # contamos la cantidad de distractores que contiene la secuencia elegida. Puede no tener
-        self.sesion.cantidad_distractores = sum(1 for item in os.listdir(self.sesion.ubicacion_img) if os.path.isfile(os.path.join(self.sesion.ubicacion_img, item)) and item.startswith('distractor'))
+            # contamos la cantidad de pasos que contiene la secuencia elegida. En el caso de que se incluyan distractores estos no se cuentan
+            self.sesion.cantidad_pasos = sum(1 for item in os.listdir(self.sesion.ubicacion_img) if os.path.isfile(os.path.join(self.sesion.ubicacion_img, item)) and item.startswith('img'))
+            # contamos la cantidad de distractores que contiene la secuencia elegida. Puede no tener
+            self.sesion.cantidad_distractores = sum(1 for item in os.listdir(self.sesion.ubicacion_img) if os.path.isfile(os.path.join(self.sesion.ubicacion_img, item)) and item.startswith('distractor'))
 
     def cargar_matriz_clasificacion(self):
         '''------------
