@@ -15,6 +15,7 @@ LICENSE.txt
 # Carpetas
 config/
 terapia/
+calibracion/
 documentos/
 datos/
 ui/
