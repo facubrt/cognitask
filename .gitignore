@@ -9,6 +9,10 @@ __pycache__/
 #icono
 *.ico
 
+#design
+ui_aplicacion.py
+ui_operador.py
+
 #LICENSE
 LICENSE.txt
 
