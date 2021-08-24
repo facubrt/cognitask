@@ -26,6 +26,10 @@ recursos/
 release/
 .prm
 
+# vistas
+ui_operador.py
+ui_aplicacion.py
+
 # Distribution / packaging
 .Python
 build/
