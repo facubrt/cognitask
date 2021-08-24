@@ -14,7 +14,6 @@ LICENSE.txt
 
 # Carpetas
 config/
-calibracion/
 terapia/
 documentos/
 datos/
@@ -22,8 +21,6 @@ ui/
 BCI2000/
 recursos/
 release/
-config/
-terapia/
 .prm
 
 # Distribution / packaging
