@@ -41,6 +41,10 @@ CSS_MSG_COMENZAR = "color: rgb(242, 242, 242);border-color: rgb(0, 0, 0); border
 CSS_MSG_TERMINADO = "color: rgb(242, 242, 242);border-color: rgb(0, 0, 0); border-radius: 6px; background-color: rgb(35, 181, 156);"
 CSS_MSG_SUSPENDIDO = "color: rgb(242, 242, 242);border-color: rgb(0, 0, 0); border-radius: 6px; background-color: rgb(35, 181, 156);"
 
+COMENZAR_BOTON_CSS = "QPushButton{color: rgb(242, 242, 242);border-radius:4px; background-color: rgb(35, 181, 156);border-style: solid;border-width:1px;border-color:  rgb(38, 43, 50);} QPushButton:hover{background-color: rgb(47, 193, 165);color: rgb(242, 242, 242);border-radius:4px;} QPushButton:disabled{color:rgb(116,123,141); border-radius:4px;border-style: solid;border-width:1px; border-color:  rgb(116, 123, 141); background-color: rgb(244, 244, 248);}"
+
+SUSPENDER_BOTON_CSS = "QPushButton{color: rgb(242, 242, 242);border-radius:4px; background-color: rgb(234, 86, 61);border-style: solid;border-width:1px;border-color:  rgb(38, 43, 50);} QPushButton:hover{background-color: rgb(242, 95, 70);color: rgb(242, 242, 242);border-radius:4px;} QPushButton:disabled{color:rgb(116,123,141); border-radius:4px;border-style: solid;border-width:1px; border-color:  rgb(116, 123, 141); background-color: rgb(244, 244, 248);}"
+
 # Carga los valores puestos en el archivo constantes.txt 
 def cargar():
     with open('config/constantes.txt', 'r') as f:

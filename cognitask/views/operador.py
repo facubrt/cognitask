@@ -59,7 +59,9 @@ class BCIOperador(QMainWindow, Ui_BCIOperador):
         ------------'''
         QtCore.QCoreApplication.processEvents()
         self.comenzar_calibracion_boton.setText("Suspender")
+        self.comenzar_calibracion_boton.setStyleSheet(constantes.SUSPENDER_BOTON_CSS)
         self.comenzar_terapia_boton.setText("Suspender")
+        self.comenzar_terapia_boton.setStyleSheet(constantes.SUSPENDER_BOTON_CSS)
         self.aplicar_terapia_boton.setEnabled(False)
         self.preparar_calibracion_boton.setEnabled(False)
         self.terapia_boton.setEnabled(False)
@@ -86,7 +88,9 @@ class BCIOperador(QMainWindow, Ui_BCIOperador):
         ------------'''
         QtCore.QCoreApplication.processEvents()
         self.comenzar_calibracion_boton.setText("Comenzar")
+        self.comenzar_calibracion_boton.setStyleSheet(constantes.COMENZAR_BOTON_CSS)
         self.comenzar_terapia_boton.setText("Comenzar")
+        self.comenzar_terapia_boton.setStyleSheet(constantes.COMENZAR_BOTON_CSS)
         self.aplicar_terapia_boton.setEnabled(True)
         self.preparar_calibracion_boton.setEnabled(True)
         self.terapia_boton.setEnabled(True)
@@ -103,7 +107,29 @@ class BCIOperador(QMainWindow, Ui_BCIOperador):
         self.archivo_calibracion_entrada.setEnabled(True)
         self.archivo_calibracion_boton.setEnabled(True)
         self.guia_visual_opciones.setEnabled(True)
-
+    
+    def _aplicando_configuracion(self):
+        '''------------
+        DOCUMENTACIÓN -
+        Inhabilita las modificaciones cuando se prepara o se aplica la configuración de una sesión
+        - Bloquea el comportamiento de botones, paginas, etc
+        ------------'''
+        self.preparar_calibracion_boton.setEnabled(False)
+        self.preparar_calibracion_boton.setText("Preparando...")
+        self.aplicar_terapia_boton.setEnabled(False)
+        self.aplicar_terapia_boton.setText("Aplicando...")
+    
+    def _configuracion_lista(self):  
+        '''------------
+        DOCUMENTACIÓN -
+        Habilita las modificaciones cuando se prepara o se aplica la configuración de una sesión
+        - Desbloquea el comportamiento de botones, paginas, etc
+        ------------'''
+        self.preparar_calibracion_boton.setEnabled(True)
+        self.preparar_calibracion_boton.setText("Preparar")
+        self.aplicar_terapia_boton.setEnabled(True)
+        self.aplicar_terapia_boton.setText("Aplicar")
+          
     # PAGINAS 
     # ///////////////////////////////////////////////////////////
     def ui_nueva_sesion_pagina (self):
@@ -217,7 +243,25 @@ class BCIOperador(QMainWindow, Ui_BCIOperador):
         self.comenzar_terapia_boton.setEnabled(False)
         self.comenzar_calibracion_boton.setEnabled(True)
         self._mostrar_resumen(paciente, INDICE_RESUMEN)
-        
+    
+    def ui_inhabilitar_preparacion_calibracion(self):
+        '''------------
+        DOCUMENTACIÓN -
+        Inhabilita las modificaciones cuando se prepara o se aplica la configuración de una sesión de Calibración
+        - Bloquea el comportamiento de botones, paginas, etc
+        ------------'''
+        self.preparar_calibracion_boton.setEnabled(False)
+        self.preparar_calibracion_boton.setText("Preparando...")
+    
+    def ui_habilitar_preparacion_calibracion(self):
+        '''------------
+        DOCUMENTACIÓN -
+        Habilita las modificaciones cuando se prepara o se aplica la configuración de una sesión de Calibración
+        - Desbloquea el comportamiento de botones, paginas, etc
+        ------------'''
+        self.preparar_calibracion_boton.setEnabled(True)
+        self.preparar_calibracion_boton.setText("Preparar")
+            
     def ui_comenzar_calibracion(self, calibracion_tarea):
         '''------------
         DOCUMENTACIÓN -
@@ -306,6 +350,24 @@ class BCIOperador(QMainWindow, Ui_BCIOperador):
         self.comenzar_terapia_boton.setEnabled(True)
         self.comenzar_calibracion_boton.setEnabled(False)
         self._mostrar_resumen(paciente, INDICE_RESUMEN)
+
+    def ui_inhabilitar_aplicacion_terapia(self):
+        '''------------
+        DOCUMENTACIÓN -
+        Inhabilita las modificaciones cuando se prepara o se aplica la configuración de una sesión de Terapia
+        - Bloquea el comportamiento de botones, paginas, etc
+        ------------'''
+        self.aplicar_terapia_boton.setEnabled(False)
+        self.aplicar_terapia_boton.setText("Aplicando...")
+        
+    def ui_habilitar_aplicacion_terapia(self):
+        '''------------
+        DOCUMENTACIÓN -
+        Habilita las modificaciones cuando se prepara o se aplica la configuración de una sesión de Terapia
+        - Desbloquea el comportamiento de botones, paginas, etc
+        ------------'''
+        self.aplicar_terapia_boton.setEnabled(True)
+        self.aplicar_terapia_boton.setText("Aplicar")
     
     def ui_cargar_matriz(self, matriz):
         '''------------

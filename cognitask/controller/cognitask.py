@@ -141,6 +141,10 @@ class Cognitask():
         # restablecer
         self.BCIAplicacion.restablecerMensajes()
         self.sesion.restablecer_selecciones()
+        
+        # Se deshabilita la posibilidad de realizar multiples selecciones
+        self.BCIOperador.ui_inhabilitar_preparacion_calibracion()
+        
         # tarea
         if self.sesion.indice_tarea == 1:
             self.sesion.actualizar_tarea_calibracion(constantes.TAREA_UNO)
@@ -171,6 +175,8 @@ class Cognitask():
         self.BCIOperador.ui_preparar_calibracion(self.paciente)
         self.BCIOperador.ui_iniciar_resumen(CALIBRACION, self.tarea)
         Resumen.escribir_resumen(self.sesion, self.bci, self.BCIOperador, "sesion", True)
+        # se habilita la opcion de preparar calibracion nuevamente
+        self.BCIOperador.ui_habilitar_preparacion_calibracion()
         self.sesion.actualizar_estado('Preparado')
 
     def comenzar_calibracion(self):
@@ -256,10 +262,13 @@ class Cognitask():
         ------------'''
         # Refrezca la interfaz grafica evitando que se congele
         QtCore.QCoreApplication.processEvents()
-        # restablecer variables de sesion
+        # Restablecer variables de sesion
         self.BCIAplicacion.restablecerMensajes()
         self.sesion.restablecer_selecciones()
 
+        # Se deshabilita la opcion de aplicar configuracion de terapia
+        self.BCIOperador.ui_inhabilitar_aplicacion_terapia()
+        
         if self.BCIOperador.guia_visual != "Deshabilitada":
             self.BCIAplicacion.ui_mostrar_guia_terapia(self.sesion)
         else:
@@ -289,6 +298,8 @@ class Cognitask():
         self.BCIOperador.ui_aplicar_terapia(self.paciente)
         self.BCIOperador.ui_iniciar_resumen(TERAPIA, self.tarea)
         Resumen.escribir_resumen(self.sesion, self.bci, self.BCIOperador, "sesion", False)
+        # Se habilita la opcion de aplicar configuracion de terapia nuevamente
+        self.BCIOperador.ui_habilitar_aplicacion_terapia()
         self.sesion.actualizar_estado('Preparado')
 
     def comenzar_terapia(self):
