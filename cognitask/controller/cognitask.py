@@ -20,6 +20,7 @@ from cognitask.models.evaluacion import Evaluacion
 from cognitask.models.resumen import Resumen
 import cognitask.common.ubicaciones as ubicaciones
 import cognitask.common.constantes as constantes
+from cognitask.utils.proxy_model import ProxyModel
 
 TERAPIA = "Terapia"
 CALIBRACION = "Calibracion"
