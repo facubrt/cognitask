@@ -45,6 +45,16 @@ COMENZAR_BOTON_CSS = "QPushButton{color: rgb(242, 242, 242);border-radius:4px; b
 
 SUSPENDER_BOTON_CSS = "QPushButton{color: rgb(242, 242, 242);border-radius:4px; background-color: rgb(234, 86, 61);border-style: solid;border-width:1px;border-color:  rgb(38, 43, 50);} QPushButton:hover{background-color: rgb(242, 95, 70);color: rgb(242, 242, 242);border-radius:4px;} QPushButton:disabled{color:rgb(116,123,141); border-radius:4px;border-style: solid;border-width:1px; border-color:  rgb(116, 123, 141); background-color: rgb(244, 244, 248);}"
 
+# OPENBCI LSL
+STREAM = "--stream"
+START = "/start"
+STOP = "/stop"
+EXIT = "/exit"
+CONFIG_CANALES = "CONFIG_CANALES"
+PUERTO = "PUERTO"
+LOC_CANALES = "LOC_CANALES"
+
+
 # Carga los valores puestos en el archivo constantes.txt 
 def cargar():
     with open('config/constantes.txt', 'r') as f:
@@ -97,3 +107,9 @@ def cargar():
         MSG_COMENZAR = lineas[32].split(' = ')[1]
         global MSG_SUSPENDIDO
         MSG_SUSPENDIDO = lineas[33].split(' = ')[1]
+        global CONFIG_CANALES
+        CONFIG_CANALES = lineas[36].split(' = ')[1]
+        global PUERTO
+        PUERTO = lineas[37].split(' = ')[1]
+        global LOC_CANALES
+        LOC_CANALES = lineas[38].split(' = ')[1].split(' - ')

@@ -15,6 +15,7 @@ import subprocess
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QFileDialog
 from datetime import date
+from cognitask.models.openBCI_LSL import OpenBCI_LSL
 from cognitask.models.parametros import Parametros
 from cognitask.models.evaluacion import Evaluacion
 from cognitask.models.resumen import Resumen
@@ -30,7 +31,7 @@ CALIBRACION = "Calibracion"
 ####################################################################
 class Cognitask():
 
-    def __init__(self, bci, sesion, operador, aplicacion):
+    def __init__(self, bci, sesion, operador, aplicacion, openbci_lsl):
         '''------------
         DOCUMENTACIÓN -
         Inicializa Cognitask.
@@ -55,6 +56,8 @@ class Cognitask():
         self.bci = bci
         # SESION
         self.sesion = sesion
+        # OPENBCI LSL
+        self.openbci_lsl = openbci_lsl
 
         # variables
         self.paciente = 'Paciente'
@@ -109,6 +112,8 @@ class Cognitask():
             self.paciente = self.BCIOperador.paciente
             self.bci.cargar_datos(self.BCIOperador.paciente, hoy, self.sesion.ubicacion_datos)
             self.calibracion_pagina()
+            #OPENBCI_LSL
+            #self.openbci_lsl.iniciar()
 
     def seleccionar_directorio(self):
         '''------------
@@ -179,6 +184,9 @@ class Cognitask():
         # se habilita la opcion de preparar calibracion nuevamente
         self.BCIOperador.ui_habilitar_preparacion_calibracion()
         self.sesion.actualizar_estado('Preparado')
+        # OPENBCI_LSL
+        #self.openbci_lsl.iniciar(comando=None)
+        #self.openbci_lsl.iniciar(comando=constantes.CONFIG_CANALES)
 
     def comenzar_calibracion(self):
         '''------------
@@ -209,6 +217,8 @@ class Cognitask():
             
         self.bci.estado = 'Running'
         self.observar_estados(True)
+        #OPENBCI_LSL
+        #self.openbci_lsl.iniciar(comando='/start')
 
     def suspender_calibracion(self):
         '''------------
@@ -302,6 +312,8 @@ class Cognitask():
         # Se habilita la opcion de aplicar configuracion de terapia nuevamente
         self.BCIOperador.ui_habilitar_aplicacion_terapia()
         self.sesion.actualizar_estado('Preparado')
+        # OPENBCI_LSL
+        self.openbci_lsl.iniciar(comando=None)
 
     def comenzar_terapia(self):
         '''------------

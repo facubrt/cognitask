@@ -12,6 +12,7 @@ import os
 import sys
 import inspect
 from PyQt5 import QtWidgets, QtGui
+from PyQt5.QtCore import QThread
 
 import cognitask.common.constantes as constantes
 import cognitask.common.ubicaciones as ubicaciones
@@ -20,6 +21,7 @@ import cognitask.common.procesos as procesos
 from cognitask.views.aplicacion import BCIAplicacion
 from cognitask.views.operador import BCIOperador
 
+from cognitask.models.openBCI_LSL import OpenBCI_LSL
 from cognitask.models.BCI2000 import BCI2000
 from cognitask.models.sesion import Sesion
 
@@ -57,10 +59,15 @@ def main():
     splash.show()
     
     #Instancio BCI2000, OPERADOR, APLICACION Y SESIÓN para pasarlo al controlador
+    
     bci = BCI2000()
     operador = BCIOperador()
     aplicacion = BCIAplicacion()
     sesion = Sesion()
+    #thread = QThread()
+    openbci_lsl = None #OpenBCI_LSL(puerto=constantes.PUERTO, comando=constantes.STREAM)
+    #openbci_lsl.moveToThread(thread)
+    #thread.start
     
     # PROCESOS
     # introduce P3Speller dentro del modulo de Aplicacion Cognitask
@@ -68,7 +75,7 @@ def main():
     # hace invisible los procesos de BCI2000
     procesos.ocultarProcesos(bci)
     
-    ctask = Cognitask(bci, sesion, operador, aplicacion)
+    ctask = Cognitask(bci, sesion, operador, aplicacion, openbci_lsl)
     splash.close()
     
     sys.exit(app.exec_())
