@@ -60,7 +60,8 @@ class Cognitask():
         self.openbci_lsl = openbci_lsl
         self.openbci_lsl.iniciar()
         self.openbci_lsl.enviarComando(comando=constantes.CONFIG_CANALES)
-        self.openbci_lsl.enviarComando(comando=constantes.START)
+        #self.openbci_lsl.enviarComando(comando=constantes.START)
+        self.openbci_lsl.comenzar()
         
 
         # variables
