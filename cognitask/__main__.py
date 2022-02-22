@@ -65,7 +65,7 @@ def main():
     aplicacion = BCIAplicacion()
     sesion = Sesion()
     #thread = QThread()
-    openbci_lsl = None #OpenBCI_LSL(puerto=constantes.PUERTO, comando=constantes.STREAM)
+    openbci_lsl = OpenBCI_LSL(puerto=constantes.PUERTO, comando=constantes.STREAM)
     #openbci_lsl.moveToThread(thread)
     #thread.start
     

@@ -58,6 +58,10 @@ class Cognitask():
         self.sesion = sesion
         # OPENBCI LSL
         self.openbci_lsl = openbci_lsl
+        self.openbci_lsl.iniciar()
+        self.openbci_lsl.enviarComando(comando=constantes.CONFIG_CANALES)
+        self.openbci_lsl.enviarComando(comando=constantes.START)
+        
 
         # variables
         self.paciente = 'Paciente'
@@ -186,7 +190,8 @@ class Cognitask():
         self.sesion.actualizar_estado('Preparado')
         # OPENBCI_LSL
         #self.openbci_lsl.iniciar(comando=None)
-        #self.openbci_lsl.iniciar(comando=constantes.CONFIG_CANALES)
+        # self.openbci_lsl.iniciar(comando=constantes.CONFIG_CANALES)
+        # self.openbci_lsl.iniciar(comando=constantes.START)
 
     def comenzar_calibracion(self):
         '''------------

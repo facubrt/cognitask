@@ -43,6 +43,10 @@ class OpenBCI_LSL(QObject):
       self.lsl = streamerlsl.StreamerLSL(port=self.port,GUI=False)
     self.lsl.create_lsl()
     
-  def iniciar(self, comando):  
-    self.lsl.begin(comando)
+  def iniciar(self):  
+    self.lsl.begin()
+
+  def enviarComando(self, comando):
+    self.lsl.sendCommand(comando)
+
     
